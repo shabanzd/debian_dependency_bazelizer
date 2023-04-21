@@ -1,0 +1,7 @@
+py_binary(
+    name = "dependency-bazelizer",
+    srcs = ["main.py"],
+    main = "main.py",
+    tags  = ["local"],
+    visibility = ["//visibility:public"],
+)
