@@ -1,19 +1,15 @@
 from typing import Final, Set
 from pathlib import Path
 
-import dataclasses
 import os
+
+from package import PackageMetadata
 
 BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
 DEB_PACKAGE_IN: Final = Path().joinpath(
     BAZEL_WORKSPACE_DIR, "src", "deb_packages.in"
 )
 
-@dataclasses.dataclass(frozen=True)
-class PackageMetadata:
-    name: str
-    arch: str
-    version: str
 
 def _get_package_metadata(pinned_package: str) -> PackageMetadata:
     if pinned_package.count(":") != 1 or pinned_package.count("=") > 1:
