@@ -3,6 +3,7 @@ from pathlib import Path
 
 import os
 
+from create_deb_package import create_deb_package
 from package import PackageMetadata
 from get_package_version import get_package_version
 
@@ -30,7 +31,7 @@ def _get_package_metadata(pinned_package: str) -> PackageMetadata:
     return PackageMetadata(name=name, arch=arch, version=version)
         
 
-def _get_input_file_entries() -> Set[PackageMetadata]:
+def _get_input_package_metadatas() -> Set[PackageMetadata]:
     with open(DEB_PACKAGE_IN, "r") as input_file:
         entries = set(input_file.read().splitlines())
     
@@ -38,7 +39,10 @@ def _get_input_file_entries() -> Set[PackageMetadata]:
    
 
 def main():
-    print(_get_input_file_entries())
+    for package_metadata in _get_input_package_metadatas():
+        if package_metadata.name == "dummy":
+            continue
+        print(create_deb_package(package_metadata))
 
 if __name__ == "__main__":
     main()
