@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 
 from package import PackageMetadata
+from get_package_version import get_package_version
 
 BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
 DEB_PACKAGE_IN: Final = Path().joinpath(
@@ -24,8 +25,7 @@ def _get_package_metadata(pinned_package: str) -> PackageMetadata:
         arch, version = arch_version.split("=")
     
     if not version:
-        # get version from registry
-        print("implicit version deduction not yet implemented")
+        version = get_package_version(name=name, arch=arch)
 
     return PackageMetadata(name=name, arch=arch, version=version)
         
@@ -35,10 +35,7 @@ def _get_input_file_entries() -> Set[PackageMetadata]:
         entries = set(input_file.read().splitlines())
     
     return {_get_package_metadata(entry) for entry in entries if entry and not entry.startswith("#")}
-
-
-
-        
+   
 
 def main():
     print(_get_input_file_entries())
