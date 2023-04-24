@@ -6,6 +6,7 @@ import os
 from create_deb_package import create_deb_package
 from package import PackageMetadata
 from get_package_version import get_package_version
+from registry import find_package_in_registry
 
 BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
 DEB_PACKAGE_IN: Final = Path().joinpath(
@@ -41,8 +42,9 @@ def _get_input_package_metadatas() -> Set[PackageMetadata]:
 def main():
     for package_metadata in _get_input_package_metadatas():
         if package_metadata.name == "dummy":
-            continue
-        print(create_deb_package(package_metadata))
+            print(find_package_in_registry(package_metadata))
+        else:
+            print(create_deb_package(package_metadata))
 
 if __name__ == "__main__":
     main()
