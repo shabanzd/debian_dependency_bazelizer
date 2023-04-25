@@ -47,8 +47,11 @@ def main():
             print(find_package_in_registry(package_metadata))
         else:
             package = create_deb_package(package_metadata)
-            write_module_file(package=package, file=MODULES_DIR / package.package_dir / "MODULE.bazel")
-            write_build_file(package=package, file=MODULES_DIR / package.package_dir / "BUILD.bazel")
+            package_dir_name = f"{package.name}_{package.version}_{package.arch}"
+            package_dir = MODULES_DIR / package_dir_name
+            package_dir.mkdir(parents=True, exist_ok=True)
+            write_module_file(package=package, file=package_dir / "MODULE.bazel")
+            write_build_file(package=package, file=package_dir / "BUILD.bazel")
 
 if __name__ == "__main__":
     main()
