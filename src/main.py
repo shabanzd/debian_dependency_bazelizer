@@ -7,7 +7,7 @@ from create_deb_package import create_deb_package
 from package import PackageMetadata
 from get_package_version import get_package_version
 from registry import find_package_in_registry
-from writers import write_build_file, write_module_file
+from modularize_package import modularize_package
 
 BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
 DEB_PACKAGE_IN: Final = Path().joinpath(
@@ -47,11 +47,7 @@ def main():
             print(find_package_in_registry(package_metadata))
         else:
             package = create_deb_package(package_metadata)
-            package_dir_name = f"{package.name}_{package.version}_{package.arch}"
-            package_dir = MODULES_DIR / package_dir_name
-            package_dir.mkdir(parents=True, exist_ok=True)
-            write_module_file(package=package, file=package_dir / "MODULE.bazel")
-            write_build_file(package=package, file=package_dir / "BUILD.bazel")
+            modularize_package(package)
 
 if __name__ == "__main__":
     main()

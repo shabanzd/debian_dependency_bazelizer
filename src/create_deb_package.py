@@ -165,7 +165,7 @@ def create_deb_package(metadata: PackageMetadata):
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
-    package.prefix = f"{package.name}{package.version}{package.arch}"
+    package.prefix = f"{package.name}_{package.version}_{package.arch}"
     package.compatibility_level = (
         int(hashlib.sha256(package.prefix.encode("utf-8")).hexdigest(), 16) % 10**8
     )
