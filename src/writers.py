@@ -15,8 +15,7 @@ def _create_build_file_content(package: Package):
     files_str = "\n      ".join(
         ['"' + os.fspath(file) + '",' for file in package.elf_files.union(package.nonelf_files)])
 
-    file_group = f"""
-filegroup(
+    file_group = f"""filegroup(
     name = "all_files",
     srcs = [
       {files_str}
@@ -32,8 +31,7 @@ exports_files([
 ])
 """
 
-    return f"""
-{file_group}
+    return f"""{file_group}
 
 {exports_files}
 
