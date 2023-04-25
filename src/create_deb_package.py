@@ -65,9 +65,9 @@ def _get_deb_pinned_name(name: str, arch: str = "", version: str = ""):
     return package
 
 
-def _download_package_dot_debian(name: str, arch: str, version: str, pinned_name: str):
+def _download_package_dot_debian(name: str, arch: str, version: str, pinned_name: str) -> Path:
     subprocess.check_call(
-        ["apt-get", "download", pinned_name], stdout=subprocess.DEVNULL
+        ["sudo", "apt-get", "download", pinned_name], stdout=subprocess.DEVNULL
     )
 
     files = [file for file in os.listdir() if os.path.isfile(file)]
