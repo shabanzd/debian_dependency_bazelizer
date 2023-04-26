@@ -177,7 +177,7 @@ def create_deb_package(metadata: PackageMetadata):
         pinned_name=package.pinned_name,
     )
     package_dir = archive_path.parent / Path(package.prefix)
-    package_dir.mkdir()
+    package_dir.mkdir(exist_ok=True)
     package.package_dir = package_dir.resolve()
     # the following fills the files-related attributes of the deb package
     files_str = subprocess.check_output(

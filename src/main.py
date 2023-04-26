@@ -3,6 +3,7 @@ from pathlib import Path
 
 import os
 
+from bazelize_deps import bazelize_deps
 from create_deb_package import create_deb_package
 from package import PackageMetadata
 from get_package_version import get_package_version
@@ -42,12 +43,7 @@ def _get_input_package_metadatas() -> Set[PackageMetadata]:
    
 
 def main():
-    for package_metadata in _get_input_package_metadatas():
-        if package_metadata.name == "dummy":
-            print(find_package_in_registry(package_metadata))
-        else:
-            package = create_deb_package(package_metadata)
-            modularize_package(package)
+    bazelize_deps(_get_input_package_metadatas())
 
 if __name__ == "__main__":
     main()
