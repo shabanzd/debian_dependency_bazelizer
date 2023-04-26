@@ -43,6 +43,7 @@ def _get_input_package_metadatas() -> Set[PackageMetadata]:
    
 
 def main():
+    MODULES_DIR.mkdir()
     bazelize_deps(_get_input_package_metadatas())
 
 if __name__ == "__main__":
