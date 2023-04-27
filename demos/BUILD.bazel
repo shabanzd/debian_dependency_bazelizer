@@ -1,0 +1,15 @@
+sh_binary(
+    name = "ip",
+    srcs = ["@iproute2_amd64//:bin/ip"],
+    data = [
+        "@iproute2_amd64//:all_files",
+    ],
+    visibility = ["//visibility:public"],
+)
+py_binary(
+    name = "iproute2-demo",
+    srcs = ["iproute2-demo.py"],
+    main = "iproute2-demo.py",
+    data = [":ip"],
+    visibility = ["//visibility:public"],
+)

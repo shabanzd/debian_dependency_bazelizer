@@ -1,0 +1,1 @@
+bazel_dep(name = "iproute2_amd64", version = "5.15.0-1ubuntu2")

@@ -1,22 +1,21 @@
 from typing import Dict, List, Set
-import shutil
 
-from modularize_package import modularize_package
-from package import Package, PackageMetadata
 from create_deb_package import create_deb_package
 from module import Module
+from modularize_package import modularize_package
+from package import Package, PackageMetadata
 from registry import find_package_in_registry
 
 
 def _add_deps_to_stack(
     package_metadata: PackageMetadata,
-    package_stack: List[Module],
-    visited: Set[PackageMetadata],
+    package_stack: List[PackageMetadata],
+    visited_modules: Set[PackageMetadata],
     deb_package_cache: Dict[PackageMetadata, Package],
 ):
     deps_added = False
     for dep_metadata in deb_package_cache[package_metadata].deps:
-        if dep_metadata in visited:
+        if dep_metadata in visited_modules:
             continue
 
         package_stack.append(dep_metadata)
@@ -44,41 +43,43 @@ def _print_summary(deb_package_cache: Dict[str, Package]):
 
 
 def bazelize_deps(input_package_metadatas: Set[PackageMetadata]) -> None:
-    visited: Set[PackageMetadata] = set()
+    visited_modules: Dict[PackageMetadata, Module] = dict()
     # will be used as a stack for the DFS algorithm
     package_stack: List[PackageMetadata] = []
-    deb_package_cache: Dict[PackageMetadata, Package] = dict()
+    processed_packages: Dict[PackageMetadata, Package] = dict()
 
     for input_package_metadata in input_package_metadatas:
-        if find_package_in_registry(input_package_metadata):
-            visited.add(input_package_metadata)
+        module = find_package_in_registry(input_package_metadata)
+        if module:
+            visited_modules[input_package_metadata] = module
             continue
 
-        deb_package_cache[input_package_metadata] = create_deb_package(input_package_metadata)
+        processed_packages[input_package_metadata] = create_deb_package(input_package_metadata)
 
-    package_stack = list(deb_package_cache.keys())
+    package_stack = list(processed_packages.keys())
 
     while package_stack:
-        if package_stack[-1] in visited:
+        if package_stack[-1] in visited_modules:
             package_stack.pop()
             continue
 
-        if find_package_in_registry(package_stack[-1]):
-            visited.add(package_stack.pop())
+        module = find_package_in_registry(package_stack[-1])
+        if module:
+            visited_modules[package_stack.pop()] = module
             continue
 
-        if package_stack[-1] not in deb_package_cache:
-            deb_package_cache[package_stack[-1]] = create_deb_package(package_stack[-1])
+        if package_stack[-1] not in processed_packages:
+            processed_packages[package_stack[-1]] = create_deb_package(package_stack[-1])
 
         if not _add_deps_to_stack(
             package_stack[-1],
             package_stack=package_stack,
-            deb_package_cache=deb_package_cache,
-            visited=visited,
+            deb_package_cache=processed_packages,
+            visited_modules=visited_modules,
         ):
-            package = package_stack.pop()
-            modularize_package(deb_package_cache[package])
-            visited.add(package)
+            package_metadata = package_stack.pop()
+            package = processed_packages[package_metadata]
+            modularize_package(package, visited_modules)
+            visited_modules[package_metadata] = Module(name=package.name, arch=package.arch, version=package.version, rpaths=package.rpaths)
 
-
-    _print_summary(deb_package_cache)
+    _print_summary(processed_packages)

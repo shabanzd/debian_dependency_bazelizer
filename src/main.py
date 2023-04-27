@@ -4,17 +4,14 @@ from pathlib import Path
 import os
 
 from bazelize_deps import bazelize_deps
-from create_deb_package import create_deb_package
 from package import PackageMetadata
 from get_package_version import get_package_version
-from registry import find_package_in_registry
-from modularize_package import modularize_package
 
 BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
 DEB_PACKAGE_IN: Final = Path().joinpath(
     BAZEL_WORKSPACE_DIR, "src", "deb_packages.in"
 )
-MODULES_DIR : Final = Path().joinpath(BAZEL_WORKSPACE_DIR, "modules")
+MODULES_DIR_IN_REGISTRY : Final = Path().joinpath(BAZEL_WORKSPACE_DIR, "modules")
 
 
 def _get_package_metadata(pinned_package: str) -> PackageMetadata:
@@ -33,7 +30,6 @@ def _get_package_metadata(pinned_package: str) -> PackageMetadata:
         version = get_package_version(name=name, arch=arch)
 
     return PackageMetadata(name=name, arch=arch, version=version)
-        
 
 def _get_input_package_metadatas() -> Set[PackageMetadata]:
     with open(DEB_PACKAGE_IN, "r") as input_file:
@@ -43,7 +39,7 @@ def _get_input_package_metadatas() -> Set[PackageMetadata]:
    
 
 def main():
-    MODULES_DIR.mkdir()
+    MODULES_DIR_IN_REGISTRY.mkdir()
     bazelize_deps(_get_input_package_metadatas())
 
 if __name__ == "__main__":

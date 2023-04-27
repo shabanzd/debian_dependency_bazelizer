@@ -1,23 +1,54 @@
-from typing import Final, Optional
+"""registry utils."""
+
+from typing import Any, Final, Optional
 from pathlib import Path
+import json
 import os
 
-from module import Module
-from package import PackageMetadata
+from module import Module, get_module_name, get_module_version
+from package import Package, PackageMetadata
 from get_package_version import get_version_from_registry
+from writers import write_module_file, write_file
 
 BAZEL_WORKSPACE_DIRECTORY_ENV: Final = "BUILD_WORKSPACE_DIRECTORY"
-MODULES_DIR: Final = Path().joinpath("registry", "modules")
+MODULES_DIR_IN_REGISTRY: Final = Path().joinpath("registry", "modules")
 RPATHS_DOT_TXT: Final = Path("rpaths.txt")
+METADATA_DOT_JSON: Final = Path("metadata.json")
+SOURCE_DOT_JSON: Final = Path("source.json")
+VERSION_DOT_TXT: Final = Path("version.txt")
+MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
 
-def _get_src_root_dir():
-    return os.environ[BAZEL_WORKSPACE_DIRECTORY_ENV]
+
+def _get_module_path_in_registry(module_name: str):
+    return (
+        Path(os.environ[BAZEL_WORKSPACE_DIRECTORY_ENV])
+        / MODULES_DIR_IN_REGISTRY
+        / module_name
+    )
+
+
+def _get_module_version_path_in_registry(module_name: str, module_version: str):
+    return (
+        Path(os.environ[BAZEL_WORKSPACE_DIRECTORY_ENV])
+        / MODULES_DIR_IN_REGISTRY
+        / module_name
+        / module_version
+    )
+
+
+def _json_dump(json_file, obj, sort_keys=True):
+    with open(file=json_file, mode="w", encoding="utf-8") as file:
+        json.dump(obj, file, indent=4, sort_keys=sort_keys)
+        file.write("\n")
 
 
 def find_package_in_registry(
     package_metadata: PackageMetadata,
 ) -> Optional[Module]:
-    """Tries to find package in registry. Returns Null if package not found and a Debian Module Object otherwise."""
+    """
+    Tries to find package in registry.
+    Returns Null if package not found and a Debian Module Object otherwise.
+    """
     found_version = get_version_from_registry(
         name=package_metadata.name,
         version=package_metadata.version,
@@ -32,15 +63,57 @@ def find_package_in_registry(
         arch=package_metadata.arch,
     )
     with open(
-        Path(
-            _get_src_root_dir(),
-            MODULES_DIR,
-            package.module_name(),
-            package.module_version(),
+        file=Path(
+            _get_module_version_path_in_registry(
+                module_name=package.module_name(),
+                module_version=package.module_version(),
+            ),
             RPATHS_DOT_TXT,
         ),
-        "r",
+        mode="r",
+        encoding="utf-8",
     ) as file:
         package.rpaths = set(file.read().splitlines())
 
     return package
+
+
+def add_package_to_registry(package: Package):
+    """Adds modularized package to local registry"""
+    module_name = get_module_name(name=package.name, arch=package.arch)
+    module_version = get_module_version(package.version)
+    module_path_in_registry = _get_module_version_path_in_registry(
+        module_name=module_name, module_version=module_version
+    )
+    module_path_in_registry.mkdir(parents=True, exist_ok=True)
+
+    metadata_path = Path(
+        _get_module_path_in_registry(module_name), METADATA_DOT_JSON
+    )
+
+    metadata: Any
+
+    if metadata_path.exists():
+        metadata = json.load(metadata_path.open(encoding="utf-8"))
+        metadata["versions"].append(module_version)
+        # TODO(zshaban): sort the list
+        metadata["versions"] = list(set(metadata["versions"]))
+    else:
+        metadata = {
+            "versions": [module_version],
+        }
+
+    _json_dump(metadata_path, metadata)
+
+    source_json = {
+        "type": "local_path",
+        "path": f"../modules/{package.name}_{package.version}_{package.arch}/",
+    }
+
+    _json_dump(Path.joinpath(module_path_in_registry, SOURCE_DOT_JSON), source_json)
+    write_module_file(package=package, file=Path.joinpath(module_path_in_registry, MODULE_DOT_BAZEL))
+    write_file(
+        "\n".join([os.fspath(path) for path in package.rpaths]),
+        Path.joinpath(module_path_in_registry, RPATHS_DOT_TXT),
+    )
+    write_file(package.version, Path.joinpath(module_path_in_registry, VERSION_DOT_TXT))
