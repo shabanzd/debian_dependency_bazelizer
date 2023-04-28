@@ -11,30 +11,23 @@ from get_package_version import get_version_from_registry
 from writers import write_module_file, write_file
 
 BAZEL_WORKSPACE_DIRECTORY_ENV: Final = "BUILD_WORKSPACE_DIRECTORY"
-MODULES_DIR_IN_REGISTRY: Final = Path().joinpath("registry", "modules")
+REGISTRY_DIR: Final = Path("registry")
+MODULES_DIR: Final = Path("modules")
 RPATHS_DOT_TXT: Final = Path("rpaths.txt")
 METADATA_DOT_JSON: Final = Path("metadata.json")
 SOURCE_DOT_JSON: Final = Path("source.json")
 VERSION_DOT_TXT: Final = Path("version.txt")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
+BAZEL_REGISTRY_DOT_JSON: Final = Path("bazel_registry.json")
 
+def _get_registry_path() -> Path:
+    return Path(os.environ[BAZEL_WORKSPACE_DIRECTORY_ENV]) / REGISTRY_DIR
 
-def _get_module_path_in_registry(module_name: str):
-    return (
-        Path(os.environ[BAZEL_WORKSPACE_DIRECTORY_ENV])
-        / MODULES_DIR_IN_REGISTRY
-        / module_name
-    )
-
+def _get_module_path_in_registry(module_name: str) -> Path:
+    return _get_registry_path() / MODULES_DIR / module_name
 
 def _get_module_version_path_in_registry(module_name: str, module_version: str):
-    return (
-        Path(os.environ[BAZEL_WORKSPACE_DIRECTORY_ENV])
-        / MODULES_DIR_IN_REGISTRY
-        / module_name
-        / module_version
-    )
-
+    return _get_module_path_in_registry(module_name) / module_version
 
 def _json_dump(json_file, obj, sort_keys=True):
     with open(file=json_file, mode="w", encoding="utf-8") as file:
@@ -107,10 +100,15 @@ def add_package_to_registry(package: Package):
 
     source_json = {
         "type": "local_path",
-        "path": f"../modules/{package.name}_{package.version}_{package.arch}/",
+        "path": f"modules/{package.name}_{package.version}_{package.arch}/",
     }
-
     _json_dump(Path.joinpath(module_path_in_registry, SOURCE_DOT_JSON), source_json)
+
+    bazel_registry_json = {
+        "module_base_path": "../"
+    }
+    _json_dump(Path.joinpath(_get_registry_path(), BAZEL_REGISTRY_DOT_JSON), bazel_registry_json)
+
     write_module_file(package=package, file=Path.joinpath(module_path_in_registry, MODULE_DOT_BAZEL))
     write_file(
         "\n".join([os.fspath(path) for path in package.rpaths]),
