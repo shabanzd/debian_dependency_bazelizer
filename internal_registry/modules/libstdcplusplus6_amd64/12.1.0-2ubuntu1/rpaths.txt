@@ -1,0 +1,1 @@
+libstdcplusplus6_amd64~12.1.0-2ubuntu1/usr/lib/x86_64-linux-gnu

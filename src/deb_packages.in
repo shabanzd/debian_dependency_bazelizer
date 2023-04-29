@@ -1,5 +1,2 @@
-iproute2:amd64=5.15.0-1ubuntu2
 # iproute2 without a version to test implicit version resolution
 iproute2:amd64
-# dummy package to test version retrieval from registry
-dummy:amd64

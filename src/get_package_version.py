@@ -62,7 +62,7 @@ def get_version_from_registry(
 ) -> str:
     module_name = get_module_name(name=name, arch=arch)
     modules_path = Path().joinpath(_get_src_root_dir(), MODULES_DIR)
-    path = Path.joinpath(modules_path, module_name)
+    path = modules_path / module_name
     if not path.exists():
         logger.info(
             f"module {module_name} not found in local bazel registry, expected path: {path} does not exist."

@@ -1,1 +1,1 @@
-bazel_dep(name = "iproute2_amd64", version = "5.15.0-1ubuntu2")
+bazel_dep(name = "patchelf_amd64", version = "0.14.3-1")
