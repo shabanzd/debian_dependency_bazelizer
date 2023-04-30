@@ -24,7 +24,7 @@ graph LR;
 
 # Give it a try!
 
-In order to try the dependency-bazelizer, you need a linux machine and `patchelf` installed on that machine. 
+In order to try the dependency-bazelizer, you need a linux machine and `patchelf` installed on that machine. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the dependency-bazelizer itself on your chosen OS.
 
 * clone the repo.
 * `cd dependency-bazelizer`
