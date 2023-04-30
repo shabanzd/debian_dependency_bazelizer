@@ -1,4 +1,4 @@
-# dependency-bazelizer
+# dependency-bazelizer (WIP)
 
 The dependency bazelizer aims at analyzing the transitive dependency graph of each input dependency and the turning entire graph into bzlmods that fetch each other as needed. The modules are also automatically referenced by the local registry of the repo.
 
@@ -21,4 +21,14 @@ graph LR;
     D[Next Dependency]-->A;
     C --> D;
 ```
+
+# Give it a try!
+
+In order to try the dependency-bazelizer, you need a linux machine and `patchelf` installed on that machine. 
+
+* clone the repo.
+* `cd dependency-bazelizer`
+* `bazelisk run //src:dependency-bazelizer`
+
+Now you have iproute2 modularized! you can go ahead and add it to `MODULE.bazel` and run the demo `demos:iproute2-demo` (you may need to tweek the path in `demos/iproute2_demo.py`, depending on the version of iproute2 in your apt-cache)
 
