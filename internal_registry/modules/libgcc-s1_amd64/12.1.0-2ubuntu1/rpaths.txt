@@ -1,1 +1,0 @@
-libgcc-s1_amd64~12.1.0-2ubuntu1/lib/x86_64-linux-gnu
