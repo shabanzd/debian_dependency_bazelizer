@@ -1,2 +1,4 @@
+# The input deb package needs to follow the template: 
+# name:arch=version. Where name and arch are mandatory, and version is optional.
 # iproute2 without a version to test implicit version resolution
 iproute2:amd64
