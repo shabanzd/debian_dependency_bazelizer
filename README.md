@@ -1,6 +1,6 @@
 # dependency-bazelizer (WIP)
 
-The dependency bazelizer aims at analyzing the transitive dependency graph of each input dependency and the turning entire graph into bzlmods that fetch each other as needed. The modules are also automatically referenced by the local registry of the repo.
+The dependency bazelizer aims at analyzing the transitive dependency graph of each input dependency and turning the entire graph into bzlmods that fetch each other as needed. The modules are also automatically referenced by the local registry of the repo.
 
 So far, this is only done for debian packages. The plan is to include Python as well in the following versions.
 
