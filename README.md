@@ -24,11 +24,14 @@ graph LR;
 
 # Give it a try!
 
-In order to try the dependency-bazelizer, you need a linux machine and `patchelf` installed on that machine. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the dependency-bazelizer itself on your chosen OS.
+In order to try the dependency-bazelizer, you need a linux machine and `patchelf` installed on that machine. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the dependency-bazelizer itself on your chosen platform.
 
 * clone the repo.
 * `cd dependency-bazelizer`
+* fill up the deb_packages.in file with the deb packages you want to modularize. Name and architecture of the package are mandatory, and the package needs to follow the format: `name:arch=version`.
 * `bazelisk run //src:dependency-bazelizer`
 
-Now you have iproute2 modularized! you can go ahead and add it to `MODULE.bazel` and run the demo `demos:iproute2-demo` (you may need to tweek the path in `demos/iproute2_demo.py`, depending on the version of iproute2 in your apt-cache)
+Now you have will have the dependencies, listed in the deb_packages.in, modularized, alongside their entire transitive dependency graphs! :partying_face:
+
+The `dependency-bazelizer` locate the new modules in the folder `modules/` and the internal registry referencing those modules at `registry/`. In the .bazelrc, I already added the internal registry as the main bazel registry, with the Bazel Central Registry as a fallback. So as soon as you modularize the desired dependencies, you can go ahead and play around with them!
 
