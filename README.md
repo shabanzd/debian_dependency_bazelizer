@@ -35,3 +35,5 @@ Now you have will have the dependencies, listed in the deb_packages.in, modulari
 
 The `dependency-bazelizer` locate the new modules in the folder `modules/` and the internal registry referencing those modules at `registry/`. In the .bazelrc, I already added the internal registry as the main bazel registry, with the Bazel Central Registry as a fallback. So as soon as you modularize the desired dependencies, you can go ahead and play around with them!
 
+If this is the first time you play around with this tool, this video will help you get started: 
+https://www.youtube.com/watch?v=LFV-H7djEYw
