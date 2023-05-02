@@ -1,16 +1,31 @@
 # dependency-bazelizer (WIP)
 
-The dependency bazelizer aims at analyzing the transitive dependency graph of each input dependency and turning the entire graph into bzlmods that fetch each other as needed. The modules are also automatically referenced by the local registry of the repo.
+The dependency bazelizer takes an input list debian packages, and turns them and their entire transitive dependency subgraphs into ready-to-use, fully bazelizer modules (bzlmods). It also automatically references the bazelized modules in the internal registry of the repo. A demo of how this looks like can be found at: https://www.youtube.com/watch?v=LFV-H7djEYw
 
-So far, this is only done for debian packages. The plan is to include Python as well in the following versions.
+So far, the dependency-bazelizer supports debian packages only. The plan is to include Python as well in the following versions.
 
 # Summary
 
-Since bazel6 and the introduction of bzlmods, one can, at least in theory, build a dependency graph consisting of bazel modules. See, modules act cool, but in reality, they are anything with a `MODULE.bazel` file on top, and a few accessory files like an empty `WORKSPACE` and a `BUILD.bazel` file exposing the files and targets to be used by other modules. 
 
-So in order to turn a debian package (say `deb_a`), for example, into a module, all we need to do is: unpackage it, put a `MODULE.bazel`, empty `WORKSPACE` and a `BUILD.bazel` file on top, and store the folder containing everything somewhere in the repo (or archive it and upload it somewhere).
+Up until `Bazel 5`, Bazel had not been able to resolve dependency graphs. The result was that `Bazel` needed a dependency manager to run during **every build** to build the transitive dependency graph of each dependency. Since this process needs to run early in the build, repository rules for package managers started being developed and became the norm.
 
-Great, so now `deb_a` is a module. Problem is, it is likely that deb_a has transitive dependencies. In order for the `deb_a` module to fetch those dependencies, they also need to be modules. In other words, the entire subgraph needs to be built up of bazel modules. This means that the modularization process mentioned above should be done for the entire dependency subgraph.
+Since `Bazel 6` and the introduction of `bzlmods`, modules can tell bazel what transitive dependencies they need exactly. `Bazel` then builds a unique transitive dependency subgraph for each module. In other words, Bazel can act like a package manager. This opened a door to a different approach of handling the external dependency management problem.
+
+### What if every dependency was a bzlmod?
+
+Imagine every debian dependency, every python dependency ... etc has suddenly become a bazel module. What would happen? 
+
+* Package managers running as repository rules would no longer be needed. Meaning that dependencies wouldn't need to be installed over and over again in the early stages of each uncached build => more efficient builds.
+
+* Bazel would build a strict dependency subgraph for each dependency, and even provide a lock file representing these subgraphs =>Easier and more reliable Software Bill Of Material (SBOM) for the modules.
+
+### How can we make that happen?
+
+Modules act cool, but in reality, they are anything with a `MODULE.bazel` file on top, and a few accessory files like an empty `WORKSPACE` and a `BUILD.bazel` file exposing the files and targets to be used by other modules. 
+
+So in order to turn a debian package, say `deb_a`, into a module, all we need to do is: unpackage it, put a `MODULE.bazel`, empty `WORKSPACE` and a `BUILD.bazel` file on top, and store the folder containing everything somewhere in the repo (or archive it and upload it somewhere).
+
+Great, so now `deb_a` is a module. Problem is, it is likely that `deb_a` has transitive dependencies. In order for the `deb_a` module to fetch those dependencies, they also need to be modules. In other words, the entire subgraph needs to be built up of bazel modules. This means that the modularization process mentioned above should be done for the entire dependency subgraph.
 
 The dependency-bazelizer tries to do exactly that; it processes the entire dependency graph and repackages it into modules. It also adds references to these modules in a local registry inside the repo. One can visualize the process as in the graph below
 
@@ -22,14 +37,21 @@ graph LR;
     C --> D;
 ```
 
+Since it is not necessary for this tool to be implemented as a repository rule, I decided to do it entirely in python. This could make the code base easier to test and collaborate on.
+
+
 # Give it a try!
 
-In order to try the dependency-bazelizer, you need a linux machine and `patchelf` installed on that machine. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the dependency-bazelizer itself on your chosen platform.
+### Requirements
+
+In order to try the dependency-bazelizer, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the dependency-bazelizer itself on your chosen platform. You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
 
 * clone the repo.
 * `cd dependency-bazelizer`
-* fill up the deb_packages.in file with the deb packages you want to modularize. Name and architecture of the package are mandatory, and the package needs to follow the format: `name:arch=version`.
+* fill up the deb_packages.in file with the deb packages you want to modularize. Name and architecture of the package are mandatory, and the package needs to follow the format: `name:arch=version`
 * `bazelisk run //src:dependency-bazelizer`
+
+
 
 Now you have will have the dependencies, listed in the deb_packages.in, modularized, alongside their entire transitive dependency graphs! :partying_face:
 
@@ -91,4 +113,3 @@ graph TB;
     %% if all transitive deps are visited => process next
     K-->|no|P[add all non-processed transitive deps to deb_q]-->A;
 ```
-
