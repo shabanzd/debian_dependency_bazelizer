@@ -1,5 +1,4 @@
 /bazel-*
 /modules/*
-/src/__pycache__/*
 /registry/*
 .vscode/settings.json
