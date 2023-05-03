@@ -10,6 +10,7 @@ from module import get_module_name, get_module_version
 from package import PackageMetadata, Package
 
 DEPENDS_ATTR: Final = "Depends"
+PATCHELF_PROGRAM: Final = Path().joinpath("..", "patchelf_amd64~0.14.3-1", "usr", "bin", "patchelf")
 
 def _is_acceptable_error(err: ByteString):
     if (
@@ -24,9 +25,10 @@ def _is_acceptable_error(err: ByteString):
 
 def _is_patchable_elf_file(file: Path) -> bool:
     "Tries to print rpath in order to tell if file is ELF or not"
+    patch_elf_program = Path(os.curdir) / PATCHELF_PROGRAM
     try:
         old_rpath = subprocess.run(
-            ["patchelf", "--print-rpath", file.resolve()],
+            [patch_elf_program, "--print-rpath", file.resolve()],
             check=True,
             capture_output=True,
             encoding="utf-8",
@@ -114,8 +116,8 @@ def _get_deb_dep_names(archive_path: Path):
     if not deps_str:
         return deps
 
-    # TODO: use a lib that does the parsing for you. I was too lazy to leave the code and search =D
     polluted_deps = deps_str.split(", ")
+
     for dep in polluted_deps:
         # imagine a case where the following is returned: debconf (>= 0.5) | debconf-2.0, 
         # we want the left hand side, since it is not a virtual dep. The way to do that, is to search for brackets
@@ -165,7 +167,7 @@ def create_deb_package(metadata: PackageMetadata):
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
-    package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}~{get_module_version(metadata.version)}"
+    package.prefix = f"{package.name}_{package.version}_{package.arch}"
     package.compatibility_level = (
         int(hashlib.sha256(package.prefix.encode("utf-8")).hexdigest(), 16) % 10**8
     )
@@ -185,6 +187,7 @@ def create_deb_package(metadata: PackageMetadata):
         encoding="utf-8",
         stderr=subprocess.STDOUT,
     )
+    rpath_prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}~{get_module_version(metadata.version)}"
 
     for file in files_str.split("\n"):
         # the ":" part is a workaround some files having unacceptable names for bazel targets
@@ -201,7 +204,7 @@ def create_deb_package(metadata: PackageMetadata):
 
         package.elf_files.add(file_path)
         # register the parent of the ELF file as an rpath
-        package.rpaths.add(Path(package.prefix / file_path.parent))
+        package.rpaths.add(Path(rpath_prefix / file_path.parent))
 
     # The next check is needed since libc6 is cyclic with libcrypt1. 
     # I assume libc6 does not have deps in this case :D

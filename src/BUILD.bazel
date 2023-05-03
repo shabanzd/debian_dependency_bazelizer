@@ -1,6 +1,7 @@
 py_binary(
     name = "dependency-bazelizer",
     srcs = ["main.py"],
+    data = ["@patchelf_amd64//:all_files"],
     main = "main.py",
     tags  = ["local"],
     visibility = ["//visibility:public"],
