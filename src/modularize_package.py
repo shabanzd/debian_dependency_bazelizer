@@ -10,12 +10,6 @@ from package import Package, PackageMetadata
 from registry import add_package_to_registry
 from writers import write_build_file, write_module_file
 
-
-PATCHELF_PROGRAM: Final = (
-    Path()
-    .joinpath("..", "patchelf_amd64~0.10-2build1", "usr", "bin", "patchelf")
-    .resolve()
-)
 BUILD_FILE: Final = Path("BUILD")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
 BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
