@@ -55,7 +55,13 @@ In order to try the dependency-bazelizer, you need a linux distribution running 
 
 Now you have will have the dependencies, listed in the deb_packages.in, modularized, alongside their entire transitive dependency graphs! :partying_face:
 
-The `dependency-bazelizer` locate the new modules in the folder `modules/` and the internal registry referencing those modules at `registry/`. In the .bazelrc, I already added the internal registry as the main bazel registry, with the Bazel Central Registry as a fallback. So as soon as you modularize the desired dependencies, you can go ahead and play around with them!
+The `dependency-bazelizer` locate the new modules in the folder `modules/`. If you navigate there and run `ldd` on any ELF file in the `modules/` dir, you should be able to see that the ELF file accesses its runtime deps from the modules not the system:
+
+![WhatsApp Image 2023-05-03 at 09 57 56](https://user-images.githubusercontent.com/8200878/235862696-463d4bb1-d65c-4a8a-b8a5-379daf435ca6.jpeg)
+
+Since the file structure and naming matches that in the runfiles, you can expect the same results once you run a program.
+
+The `dependency-bazelizer` also adds an internal registry referencing those modules at `registry/`. In the .bazelrc, I already added the internal registry as the main bazel registry, with the Bazel Central Registry as a fallback. So as soon as you modularize the desired dependencies, you can go ahead and play around with them!
 
 If this is the first time you play around with this tool, this video will help you get started: 
 https://www.youtube.com/watch?v=LFV-H7djEYw
