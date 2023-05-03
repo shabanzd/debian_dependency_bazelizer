@@ -100,7 +100,7 @@ def add_package_to_registry(package: Package):
 
     source_json = {
         "type": "local_path",
-        "path": f"modules/{package.name}_{package.version}_{package.arch}/",
+        "path": f"modules/{package.prefix}/",
     }
     _json_dump(Path.joinpath(module_path_in_registry, SOURCE_DOT_JSON), source_json)
 
