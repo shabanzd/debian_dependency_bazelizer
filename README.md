@@ -44,7 +44,7 @@ Since it is not necessary for this tool to be implemented as a repository rule, 
 
 ### Requirements
 
-In order to try the dependency-bazelizer, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the dependency-bazelizer itself on your chosen platform. You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
+In order to try the dependency-bazelizer, you need a linux distribution that has `apt`, `dpkg` and `patchelf` installed. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the dependency-bazelizer itself on your chosen platform. You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
 
 * clone the repo.
 * `cd dependency-bazelizer`
