@@ -69,7 +69,7 @@ def get_version_from_registry(
         )
 
         return ""
-
+    
     if version:
         return (
             version
@@ -99,7 +99,7 @@ def get_version_from_registry(
     return version_output
 
 
-def get_package_version(name: str, arch: str = "") -> str:
+def get_package_version(name: str, arch: str) -> str:
     dep_version = get_version_from_registry(name=name, arch=arch)
     if not dep_version:
         dep_version = _get_deb_package_version_from_aptcache(name, arch)
