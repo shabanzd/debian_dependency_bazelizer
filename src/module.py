@@ -8,9 +8,12 @@ def get_module_name(name: str, arch: str):
     """
 
     module_name = f"{name}_{arch}"
+    # module name rules:
     # 1) valid names must only contain lowercase letters (a-z), digits (0-9), dots (.), hyphens (-),
     # and underscores (_); 2) begin with a lowercase letter; 3) end with a lowercase letter or digit.
-    module_name = module_name.lower()
+
+    # Deb package names must consist of lower case letters, digits (0-9), (+), (-) and (.)
+    # https://www.debian.org/doc/debian-policy/ch-controlfields.html
     module_name = module_name.replace("+", "plus")
 
     return module_name
