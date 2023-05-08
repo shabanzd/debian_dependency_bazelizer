@@ -1,7 +1,85 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+package(default_visibility = ["//tests:__subpackages__"])
+
 py_binary(
     name = "dependency-bazelizer",
     srcs = ["main.py"],
+    data = ["deb_packages.in"],
     main = "main.py",
-    tags  = ["local"],
+    tags = ["local"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":bazelize_deps",
+        ":create_deb_package",
+        ":modularize_package",
+        ":module",
+        ":package",
+        ":registry",
+    ],
+)
+
+py_library(
+    name = "bazelize_deps",
+    srcs = ["bazelize_deps.py"],
+    deps = [
+        ":create_deb_package",
+        ":modularize_package",
+        ":module",
+        ":package",
+        ":registry",
+    ],
+)
+
+py_library(
+    name = "create_deb_package",
+    srcs = ["create_deb_package.py"],
+    deps = [
+        ":get_package_version",
+        ":module",
+        ":package",
+    ],
+)
+
+py_library(
+    name = "get_package_version",
+    srcs = ["get_package_version.py"],
+    deps = [":module"],
+)
+
+py_library(
+    name = "modularize_package",
+    srcs = ["modularize_package.py"],
+    deps = [
+        ":module",
+        ":package",
+        ":registry",
+        ":writers",
+    ],
+)
+
+py_library(
+    name = "module",
+    srcs = ["module.py"],
+)
+
+py_library(
+    name = "package",
+    srcs = ["package.py"],
+)
+
+py_library(
+    name = "registry",
+    srcs = ["registry.py"],
+    deps = [
+        ":get_package_version",
+        ":module",
+        ":package",
+        ":writers",
+    ],
+)
+
+py_library(
+    name = "writers",
+    srcs = ["writers.py"],
 )

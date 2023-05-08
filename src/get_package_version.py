@@ -4,7 +4,7 @@ import logging
 import os
 import subprocess
 
-from module import (
+from src.module import (
     get_module_name,
     get_module_version,
 )

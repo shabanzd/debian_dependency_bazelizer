@@ -1,8 +1,8 @@
 from pathlib import Path
 import os
 
-from package import Package
-from module import get_module_name, get_module_version
+from src.package import Package
+from src.module import get_module_name, get_module_version
 
 
 def _create_build_file_content(package: Package):

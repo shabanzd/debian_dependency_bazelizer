@@ -5,9 +5,9 @@ import hashlib
 import os
 import subprocess
 
-from get_package_version import get_package_version
-from module import get_module_name, get_module_version
-from package import PackageMetadata, Package
+from src.get_package_version import get_package_version
+from src.module import get_module_name, get_module_version
+from src.package import PackageMetadata, Package
 
 DEPENDS_ATTR: Final = "Depends"
 

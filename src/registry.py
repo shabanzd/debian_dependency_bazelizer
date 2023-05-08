@@ -5,10 +5,10 @@ from pathlib import Path
 import json
 import os
 
-from module import Module, get_module_name, get_module_version
-from package import Package, PackageMetadata
-from get_package_version import get_version_from_registry
-from writers import write_module_file, write_file
+from src.module import Module, get_module_name, get_module_version
+from src.package import Package, PackageMetadata
+from src.get_package_version import get_version_from_registry
+from src.writers import write_module_file, write_file
 
 BAZEL_WORKSPACE_DIRECTORY_ENV: Final = "BUILD_WORKSPACE_DIRECTORY"
 REGISTRY_DIR: Final = Path("registry")
