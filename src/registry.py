@@ -36,13 +36,15 @@ def _json_dump(json_file, obj, sort_keys=True):
 
 
 def find_package_in_registry(
-    package_metadata: PackageMetadata,
+        registry_path: Path,
+        package_metadata: PackageMetadata,
 ) -> Optional[Module]:
     """
     Tries to find package in registry.
     Returns Null if package not found and a Debian Module Object otherwise.
     """
     found_version = get_version_from_registry(
+        registry_path=registry_path,
         name=package_metadata.name,
         version=package_metadata.version,
         arch=package_metadata.arch,

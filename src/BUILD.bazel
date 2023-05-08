@@ -16,6 +16,7 @@ py_binary(
         ":module",
         ":package",
         ":registry",
+        "@pip//:click_pkg",
     ],
 )
 

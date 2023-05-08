@@ -1,7 +1,6 @@
 from typing import Final
 from pathlib import Path
 import logging
-import os
 import subprocess
 
 from src.module import (
@@ -11,16 +10,9 @@ from src.module import (
 
 logger = logging.getLogger(__name__)
 
-# The environment variable where Bazel stores the workspace directory
-BAZEL_WORKSPACE_DIRECTORY_ENV: Final = "BUILD_WORKSPACE_DIRECTORY"
 # version attribute as listed in apt-cache show
 VERSION_ATTRIBUTE: Final = "Version"
-MODULES_DIR: Final = Path().joinpath("registry", "modules")
 VERSION_DOT_TXT: Final = Path("version.txt")
-
-
-def _get_src_root_dir():
-    return os.environ[BAZEL_WORKSPACE_DIRECTORY_ENV]
 
 
 def _extract_attribute(
@@ -58,14 +50,14 @@ def _get_deb_package_version_from_aptcache(name: str, arch: str) -> str:
 
 
 def get_version_from_registry(
-    name: str, arch: str, version: str = ""
+    registry_path: Path, name: str, arch: str, version: str = ""
 ) -> str:
     module_name = get_module_name(name=name, arch=arch)
-    modules_path = Path().joinpath(_get_src_root_dir(), MODULES_DIR)
-    path = modules_path / module_name
-    if not path.exists():
+    modules_path = registry_path / "modules"
+    module_path = modules_path / module_name
+    if not module_path.exists():
         logger.info(
-            f"module {module_name} not found in local bazel registry, expected path: {path} does not exist."
+            f"module {module_name} not found in local bazel registry, expected path: {module_path} does not exist."
         )
 
         return ""
@@ -73,14 +65,14 @@ def get_version_from_registry(
     if version:
         return (
             version
-            if Path.joinpath(path, get_module_version(version)).exists()
+            if Path.joinpath(module_path, get_module_version(version)).exists()
             else ""
         )
 
     versions = [
         version.name
-        for version in Path.iterdir(path)
-        if Path.is_dir(Path.joinpath(path, version))
+        for version in Path.iterdir(module_path)
+        if Path.is_dir(Path.joinpath(module_path, version))
     ]
 
     if not versions:
@@ -92,15 +84,15 @@ def get_version_from_registry(
 
     version_output: str
     with open(
-        Path(_get_src_root_dir(), MODULES_DIR, path, versions[-1], VERSION_DOT_TXT), "r"
+        Path(module_path, versions[-1], VERSION_DOT_TXT), "r"
     ) as file:
         version_output = file.read()
 
     return version_output
 
 
-def get_package_version(name: str, arch: str) -> str:
-    dep_version = get_version_from_registry(name=name, arch=arch)
+def get_package_version(registry_path: Path, name: str, arch: str) -> str:
+    dep_version = get_version_from_registry(registry_path=registry_path, name=name, arch=arch)
     if not dep_version:
         dep_version = _get_deb_package_version_from_aptcache(name, arch)
 
