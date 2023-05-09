@@ -84,7 +84,7 @@ def get_version_from_registry(
 
     version_output: str
     with open(
-        Path(module_path, versions[-1], VERSION_DOT_TXT), "r"
+        Path(module_path, versions[-1], VERSION_DOT_TXT), "r", encoding='utf-8'
     ) as file:
         version_output = file.read()
 

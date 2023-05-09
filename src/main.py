@@ -1,38 +1,14 @@
-from typing import Final, Set
+from typing import Final
 from pathlib import Path
 
 import click
 import os
 
 from src.bazelize_deps import bazelize_deps
-from src.package import PackageMetadata
-from src.get_package_version import get_package_version
+from src.read_input_file import read_input_file
 
 BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
 
-def _get_package_metadata(registry_path: Path, pinned_package: str) -> PackageMetadata:
-    if pinned_package.count(":") != 1 or pinned_package.count("=") > 1:
-        raise ValueError("Entry has unexpected format, expected format: name:arch=version or name:arch")
-    
-    # entries format: name:arch=version
-    name, arch_version = pinned_package.split(":")
-    version = ""
-    arch = arch_version
-
-    if "=" in arch_version:
-        arch, version = arch_version.split("=")
-    
-    if not version:
-        version = get_package_version(registry_path=registry_path, name=name, arch=arch)
-
-    return PackageMetadata(name=name, arch=arch, version=version)
-
-def _get_input_package_metadatas(registry_path: Path, input_file: Path) -> Set[PackageMetadata]:
-    with open(input_file, "r") as input_file:
-        entries = set(input_file.read().splitlines())
-    
-    return {_get_package_metadata(registry_path=registry_path, pinned_package=entry) for entry in entries if entry and not entry.startswith("#")}
-   
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.option("--modules_path",
                "-mp", 
@@ -55,11 +31,12 @@ def _get_input_package_metadatas(registry_path: Path, input_file: Path) -> Set[P
                help="The path to the input file containing the input debian packages"
             )
 def main(modules_path: Path, registry_path: Path, input_file: Path):
+    """Turns input deb packages into modules referenced by a local registry."""
     modules_path.mkdir(exist_ok=True)
     bazelize_deps(
-        modules_path=modules_path, 
-        registry_path=registry_path, 
-        input_package_metadatas=_get_input_package_metadatas(registry_path=registry_path, input_file = input_file)
+        modules_path=modules_path,
+        registry_path=registry_path,
+        input_package_metadatas=read_input_file(registry_path=registry_path, input_file = input_file)
     )
 
 if __name__ == "__main__":

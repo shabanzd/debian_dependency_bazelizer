@@ -9,3 +9,18 @@ py_test(
         "@pip//:pytest_pkg",
     ],
 )
+
+
+py_test(
+    name = "test_read_input_file",
+    timeout = "short",
+    srcs = ["test_read_input_file.py"],
+    deps = [
+        "//src:read_input_file",
+        "@pip//:pytest_pkg",
+    ],
+    data = [
+        "//tests/resources:faulty_input.in",
+        "//tests/resources:correct_input.in",
+    ]
+)
