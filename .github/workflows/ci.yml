@@ -1,0 +1,15 @@
+name: CI
+
+on:
+  push:
+    tags: ["*"]
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: bazel test //...
