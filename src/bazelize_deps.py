@@ -1,10 +1,10 @@
 from typing import Dict, List, Set
 
-from create_deb_package import create_deb_package
-from module import Module
-from modularize_package import modularize_package
-from package import Package, PackageMetadata
-from registry import find_package_in_registry
+from src.create_deb_package import create_deb_package
+from src.module import Module
+from src.modularize_package import modularize_package
+from src.package import Package, PackageMetadata
+from src.registry import find_package_in_registry
 
 
 def _add_deps_to_stack(

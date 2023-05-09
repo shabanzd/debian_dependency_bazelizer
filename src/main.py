@@ -3,9 +3,9 @@ from pathlib import Path
 
 import os
 
-from bazelize_deps import bazelize_deps
-from package import PackageMetadata
-from get_package_version import get_package_version
+from src.bazelize_deps import bazelize_deps
+from src.package import PackageMetadata
+from src.get_package_version import get_package_version
 
 BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
 DEB_PACKAGE_IN: Final = Path().joinpath(

@@ -5,15 +5,16 @@ import os
 import shutil
 import subprocess
 
-from module import Module
-from package import Package, PackageMetadata
-from registry import add_package_to_registry
-from writers import write_build_file, write_module_file
+from src.module import Module
+from src.package import Package, PackageMetadata
+from src.registry import add_package_to_registry
+from src.writers import write_build_file, write_module_file
 
 BUILD_FILE: Final = Path("BUILD")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
-BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
-MODULES_DIR : Final = Path().joinpath(BAZEL_WORKSPACE_DIR, "modules")
+BAZEL_WORKSPACE_DIR: Final = os.getenv("BUILD_WORKSPACE_DIRECTORY", ".")
+MODULES_DIR: Final = Path().joinpath(BAZEL_WORKSPACE_DIR, "modules")
+
 
 def _get_dep_rpath_set(rpaths: Set[str], prefix: str):
     rpath_set: Set[str] = set()

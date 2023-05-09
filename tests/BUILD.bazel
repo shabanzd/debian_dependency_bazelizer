@@ -1,0 +1,11 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(
+    name = "test_modularize_package",
+    timeout = "short",
+    srcs = ["test_modularize_package.py"],
+    deps = [
+        "//src:modularize_package",
+        "@pip//:pytest_pkg",
+    ],
+)
