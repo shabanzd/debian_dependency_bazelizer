@@ -1,4 +1,4 @@
-# comments should be allowed.
+# comments and empty lines are allowed.
 
 iproute2:arm64=1.2.3
 patchelf:amd64

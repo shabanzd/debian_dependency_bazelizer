@@ -8,7 +8,7 @@ from src.get_package_version import get_package_version
 def _get_package_metadata(registry_path: Path, pinned_package: str) -> PackageMetadata:
     if pinned_package.count(":") != 1 or pinned_package.count("=") > 1:
         raise ValueError(
-            "Entry has unexpected format, expected format: name:arch=version or name:arch"
+            f"Entry {repr(pinned_package)} has unexpected format, expected 'name:arch=version' or 'name:arch'"
         )
     # entries format: name:arch=version
     name, arch_version = pinned_package.split(":")
@@ -25,8 +25,7 @@ def _get_package_metadata(registry_path: Path, pinned_package: str) -> PackageMe
 
 def read_input_file(registry_path: Path, input_file: Path) -> Set[PackageMetadata]:
     """Reads input file and returns a Set of PackageMetadatas."""
-    with open(input_file, "r", encoding='utf-8') as file:
-        entries = set(file.read().splitlines())
+    entries = input_file.read_text().splitlines()
 
     return {
         _get_package_metadata(registry_path=registry_path, pinned_package=entry)

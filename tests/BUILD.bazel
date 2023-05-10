@@ -20,7 +20,18 @@ py_test(
         "@pip//:pytest_pkg",
     ],
     data = [
-        "//tests/resources:faulty_input.in",
-        "//tests/resources:correct_input.in",
+        "resources/faulty_input.in",
+        "resources/correct_input.in",
     ]
+)
+
+py_test(
+    name = "test_main",
+    timeout = "short",
+    srcs = ["test_main.py"],
+    deps = [
+        "//src:dependency-bazelizer",
+        "@pip//:pytest_pkg",
+        "@pip//:click_pkg",
+    ],
 )

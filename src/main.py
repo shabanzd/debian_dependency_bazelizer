@@ -7,7 +7,7 @@ import os
 from src.bazelize_deps import bazelize_deps
 from src.read_input_file import read_input_file
 
-BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
+BAZEL_WORKSPACE_DIR: Final = os.environ.get("BUILD_WORKSPACE_DIRECTORY") or os.environ.get("TEST_UNDECLARED_OUTPUTS_DIR") or os.environ.get("TEST_TMPDIR")
 
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.option("--modules_path",
@@ -25,14 +25,14 @@ BAZEL_WORKSPACE_DIR: Final = os.environ["BUILD_WORKSPACE_DIRECTORY"]
                help="The path to the directory where the local registry will reside"
             )
 @click.option("--input_file",
-               "-ip", 
+               "-if", 
                type=click.Path(path_type=Path, dir_okay=False, exists=True), 
                required=True,
                help="The path to the input file containing the input debian packages"
             )
 def main(modules_path: Path, registry_path: Path, input_file: Path):
     """Turns input deb packages into modules referenced by a local registry."""
-    modules_path.mkdir(exist_ok=True)
+    modules_path.mkdir(exist_ok=True, parents=True)
     bazelize_deps(
         modules_path=modules_path,
         registry_path=registry_path,

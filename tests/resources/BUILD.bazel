@@ -1,4 +1,0 @@
-exports_files([
-    "faulty_input.in",
-    "correct_input.in"
-])
