@@ -12,9 +12,6 @@ from src.writers import write_build_file, write_module_file
 
 BUILD_FILE: Final = Path("BUILD")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
-BAZEL_WORKSPACE_DIR: Final = os.getenv("BUILD_WORKSPACE_DIRECTORY", ".")
-MODULES_DIR: Final = Path().joinpath(BAZEL_WORKSPACE_DIR, "modules")
-
 
 def _get_dep_rpath_set(rpaths: Set[str], prefix: str):
     rpath_set: Set[str] = set()
@@ -75,9 +72,9 @@ def _repackage_deb_package(package: Package):
         package, Path(package.package_dir / MODULE_DOT_BAZEL)
     )
 
-def modularize_package(package: Package, modules: Dict[PackageMetadata, Module]):
+def modularize_package(modules_path: Path, package: Package, modules: Dict[PackageMetadata, Module]):
     """Turns package into a module and adds it to local registry."""
     _rpath_patch_elf_files(package=package, modules=modules)
     _repackage_deb_package(package=package)
     add_package_to_registry(package=package)
-    shutil.move(str(package.package_dir), str(MODULES_DIR))
+    shutil.move(str(package.package_dir), str(modules_path))

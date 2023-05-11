@@ -152,7 +152,7 @@ def _get_deb_dep_names(archive_path: Path):
     return deps
 
 
-def create_deb_package(metadata: PackageMetadata):
+def create_deb_package(registry_path: Path, metadata: PackageMetadata):
     if not metadata.name or not metadata.arch or not metadata.version:
         raise ValueError(
             f"name, arch and version must all be provided and not empty, in order to create a debian package. Provided values are: name={metadata.name}, version={metadata.version}, arch={metadata.arch}"
@@ -217,7 +217,7 @@ def create_deb_package(metadata: PackageMetadata):
         if dep_name == "tzdata":
             continue
         dep_version = get_package_version(
-            name=dep_name, arch=package.arch
+            registry_path=registry_path, name=dep_name, arch=package.arch
         )
         package.deps.add(
             PackageMetadata(name=dep_name, arch=package.arch, version=dep_version)

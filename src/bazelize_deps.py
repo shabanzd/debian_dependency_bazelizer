@@ -1,4 +1,5 @@
 from typing import Dict, List, Set
+from pathlib import Path
 
 from src.create_deb_package import create_deb_package
 from src.module import Module
@@ -42,19 +43,19 @@ def _print_summary(deb_package_cache: Dict[str, Package]):
         print(f"{i}) {package.pinned_name}")
 
 
-def bazelize_deps(input_package_metadatas: Set[PackageMetadata]) -> None:
+def bazelize_deps(modules_path: Path, registry_path: Path, input_package_metadatas: Set[PackageMetadata]) -> None:
     visited_modules: Dict[PackageMetadata, Module] = dict()
     # will be used as a stack for the DFS algorithm
     package_stack: List[PackageMetadata] = []
     processed_packages: Dict[PackageMetadata, Package] = dict()
 
     for input_package_metadata in input_package_metadatas:
-        module = find_package_in_registry(input_package_metadata)
+        module = find_package_in_registry(registry_path=registry_path, package_metadata=input_package_metadata)
         if module:
             visited_modules[input_package_metadata] = module
             continue
 
-        processed_packages[input_package_metadata] = create_deb_package(input_package_metadata)
+        processed_packages[input_package_metadata] = create_deb_package(registry_path=registry_path, metadata=input_package_metadata)
 
     package_stack = list(processed_packages.keys())
 
@@ -63,13 +64,13 @@ def bazelize_deps(input_package_metadatas: Set[PackageMetadata]) -> None:
             package_stack.pop()
             continue
 
-        module = find_package_in_registry(package_stack[-1])
+        module = find_package_in_registry(registry_path=registry_path, package_metadata=package_stack[-1])
         if module:
             visited_modules[package_stack.pop()] = module
             continue
 
         if package_stack[-1] not in processed_packages:
-            processed_packages[package_stack[-1]] = create_deb_package(package_stack[-1])
+            processed_packages[package_stack[-1]] = create_deb_package(registry_path=registry_path, metadata=package_stack[-1])
 
         if not _add_deps_to_stack(
             package_stack[-1],
@@ -79,7 +80,7 @@ def bazelize_deps(input_package_metadatas: Set[PackageMetadata]) -> None:
         ):
             package_metadata = package_stack.pop()
             package = processed_packages[package_metadata]
-            modularize_package(package, visited_modules)
+            modularize_package(modules_path=modules_path, package=package, modules=visited_modules)
             visited_modules[package_metadata] = Module(name=package.name, arch=package.arch, version=package.version, rpaths=package.rpaths)
 
     _print_summary(processed_packages)
