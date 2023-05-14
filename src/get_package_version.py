@@ -12,6 +12,17 @@ logger = logging.getLogger(__name__)
 VERSION_ATTRIBUTE: Final = "Version"
 VERSION_DOT_TXT: Final = Path("version.txt")
 
+class FileSystem(object):
+    def path_exists(self, path: Path) -> bool:
+        return path.exists()
+
+    def get_directories(self, path: Path) -> list:
+        return [version.name for version in path.iterdir() if path.is_dir()]
+
+    def get_file_contents(self, path: Path) -> str:
+        with open(path, "r", encoding='utf-8') as file:
+            return file.read()
+
 
 def _extract_attribute(
     package_info: str, attribute: str, must_exist: bool = True
@@ -55,44 +66,40 @@ def _get_deb_package_version_from_aptcache(name: str, arch: str) -> str:
 
 
 def get_version_from_registry(
-    registry_path: Path, name: str, arch: str, version: str = ""
+    registry_path: Path, name: str, arch: str, version_spec: str = "", fs = FileSystem()
 ) -> str:
     module_name = get_module_name(name=name, arch=arch)
-    modules_path = registry_path / "modules"
+    modules_path = registry_path / "modules" / module_name
     module_path = modules_path / module_name
-    if not module_path.exists():
-        logger.info(
-            f"module {module_name} not found in local bazel registry, expected path: {module_path} does not exist."
-        )
 
+    if not fs.path_exists(modules_path):
+        logger.info(
+            f"module {module_name} not found in local bazel registry, expected path: {modules_path} does not exist."
+        )
         return ""
 
-    if version:
-        version_spec = specifiers.SpecifierSet(version) # This class can parse version specifiers like ">=3.1.4,!=3.1.6,<3.2" and check if a given version matches the specifier.
+    if version_spec:
+        version_specifier = specifiers.SpecifierSet(version_spec)
     else:
-        version_spec = specifiers.SpecifierSet()
+        version_specifier = specifiers.SpecifierSet()
 
     versions = [
-        version.parse(version.name)
-        for version in Path.iterdir(modules_path)
-        if Path.is_dir(Path.joinpath(modules_path, version))
+        version.parse(version_name)
+        for version_name in fs.get_directories(modules_path)
     ]
 
     if not versions:
         raise ValueError(
-            f"package: {get_module_name(name=name, arch=arch)}, exists in registry modules, but has no versions"
+            f"package: {module_name}, exists in registry modules, but has no versions"
         )
 
     versions.sort()
 
-    # find the highest version that matches the version_spec
+    # find the highest version that matches the version_specifier
     for v in reversed(versions):
-        if v in version_spec:
-            version_output: str
-            with open(
-                Path(module_path, versions[-1], VERSION_DOT_TXT), "r", encoding='utf-8'
-            ) as file:
-                version_output = file.read()
+        if v in version_specifier:
+            version_output_path = Path(module_path, str(v), VERSION_DOT_TXT)
+            version_output = fs.get_file_contents(version_output_path)
             return version_output
 
     return ""
