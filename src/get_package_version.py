@@ -2,11 +2,9 @@ from typing import Final
 from pathlib import Path
 import logging
 import subprocess
+from packaging import version, specifiers
 
-from src.module import (
-    get_module_name,
-    get_module_version,
-)
+from src.module import get_module_name
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +20,17 @@ def _extract_attribute(
     prefix = attribute + ": "
     lines = package_info.splitlines()
 
+    versions = []
     for line in lines:
         line = line.lstrip()
         if line.startswith(attribute):
-            return line[len(prefix) :]
+            v = version.parse(line[len(prefix) :])
+            versions.append(v)
+
+    if versions:
+        versions.sort()
+        return str(versions[-1])
+
 
     if not must_exist:
         return ""
@@ -61,34 +66,36 @@ def get_version_from_registry(
         )
 
         return ""
-    
+
     if version:
-        return (
-            version
-            if Path.joinpath(module_path, get_module_version(version)).exists()
-            else ""
-        )
+        version_spec = specifiers.SpecifierSet(version) # This class can parse version specifiers like ">=3.1.4,!=3.1.6,<3.2" and check if a given version matches the specifier.
+    else:
+        version_spec = specifiers.SpecifierSet()
 
     versions = [
-        version.name
-        for version in Path.iterdir(module_path)
-        if Path.is_dir(Path.joinpath(module_path, version))
+        version.parse(version.name)
+        for version in Path.iterdir(modules_path)
+        if Path.is_dir(Path.joinpath(modules_path, version))
     ]
 
     if not versions:
         raise ValueError(
             f"package: {get_module_name(name=name, arch=arch)}, exists in registry modules, but has no versions"
         )
-    # TODO: improve version resolution algorithm
+
     versions.sort()
 
-    version_output: str
-    with open(
-        Path(module_path, versions[-1], VERSION_DOT_TXT), "r", encoding='utf-8'
-    ) as file:
-        version_output = file.read()
+    # find the highest version that matches the version_spec
+    for v in reversed(versions):
+        if v in version_spec:
+            version_output: str
+            with open(
+                Path(module_path, versions[-1], VERSION_DOT_TXT), "r", encoding='utf-8'
+            ) as file:
+                version_output = file.read()
+            return version_output
 
-    return version_output
+    return ""
 
 
 def get_package_version(registry_path: Path, name: str, arch: str) -> str:
