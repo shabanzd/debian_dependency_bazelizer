@@ -1,5 +1,4 @@
 bazel_dep(name = "rules_python", version = "0.21.0")
-
 pip = use_extension("@rules_python//python:extensions.bzl", "pip")
 
 pip.parse(

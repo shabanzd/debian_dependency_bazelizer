@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Set
 from pathlib import Path
 import dataclasses
@@ -27,6 +28,12 @@ def get_module_version(version: str):
     filtered_version = filtered_version.split("~")[0]
     return filtered_version
 
+
+class ModuleType(Enum):
+    LOCAL = "local"
+    HTTP_ARCHIVE = "http_archive"
+
+
 @dataclasses.dataclass()
 class Module:
     """Debian package object."""
@@ -34,6 +41,7 @@ class Module:
     name: str
     arch: str
     version: str
+    type: ModuleType = ModuleType.LOCAL
     rpaths: Set[Path] = dataclasses.field(default_factory=set)
 
     def module_name(self):
