@@ -69,12 +69,12 @@ def get_version_from_registry(
     registry_path: Path, name: str, arch: str, version_spec: str = "", fs = FileSystem()
 ) -> str:
     module_name = get_module_name(name=name, arch=arch)
-    modules_path = registry_path / "modules" / module_name
+    modules_path = registry_path / "modules"
     module_path = modules_path / module_name
 
     if not fs.path_exists(modules_path):
         logger.info(
-            f"module {module_name} not found in local bazel registry, expected path: {modules_path} does not exist."
+            f"module {module_name} not found in local bazel registry, expected path: {module_path} does not exist."
         )
         return ""
 

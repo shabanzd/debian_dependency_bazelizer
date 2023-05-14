@@ -46,7 +46,7 @@ def find_package_in_registry(
     found_version = get_version_from_registry(
         registry_path=registry_path,
         name=package_metadata.name,
-        version=package_metadata.version,
+        version_spec=package_metadata.version,
         arch=package_metadata.arch,
     )
     if not found_version:
