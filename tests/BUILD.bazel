@@ -10,6 +10,15 @@ py_test(
     ],
 )
 
+py_test(
+    name = "test_get_package_version",
+    timeout = "short",
+    srcs = ["test_get_package_version.py"],
+    deps = [
+        "//src:dependency-bazelizer",
+        "@pip//:pytest_pkg",
+    ],
+)
 
 py_test(
     name = "test_read_input_file",
