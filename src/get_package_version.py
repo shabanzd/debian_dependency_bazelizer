@@ -30,14 +30,11 @@ def satisfies_specification(pkg_version: str, spec: str) -> bool:
     logger.debug("Checking if package version %s satisfies specification %s", pkg_version, spec)
     v = version.parse(pkg_version)
     
-    is_satisfactory = v in specifiers.SpecifierSet(spec)
-    logger.debug("Checking if package version %s satisfies specification %s: %s", pkg_version, spec, is_satisfactory)
-    
-    return is_satisfactory
+    return v in specifiers.SpecifierSet(spec)
 
 def parse_debian_version(version_string: str):
     # https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-version
-    match = re.match(r"(?:(\d+):)?([^-]+)(?:-(.+))?", version_string)
+    match = re.match(r"(?:(\d+):)?((?:[^-]|-(?!\d))*)(?:-([\d].*))?", version_string)
     if match is None:
         raise ValueError(f"Invalid Debian version string: {version_string}")
     epoch, debian_version, _ = match.groups()
@@ -46,6 +43,12 @@ def parse_debian_version(version_string: str):
     except TypeError:
         # epoch is not a correct integer
         epoch = None
+
+    # Process debian_version to make it compatible with packaging.version.parse
+    debian_version = debian_version.split('~')[0]
+    debian_version = debian_version.split('+')[0]
+    debian_version = debian_version.split('-')[0]
+    debian_version = re.split('[^0-9.]', debian_version)[0].rstrip('.')
 
     return epoch, debian_version
 
