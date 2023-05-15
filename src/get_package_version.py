@@ -9,7 +9,7 @@ from packaging import version, specifiers
 from src.module import get_module_name
 
 logger = logging.getLogger(__name__)
-
+logger.setLevel(logging.DEBUG)
 # version attribute as listed in apt-cache show
 VERSION_ATTRIBUTE: Final = "Version"
 VERSION_DOT_TXT: Final = Path("version.txt")
@@ -27,6 +27,7 @@ class FileSystem(object):
 
 
 def satisfies_specification(pkg_version: str, spec: str) -> bool:
+    logger.debug("Checking if package version %s satisfies specification %s", pkg_version, spec)
     v = version.parse(pkg_version)
     
     is_satisfactory = v in specifiers.SpecifierSet(spec)
