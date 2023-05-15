@@ -13,3 +13,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: bazel test //...
+      - run: bazel run //src:dependency-bazelizer -- -if ./src/deb_packages.in
