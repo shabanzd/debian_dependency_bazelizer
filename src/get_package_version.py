@@ -56,18 +56,16 @@ def compare_debian_versions(version1: str, version2: str) -> int:
     epoch1, debian_version1 = parse_debian_version(version1)
     epoch2, debian_version2 = parse_debian_version(version2)
 
-    # Compare epochs as integers if they are both present
+    # The epoch is a number that can be used to ensure that all later versions of the package are considered "newer" than all earlier versions.
+    #  Here is the quote from the Debian Policy Manual:
+    # "It is provided to allow mistakes in the version numbers of older versions of a package, and also a package's previous version numbering schemes, to be left behind."
+    # So, if the epoch is higher, it will always be considered a newer version, regardless of the rest of the version string.
     if epoch1 is not None and epoch2 is not None:
         if epoch1 < epoch2:
             return -1
         elif epoch1 > epoch2:
             return 1
     
-    # The epoch is a number that can be used to ensure that all later versions of the package are considered "newer" than all earlier versions.
-    #  Here is the quote from the Debian Policy Manual:
-    # "It is provided to allow mistakes in the version numbers of older versions of a package, and also a package's previous version numbering schemes, to be left behind."
-    # So, if the epoch is higher, it will always be considered a newer version, regardless of the rest of the version string.
-
     # If epochs are equal, compare the rest of the version
     v1 = version.parse(debian_version1)
     v2 = version.parse(debian_version2)
@@ -127,7 +125,6 @@ def get_version_from_registry(
         return ""
 
     versions =  fs.get_directories(module_path)
-
     logger.debug("Versions found: %s", versions)
 
     if not versions:

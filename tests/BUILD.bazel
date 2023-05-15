@@ -15,7 +15,7 @@ py_test(
     timeout = "short",
     srcs = ["test_get_package_version.py"],
     deps = [
-        "//src:dependency-bazelizer",
+        "//src:get_package_version",
         "@pip//:pytest_pkg",
     ],
 )
