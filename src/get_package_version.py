@@ -19,7 +19,7 @@ class FileSystem(object):
         return path.exists()
 
     def get_directories(self, path: Path) -> list:
-        return [version.name for version in path.iterdir() if path.is_dir()]
+        return [version.name for version in path.iterdir() if version.is_dir()]
 
     def get_file_contents(self, path: Path) -> str:
         with open(path, "r", encoding='utf-8') as file:
@@ -40,7 +40,7 @@ def parse_debian_version(version_string: str):
     match = re.match(r"(?:(\d+):)?([^-]+)(?:-(.+))?", version_string)
     if match is None:
         raise ValueError(f"Invalid Debian version string: {version_string}")
-    epoch, debian_version, _debian_revision = match.groups()
+    epoch, debian_version, _ = match.groups()
     try:
         epoch = int(epoch)
     except TypeError:
@@ -117,16 +117,13 @@ def get_version_from_registry(
     modules_path = registry_path / "modules"
     module_path = modules_path / module_name
 
-    if not fs.path_exists(modules_path):
+    if not fs.path_exists(module_path):
         logger.info(
             f"module {module_name} not found in local bazel registry, expected path: {module_path} does not exist."
         )
         return ""
 
-    versions = [
-        version_name
-        for version_name in fs.get_directories(modules_path)
-    ]
+    versions =  fs.get_directories(module_path)
 
     logger.debug("Versions found: %s", versions)
 
