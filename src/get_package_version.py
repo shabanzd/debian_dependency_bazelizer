@@ -82,17 +82,10 @@ def _extract_attribute(
     prefix = attribute + ": "
     lines = package_info.splitlines()
 
-    versions = []
     for line in lines:
         line = line.lstrip()
         if line.startswith(attribute):
-            v = version.parse(line[len(prefix) :])
-            versions.append(v)
-
-    if versions:
-        versions.sort()
-        return str(versions[-1])
-
+            return line[len(prefix) :]
 
     if not must_exist:
         return ""
