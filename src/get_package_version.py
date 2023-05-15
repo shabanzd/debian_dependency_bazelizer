@@ -1,7 +1,9 @@
-from typing import Final
-from pathlib import Path
 import logging
 import subprocess
+import functools
+import re
+from typing import Final
+from pathlib import Path
 from packaging import version, specifiers
 
 from src.module import get_module_name
@@ -23,6 +25,55 @@ class FileSystem(object):
         with open(path, "r", encoding='utf-8') as file:
             return file.read()
 
+
+def satisfies_specification(pkg_version: str, spec: str) -> bool:
+    v = version.parse(pkg_version)
+    
+    is_satisfactory = v in specifiers.SpecifierSet(spec)
+    logger.debug("Checking if package version %s satisfies specification %s: %s", pkg_version, spec, is_satisfactory)
+    
+    return is_satisfactory
+
+def parse_debian_version(version_string: str):
+    # https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-version
+    match = re.match(r"(?:(\d+):)?([^-]+)(?:-(.+))?", version_string)
+    if match is None:
+        raise ValueError(f"Invalid Debian version string: {version_string}")
+    epoch, debian_version, _debian_revision = match.groups()
+    try:
+        epoch = int(epoch)
+    except TypeError:
+        # epoch is not a correct integer
+        epoch = None
+
+    return epoch, debian_version
+
+def compare_debian_versions(version1: str, version2: str) -> int:
+    epoch1, debian_version1 = parse_debian_version(version1)
+    epoch2, debian_version2 = parse_debian_version(version2)
+
+    # Compare epochs as integers if they are both present
+    if epoch1 is not None and epoch2 is not None:
+        if epoch1 < epoch2:
+            return -1
+        elif epoch1 > epoch2:
+            return 1
+    
+    # The epoch is a number that can be used to ensure that all later versions of the package are considered "newer" than all earlier versions.
+    #  Here is the quote from the Debian Policy Manual:
+    # "It is provided to allow mistakes in the version numbers of older versions of a package, and also a package's previous version numbering schemes, to be left behind."
+    # So, if the epoch is higher, it will always be considered a newer version, regardless of the rest of the version string.
+
+    # If epochs are equal, compare the rest of the version
+    v1 = version.parse(debian_version1)
+    v2 = version.parse(debian_version2)
+
+    if v1 < v2:
+        return -1
+    elif v1 > v2:
+        return 1
+    else:
+        return 0
 
 def _extract_attribute(
     package_info: str, attribute: str, must_exist: bool = True
@@ -78,28 +129,29 @@ def get_version_from_registry(
         )
         return ""
 
-    if version_spec:
-        version_specifier = specifiers.SpecifierSet(version_spec)
-    else:
-        version_specifier = specifiers.SpecifierSet()
-
     versions = [
-        version.parse(version_name)
+        version_name
         for version_name in fs.get_directories(modules_path)
     ]
+
+    logger.debug("Versions found: %s", versions)
 
     if not versions:
         raise ValueError(
             f"package: {module_name}, exists in registry modules, but has no versions"
         )
 
-    versions.sort()
+    versions.sort(key=functools.cmp_to_key(compare_debian_versions))
+    logging.debug("Sorted versions: %s", versions)
 
     # find the highest version that matches the version_specifier
     for v in reversed(versions):
-        if v in version_specifier:
+        if satisfies_specification(parse_debian_version(v)[1], version_spec):
+            logger.debug("Found version: %s", parse_debian_version(v)[1])
             version_output_path = Path(module_path, str(v), VERSION_DOT_TXT)
             version_output = fs.get_file_contents(version_output_path)
+            
+
             return version_output
 
     return ""
