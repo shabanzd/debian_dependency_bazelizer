@@ -17,6 +17,7 @@ py_test(
     deps = [
         "//src:get_package_version",
         "@pip//:pytest_pkg",
+        "@pip//:pytest_mock_pkg",
     ],
 )
 
