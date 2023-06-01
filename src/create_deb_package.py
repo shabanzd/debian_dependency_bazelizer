@@ -48,11 +48,11 @@ def _is_patchable_elf_file(file: Path) -> bool:
             encoding="utf-8",
         ).stdout
         return True
-    except subprocess.CalledProcessError as e:
-        if _is_acceptable_error(e.stderr):
+    except subprocess.CalledProcessError as error:
+        if _is_acceptable_error(error.stderr):
             # Non-patchable file
             return False
-        raise e
+        raise error
 
 
 def _get_deb_pinned_name(name: str, arch: str = "", version: str = ""):
@@ -103,53 +103,59 @@ def _extract_attribute(
     )
 
 
-def _get_deb_dep_names(archive_path: Path):
+def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
     deps_str = _extract_attribute(
         subprocess.check_output(["dpkg-deb", "-I", archive_path], encoding="utf-8"),
         DEPENDS_ATTR,
         False,
     )
 
-    deps = []
+    deps = set()
     if not deps_str:
         return deps
 
     # TODO: use a lib that does the parsing for you. I was too lazy to leave the code and search =D
     polluted_deps = deps_str.split(", ")
-    for dep in polluted_deps:
+    for dep_name in polluted_deps:
         # imagine a case where the following is returned: debconf (>= 0.5) | debconf-2.0, 
         # we want the left hand side, since it is not a virtual dep. The way to do that, is to search for brackets
         # not too smart but works for now :)
-        alternative_deps = dep.split(" | ")
-        dep = alternative_deps[0]
+        alternative_deps = dep_name.split(" | ")
+        dep_name = alternative_deps[0]
         for alternative_dep in alternative_deps:
             if "(" in alternative_deps and ")" in alternative_deps:
-                dep = alternative_dep
+                dep_name = alternative_dep
                 break
 
         # with the not-so-clever check above, we may still end up with something like: dep-1.0
-        # in that case, we wanna make sure it is not vitual
-        if "(" not in dep:
-            info = subprocess.run(
-                ["apt-cache", "show", dep],
-                check=True,
-                capture_output=True,
-                encoding="utf-8",
-            ).stdout
-            # if dep is virtual ignore it
-            if not info:
-                dep = ""
-                continue
-
-        if not dep:
+        # for now we ignore deps without version spec.
+        if "(" not in dep_name:
             continue
-        # in case it is of the pattern dep (>= 0.1), we want to get rid of the (>= 0.1)
-        # TODO: here we can implement smarter version range checks.
-        dep = dep.split(" ")[0]
-        dep = dep.split(":")[0]
-        deps.append(dep)
+
+        # now it is of the pattern dep (>= 0.1)
+        dep_name, version = dep_name.split(maxsplit=1)
+        dep_name = dep_name.split(":")[0]
+        version_spec = version[1:-1].split()
+        
+        # Another workaround: tzdata accesses files from system, it needs more investigation to handle it properly.
+        # TODO: find a general way to handle deps accessing files from system.
+        if dep_name == "tzdata":
+            continue
+        
+        dep_version = get_package_version(
+            registry_path=registry_path, name=dep_name, arch=arch, version_spec=version_spec
+        )
+        
+        deps.add(PackageMetadata(name=dep_name, arch=arch, version=dep_version))
 
     return deps
+
+def _get_version_from_version_spec(version_spec: str):
+    for index, character in enumerate(version_spec):
+        if character.isdigit():
+            return version_spec[index:]
+    
+    return ""
 
 
 def create_deb_package(registry_path: Path, metadata: PackageMetadata):
@@ -161,7 +167,7 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
     package = Package()
     package.name = metadata.name
     package.arch = metadata.arch
-    package.version = metadata.version
+    package.version =_get_version_from_version_spec(metadata.version)
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
@@ -210,19 +216,7 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
         return package
 
     # now fillup the transitive deps
-    dep_names = _get_deb_dep_names(archive_path)
-    for dep_name in dep_names:
-        # Another workaround: tzdata accesses files from system, it needs more investigation to handle it properly.
-        # TODO: find a general way to handle deps accessing files from system.
-        if dep_name == "tzdata":
-            continue
-        dep_version = get_package_version(
-            registry_path=registry_path, name=dep_name, arch=package.arch
-        )
-        package.deps.add(
-            PackageMetadata(name=dep_name, arch=package.arch, version=dep_version)
-        )
-
+    package.deps = _get_package_deps(registry_path=registry_path, archive_path=archive_path, arch=package.arch)
     archive_path.unlink()
 
     return package
