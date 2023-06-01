@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Set
 from pathlib import Path
 import dataclasses
@@ -26,6 +27,7 @@ def get_module_version(version: str):
     filtered_version = filtered_version.split("+")[0]
     filtered_version = filtered_version.split("~")[0]
     return filtered_version
+
 
 @dataclasses.dataclass()
 class Module:

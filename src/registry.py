@@ -2,8 +2,11 @@
 
 from typing import Any, Final, Optional
 from pathlib import Path
+import base64
+import hashlib
 import json
 import os
+import subprocess
 
 from src.module import Module, get_module_name, get_module_version
 from src.package import Package, PackageMetadata
@@ -34,6 +37,11 @@ def _json_dump(json_file, obj, sort_keys=True):
         json.dump(obj, file, indent=4, sort_keys=sort_keys)
         file.write("\n")
 
+def _get_integrity_for_file(debian_module_tar: Path):
+    files_content = subprocess.check_output(["cat", debian_module_tar])
+    hash = hashlib.sha256(files_content).digest()
+    hash_base64 = base64.b64encode(hash).decode()
+    return f"sha256-{hash_base64}"
 
 def find_package_in_registry(
         registry_path: Path,
@@ -73,7 +81,7 @@ def find_package_in_registry(
     return package
 
 
-def add_package_to_registry(package: Package):
+def add_package_to_registry(package: Package, debian_module_tar: str, full_url: str):
     """Adds modularized package to local registry"""
     module_name = get_module_name(name=package.name, arch=package.arch)
     module_version = get_module_version(package.version)
@@ -101,16 +109,13 @@ def add_package_to_registry(package: Package):
     _json_dump(metadata_path, metadata)
 
     source_json = {
-        "type": "local_path",
-        "path": f"modules/{package.prefix}/",
+        "integrity": _get_integrity_for_file(debian_module_tar),
+        "url": full_url,
+        "strip_prefix": package.prefix,
     }
+    
     _json_dump(Path.joinpath(module_path_in_registry, SOURCE_DOT_JSON), source_json)
-
-    bazel_registry_json = {
-        "module_base_path": "../"
-    }
-    _json_dump(Path.joinpath(_get_registry_path(), BAZEL_REGISTRY_DOT_JSON), bazel_registry_json)
-
+    _json_dump(Path.joinpath(_get_registry_path(), BAZEL_REGISTRY_DOT_JSON), {})
     write_module_file(package=package, file=Path.joinpath(module_path_in_registry, MODULE_DOT_BAZEL))
     write_file(
         "\n".join([os.fspath(path) for path in package.rpaths]),

@@ -43,7 +43,7 @@ def _print_summary(deb_package_cache: Dict[str, Package]):
         print(f"{i}) {package.pinned_name}")
 
 
-def bazelize_deps(modules_path: Path, registry_path: Path, input_package_metadatas: Set[PackageMetadata]) -> None:
+def bazelize_deps(registry_path: Path, input_package_metadatas: Set[PackageMetadata], s3_config: Dict[str, str]) -> None:
     visited_modules: Dict[PackageMetadata, Module] = dict()
     # will be used as a stack for the DFS algorithm
     package_stack: List[PackageMetadata] = []
@@ -80,7 +80,7 @@ def bazelize_deps(modules_path: Path, registry_path: Path, input_package_metadat
         ):
             package_metadata = package_stack.pop()
             package = processed_packages[package_metadata]
-            modularize_package(modules_path=modules_path, package=package, modules=visited_modules)
+            modularize_package(package=package, modules=visited_modules, s3_config = s3_config)
             visited_modules[package_metadata] = Module(name=package.name, arch=package.arch, version=package.version, rpaths=package.rpaths)
 
     _print_summary(processed_packages)

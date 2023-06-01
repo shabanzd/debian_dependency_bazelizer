@@ -5,7 +5,6 @@ package(default_visibility = ["//tests:__subpackages__"])
 py_binary(
     name = "dependency-bazelizer",
     srcs = ["main.py"],
-    data = ["deb_packages.in"],
     main = "main.py",
     tags = ["local"],
     visibility = ["//visibility:public"],
@@ -64,6 +63,7 @@ py_library(
         ":package",
         ":registry",
         ":writers",
+        "@pip//:boto3_pkg",
     ],
 )
 
