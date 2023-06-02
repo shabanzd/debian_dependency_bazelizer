@@ -1,11 +1,10 @@
 from typing import ByteString, Final
 from pathlib import Path
 
-import hashlib
 import os
 import subprocess
 
-from src.get_package_version import get_package_version
+from src.get_package_version import get_package_version, parse_debian_version
 from src.module import get_module_name, get_module_version
 from src.package import PackageMetadata, Package
 
@@ -150,13 +149,6 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
 
     return deps
 
-def _get_version_from_version_spec(version_spec: str):
-    for index, character in enumerate(version_spec):
-        if character.isdigit():
-            return version_spec[index:]
-    
-    return ""
-
 
 def create_deb_package(registry_path: Path, metadata: PackageMetadata):
     if not metadata.name or not metadata.arch or not metadata.version:
@@ -167,14 +159,16 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
     package = Package()
     package.name = metadata.name
     package.arch = metadata.arch
-    package.version =_get_version_from_version_spec(metadata.version)
+    package.version = metadata.version
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
     package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}~{get_module_version(metadata.version)}"
-    package.compatibility_level = (
-        int(hashlib.sha256(package.prefix.encode("utf-8")).hexdigest(), 16) % 10**8
-    )
+    deb_version = parse_debian_version(metadata.version)
+    epoch = str(deb_version.epoch) if deb_version.epoch is not None else ""
+    # for two versions to have the same compatibility level, the epoch and major version need to be equal
+    # this silly solution simply concatenates both =D
+    package.compatibility_level = epoch + deb_version.version.split(".", maxsplit=1)[0]
     # path to package.deb
     archive_path = _download_package_dot_debian(
         name=metadata.name,
