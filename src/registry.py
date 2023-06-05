@@ -20,6 +20,7 @@ RPATHS_DOT_TXT: Final = Path("rpaths.txt")
 METADATA_DOT_JSON: Final = Path("metadata.json")
 SOURCE_DOT_JSON: Final = Path("source.json")
 VERSION_DOT_TXT: Final = Path("version.txt")
+NAME_DOT_TXT: Final = Path("name.txt")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
 BAZEL_REGISTRY_DOT_JSON: Final = Path("bazel_registry.json")
 
@@ -122,3 +123,4 @@ def add_package_to_registry(package: Package, debian_module_tar: str, full_url: 
         Path.joinpath(module_path_in_registry, RPATHS_DOT_TXT),
     )
     write_file(package.version, Path.joinpath(module_path_in_registry, VERSION_DOT_TXT))
+    write_file(package.name, Path.joinpath(module_path_in_registry, NAME_DOT_TXT))
