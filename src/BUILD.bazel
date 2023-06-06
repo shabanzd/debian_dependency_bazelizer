@@ -10,14 +10,14 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":bazelize_deps",
-        ":read_input_file",
+        ":read_input_files",
         "@pip//:click_pkg",
     ],
 )
 
 py_library(
-    name = "read_input_file",
-    srcs = ["read_input_file.py"],
+    name = "read_input_files",
+    srcs = ["read_input_files.py"],
     deps = [
         ":get_package_version",
         ":package",
