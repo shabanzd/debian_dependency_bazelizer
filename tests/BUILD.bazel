@@ -22,11 +22,11 @@ py_test(
 )
 
 py_test(
-    name = "test_read_input_file",
+    name = "test_read_input_files",
     timeout = "short",
-    srcs = ["test_read_input_file.py"],
+    srcs = ["test_read_input_files.py"],
     deps = [
-        "//src:read_input_file",
+        "//src:read_input_files",
         "@pip//:pytest_pkg",
     ],
     data = [
