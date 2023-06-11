@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 import subprocess
 
-from src.get_package_version import get_package_version, parse_debian_version
+from src.version import get_package_version, get_compatibility_level
 from src.module import get_module_name, get_module_version
 from src.package import PackageMetadata, Package
 
@@ -116,7 +116,7 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
     # TODO: use a lib that does the parsing for you. I was too lazy to leave the code and search =D
     polluted_deps = deps_str.split(", ")
     for dep_name in polluted_deps:
-        # imagine a case where the following is returned: debconf (>= 0.5) | debconf-2.0, 
+        # imagine a case where the following is returned: debconf (>= 0.5) | debconf-2.0,
         # we want the left hand side, since it is not a virtual dep. The way to do that, is to search for brackets
         # not too smart but works for now :)
         alternative_deps = dep_name.split(" | ")
@@ -140,17 +140,18 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
         # TODO: find a general way to handle deps accessing files from system.
         if dep_name == "tzdata":
             continue
-        
+
         dep_version = get_package_version(
             registry_path=registry_path, name=dep_name, arch=arch, version_spec=version_spec
         )
-        
+
         deps.add(PackageMetadata(name=dep_name, arch=arch, version=dep_version))
 
     return deps
 
 
 def create_deb_package(registry_path: Path, metadata: PackageMetadata):
+    """Factory function to create deb packages."""
     if not metadata.name or not metadata.arch or not metadata.version:
         raise ValueError(
             f"name, arch and version must all be provided and not empty, in order to create a debian package. Provided values are: name={metadata.name}, version={metadata.version}, arch={metadata.arch}"
@@ -164,11 +165,7 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
     package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}~{get_module_version(metadata.version)}"
-    deb_version = parse_debian_version(metadata.version)
-    epoch = str(deb_version.epoch) if deb_version.epoch is not None else ""
-    # for two versions to have the same compatibility level, the epoch and major version need to be equal
-    # this silly solution simply concatenates both =D
-    package.compatibility_level = epoch + deb_version.version.split(".", maxsplit=1)[0]
+    package.compatibility_level = get_compatibility_level(metadata.version)
     # path to package.deb
     archive_path = _download_package_dot_debian(
         name=metadata.name,
@@ -203,7 +200,7 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
         # register the parent of the ELF file as an rpath
         package.rpaths.add(Path(package.prefix / file_path.parent))
 
-    # The next check is needed since libc6 is cyclic with libcrypt1. 
+    # The next check is needed since libc6 is cyclic with libcrypt1.
     # I assume libc6 does not have deps in this case :D
     if package.name == "libc6":
         archive_path.unlink()

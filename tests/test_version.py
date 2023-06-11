@@ -1,23 +1,23 @@
 from pathlib import Path
-from typing import Any, List
+from typing import List
 
 import pytest
 import pytest_mock
 import sys
 
-from src.get_package_version import _extract_attribute, get_version_from_registry
+from src.version import _extract_attribute, get_version_from_registry
 
 def _mock_away_directories_and_file_content(mocker: pytest_mock.MockerFixture, directories: List[str], content: str):
     mocker.patch("pathlib.Path.exists", return_value=True)
-    mocker.patch("src.get_package_version._get_directories", return_value=directories)
-    mocker.patch("src.get_package_version._get_file_contents", return_value=content)
+    mocker.patch("src.version._get_directories", return_value=directories)
+    mocker.patch("src.version._get_file_contents", return_value=content)
 
 
 def test_extract_attribute_positive():
     package_info = "Attribute: 7.2.3\nAttribute: 2.3.4\nAttribute: 3.4.5"
     attribute = "Attribute"
     result = _extract_attribute(package_info, attribute)
-    
+
     assert result == "7.2.3", "Expected the highest version to be returned"
 
 def test_extract_attribute_negative():
@@ -30,7 +30,7 @@ def test_extract_attribute_not_must_exist():
     package_info = "Attribute: 1.2.3\nAttribute: 2.3.4\nAttribute: 3.4.5"
     attribute = "NonExistingAttribute"
     result = _extract_attribute(package_info, attribute, must_exist=False)
-    
+
     assert result == "", "Expected an empty string when attribute does not exist and must_exist is set to False"
 
 def test_get_version_from_registry_no_versions_matching_spec(mocker: pytest_mock.MockerFixture):
@@ -58,10 +58,9 @@ def test_get_version_from_registry_with_multiple_versions_matching_spec(mocker: 
     assert version == "4.0.0", "Expected highest version that matches >=2.0.0"
 
 def test_get_version_from_registry_with_complex_version_spec(mocker: pytest_mock.MockerFixture):
-    mocker
     _mock_away_directories_and_file_content(mocker, ["2.0.0-1ubuntu1", "1.0.0-1", "3.0.0", "4.0.0"], "3.0.0")
     version = get_version_from_registry(registry_path=Path("/test/path"), name="test_package", arch="test_arch", version_spec= ">=2.0.0,!=4.0.0")
-    
+
     assert version == "3.0.0", "Expected highest version that matches >=2.0.0 and !=4.0.0"
 
 if __name__ == "__main__":

@@ -20,15 +20,12 @@ def test_correct_input_file():
                     registry_path=Path("../resources/registry"),
                     input_files=[Path("../_main/tests/resources/correct_input.in").resolve()]
                 )
-    assert len(metadatas) == 2
+    assert len(metadatas) == 5
     assert PackageMetadata(name="iproute2", arch="arm64", version="1.2.3") in metadatas
-    meta1, meta2 = metadatas
-    # one of the entries is patchelf
-    assert meta1.name == "patchelf" or meta2.name == "patchelf"
-    # the patchelf entry must have amd64 architecture
-    assert meta1.arch == "amd64" or meta2.arch == "amd64"
-    # both entries should have a version
-    assert meta1.version and meta2.version
+    assert PackageMetadata(name="iproute2", arch="arm64", version="1:1.3.4") in metadatas
+    assert PackageMetadata(name="iproute2", arch="amd64", version="1:1.2.4") in metadatas
+    assert PackageMetadata(name="patchelf", arch="amd64", version="4.5.6") in metadatas
+    assert PackageMetadata(name="patchelf", arch="amd64", version="5.6.7") in metadatas
 
 def test_duplicate_input_files():
     """Tests duplicate input files."""
@@ -39,16 +36,12 @@ def test_duplicate_input_files():
                                 Path("../_main/tests/resources/correct_input.in").resolve()
                                 ]
                 )
-    assert len(metadatas) == 2
+    assert len(metadatas) == 5
     assert PackageMetadata(name="iproute2", arch="arm64", version="1.2.3") in metadatas
-    meta1, meta2 = metadatas
-    # one of the entries is patchelf
-    assert meta1.name == "patchelf" or meta2.name == "patchelf"
-    # the patchelf entry must have amd64 architecture
-    assert meta1.arch == "amd64" or meta2.arch == "amd64"
-    # both entries should have a version
-    assert meta1.version and meta2.version
-
+    assert PackageMetadata(name="iproute2", arch="arm64", version="1:1.3.4") in metadatas
+    assert PackageMetadata(name="iproute2", arch="amd64", version="1:1.2.4") in metadatas
+    assert PackageMetadata(name="patchelf", arch="amd64", version="4.5.6") in metadatas
+    assert PackageMetadata(name="patchelf", arch="amd64", version="5.6.7") in metadatas
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__] + sys.argv[1:]))
