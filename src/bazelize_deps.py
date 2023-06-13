@@ -1,7 +1,7 @@
 from typing import Dict, List, Set
 from pathlib import Path
 
-from src.create_deb_package import create_deb_package
+from src.package_factory import create_deb_package
 from src.module import Module
 from src.modularize_package import modularize_package
 from src.package import Package, PackageMetadata

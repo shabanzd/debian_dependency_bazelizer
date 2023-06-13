@@ -11,11 +11,11 @@ py_test(
 )
 
 py_test(
-    name = "test_get_package_version",
+    name = "test_version",
     timeout = "short",
-    srcs = ["test_get_package_version.py"],
+    srcs = ["test_version.py"],
     deps = [
-        "//src:get_package_version",
+        "//src:version",
         "@pip//:pytest_pkg",
         "@pip//:pytest_mock_pkg",
     ],
