@@ -6,7 +6,7 @@ from pathlib import Path
 import functools
 
 from src.package import PackageMetadata
-from src.version import get_package_version, get_compatibility_level, compare_debian_versions
+from src.version import get_package_version, get_compatibility_level, compare_version_strings
 
 
 def _get_package_metadata(registry_path: Path, pinned_package: str) -> PackageMetadata:
@@ -48,7 +48,7 @@ def _get_unique_pacakges(package_versions: Iterable[str]) -> Set[str]:
         compatible_versions_dict[compatibility_level].append(version)
 
     for key, compatible_versions in compatible_versions_dict.items():
-        compatible_versions.sort(key=functools.cmp_to_key(compare_debian_versions))
+        compatible_versions.sort(key=functools.cmp_to_key(compare_version_strings))
         compatible_versions_dict[key] = [compatible_versions[-1]]
 
     return { f"{package_arch}={version[0]}" for version in compatible_versions_dict.values()}
