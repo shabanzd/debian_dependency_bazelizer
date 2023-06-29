@@ -203,7 +203,6 @@ def get_version_from_registry(
         return ""
 
     debian_versions = _get_versions(module_path)
-    print(debian_versions)
     if not debian_versions:
         raise ValueError(
             f"package: {module_name}, exists in registry modules, but has no versions"

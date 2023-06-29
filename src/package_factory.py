@@ -139,7 +139,7 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
         # now it is of the pattern dep (>= 0.1)
         dep_name, version = dep_name.split(maxsplit=1)
         dep_name = dep_name.split(":")[0]
-        version_spec = version[1:-1].split()
+        version_spec = version[1:-1]
 
         # Another workaround: tzdata accesses files from system, it needs more investigation to handle it properly.
         # TODO: find a general way to handle deps accessing files from system.
