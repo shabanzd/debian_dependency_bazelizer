@@ -13,7 +13,11 @@ def _create_build_file_content(package: Package):
 
     data_str = "\n      ".join(dep_targets)
     files_str = "\n      ".join(
-        ['"' + os.fspath(file) + '",' for file in package.elf_files.union(package.nonelf_files)])
+        [
+            '"' + os.fspath(file) + '",'
+            for file in package.elf_files.union(package.nonelf_files)
+        ]
+    )
 
     file_group = f"""filegroup(
     name = "all_files",
@@ -54,7 +58,8 @@ def _create_module_file_content(package: Package):
             module_name = get_module_name(name=dep.name, arch=dep.arch)
             module_version = get_module_version(dep.version)
             bazel_dep_list.append(
-                f"""bazel_dep(name = "{module_name}", version = "{module_version}")""")
+                f"""bazel_dep(name = "{module_name}", version = "{module_version}")"""
+            )
         bazel_deps = "\n" + "\n".join(bazel_dep_list) + "\n"
 
     return f"""module(
