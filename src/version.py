@@ -21,16 +21,18 @@ VERSION_DOT_TXT: Final = Path("version.txt")
 @dataclasses.dataclass
 class DebianVersion:
     "Debian Version data class."
-    original_version: str
+    raw_version: str
     epoch: Optional[int] = None
     version: str = ""
     semantic_version: str = ""
-    
+
     def __post_init__(self):
         # https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-version
-        match = re.match(r"(?:(\d+):)?((?:[^-]|-(?!\d))*)(?:-([\d].*))?", self.original_version)
+        match = re.match(
+            r"(?:(\d+):)?((?:[^-]|-(?!\d))*)(?:-([\d].*))?", self.raw_version
+        )
         if match is None:
-            raise ValueError(f"Invalid Debian version string: {self.original_version}")
+            raise ValueError(f"Invalid Debian version string: {self.raw_version}")
         epoch, debian_version, _ = match.groups()
         try:
             self.epoch = int(epoch)
@@ -53,16 +55,18 @@ class Spec:
     "Debian Version data class."
     version: DebianVersion
     spec: str
-    
+
     def spec_str(self):
+        """Returns the spec as a string."""
         return self.spec + self.version.semantic_version
 
 
 def _get_versions(path: Path) -> List[DebianVersion]:
     return [
-        _get_file_contents( module_version_path / VERSION_DOT_TXT)
-        for module_version_path in path.iterdir() if module_version_path.is_dir()
-        ]
+        DebianVersion(_get_file_contents(module_version_path / VERSION_DOT_TXT))
+        for module_version_path in path.iterdir()
+        if module_version_path.is_dir()
+    ]
 
 
 def _get_file_contents(path: Path) -> str:
@@ -104,20 +108,6 @@ def _get_deb_package_version_from_aptcache(name: str, arch: str) -> str:
     return _extract_attribute(package_info=package_info, attribute=VERSION_ATTRIBUTE)
 
 
-def _satisfies_specifications(pkg_version: DebianVersion, version_spec: str) -> bool:
-    """Returns if two versions are compatible."""
-    specs = _parse_specs(version_spec)
-    for spec in specs:
-        logger.debug(
-            "Checking if package version %s satisfies specification %s", pkg_version, spec.spec_str()
-        )
-
-        version = packaging_version.parse(pkg_version)
-        if version not in packaging_specifiers.SpecifierSet(spec):
-            return False
-    
-    return True
-
 def _parse_specs(version_spec: str) -> List[Spec]:
     if not version_spec:
         return [("", DebianVersion(None, ""))]
@@ -125,19 +115,38 @@ def _parse_specs(version_spec: str) -> List[Spec]:
     specs: List[Spec] = []
 
     for one_version_spec in version_spec.split(","):
-        for i, ch in enumerate(one_version_spec):
-            if ch.isdigit():
+        for i, char in enumerate(one_version_spec):
+            if char.isdigit():
                 spec = one_version_spec[:i]
                 version = one_version_spec[i:]
                 specs.append(Spec(spec=spec, version=DebianVersion(version)))
                 break
+
+    return specs
+
+
+def _satisfies_specifications(pkg_version: DebianVersion, version_spec: str) -> bool:
+    """Returns if two versions are compatible."""
+    specs: List[Spec] = _parse_specs(version_spec)
+    for spec in specs:
+        logger.debug(
+            "Checking if package version %s satisfies specification %s",
+            pkg_version,
+            spec.spec_str(),
+        )
+
+        version = packaging_version.parse(pkg_version.semantic_version)
+        if version not in packaging_specifiers.SpecifierSet(spec.spec_str()):
+            return False
+
+    return True
 
 
 def get_compatibility_level(version_string: str) -> str:
     """Returns compatibility_level for a certain debian version."""
     deb_version = DebianVersion(version_string)
     epoch = str(deb_version.epoch) if deb_version.epoch is not None else ""
-    
+
     # for two versions to have the same compatibility level, the epoch and major version need to be equal
     # this silly solution simply concatenates both =D
     return epoch + deb_version.version.split(".", maxsplit=1)[0]
@@ -145,7 +154,8 @@ def get_compatibility_level(version_string: str) -> str:
 
 def compare_version_strings(version_1: str, version_2: str) -> int:
     """Compares two debian versions.
-    returns 1 if version1 > version2, -1 if version2 > version1 and 0 if version1 = version2."""
+    returns 1 if version1 > version2, -1 if version2 > version1 and 0 if version1 = version2.
+    """
     debian_version_1 = DebianVersion(version_1)
     debian_version_2 = DebianVersion(version_2)
     return compare_debian_versions(debian_version_1, debian_version_2)
@@ -153,7 +163,8 @@ def compare_version_strings(version_1: str, version_2: str) -> int:
 
 def compare_debian_versions(version_1: DebianVersion, version_2: DebianVersion) -> int:
     """Compares two debian versions.
-    returns 1 if version1 > version2, -1 if version2 > version1 and 0 if version1 = version2."""
+    returns 1 if version1 > version2, -1 if version2 > version1 and 0 if version1 = version2.
+    """
     # The epoch is a number that can be used to ensure that all later versions of the package are considered "newer" than all earlier versions.
     #  Here is the quote from the Debian Policy Manual:
     # "It is provided to allow mistakes in the version numbers of older versions of a package, and also a package's previous version numbering schemes, to be left behind."
@@ -190,28 +201,32 @@ def get_version_from_registry(
             f"module {module_name} not found in local bazel registry, expected path: {module_path} does not exist."
         )
         return ""
-    
-    versions = _get_versions(module_path)
 
-    if not versions:
+    debian_versions = _get_versions(module_path)
+    print(debian_versions)
+    if not debian_versions:
         raise ValueError(
             f"package: {module_name}, exists in registry modules, but has no versions"
         )
 
-    versions.sort(reverse=True, key=functools.cmp_to_key(compare_version_strings))
-    debian_versions = [DebianVersion(version) for version in versions]
+    debian_versions.sort(
+        reverse=True, key=functools.cmp_to_key(compare_debian_versions)
+    )
     # find the highest version that matches the version_specifier
-    for found_version_str, found_debian_version in zip(versions, debian_versions):
-        if version_spec and not _satisfies_specifications(found_debian_version, version_spec):
+    for deb_version in debian_versions:
+        if version_spec and not _satisfies_specifications(deb_version, version_spec):
             continue
-        
+
         logger.debug(
-            "Found version: %s%s", found_debian_version.epoch, found_debian_version.version
+            "Found version: %s:%s",
+            deb_version.epoch,
+            deb_version.version,
         )
 
-        return found_version_str
+        return deb_version.raw_version
 
     return ""
+
 
 def get_package_version(
     registry_path: Path, name: str, arch: str, version_spec: str = ""

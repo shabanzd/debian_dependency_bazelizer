@@ -2,9 +2,10 @@ from typing import Set
 from pathlib import Path
 import dataclasses
 
+
 def get_module_name(name: str, arch: str):
     """Architecture is appended to the module name to accommodate for the case of debian packages
-    having the same name and different achitectures since there is no arch attribute in module(). 
+    having the same name and different achitectures since there is no arch attribute in module().
     It also makes sure module name is compliant with bazel module naming rules.
     """
 
@@ -25,7 +26,7 @@ def get_module_name(name: str, arch: str):
 
 
 def get_module_version(version: str):
-    """Debian versions have all sort of characters. 
+    """Debian versions have all sort of characters.
     This gets rid of the bazel unallowed version characters."""
     filtered_version = version
     filtered_version = filtered_version.split(":")[-1]
@@ -45,14 +46,14 @@ class Module:
     rpaths: Set[Path] = dataclasses.field(default_factory=set)
 
     def module_name(self):
-        """Architecture is appended to the module name to accommodate for the case of debian 
-        packages having the same name and different achitectures, since there is no arch 
-        attribute in module(). It also makes sure module name is compliant with bazel module 
+        """Architecture is appended to the module name to accommodate for the case of debian
+        packages having the same name and different achitectures, since there is no arch
+        attribute in module(). It also makes sure module name is compliant with bazel module
         naming rules.
         """
         return get_module_name(name=self.name, arch=self.arch)
 
     def module_version(self):
-        """Debian versions have all sort of characters. 
+        """Debian versions have all sort of characters.
         This gets rid of the bazel unallowed version characters."""
         return get_module_version(self.version)

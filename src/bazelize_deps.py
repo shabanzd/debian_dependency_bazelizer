@@ -43,19 +43,27 @@ def _print_summary(deb_package_cache: Dict[str, Package]):
         print(f"{i}) {package.pinned_name}")
 
 
-def bazelize_deps(registry_path: Path, input_package_metadatas: Set[PackageMetadata], s3_config: Dict[str, str]) -> None:
+def bazelize_deps(
+    registry_path: Path,
+    input_package_metadatas: Set[PackageMetadata],
+    s3_config: Dict[str, str],
+) -> None:
     visited_modules: Dict[PackageMetadata, Module] = dict()
     # will be used as a stack for the DFS algorithm
     package_stack: List[PackageMetadata] = []
     processed_packages: Dict[PackageMetadata, Package] = dict()
 
     for input_package_metadata in input_package_metadatas:
-        module = find_package_in_registry(registry_path=registry_path, package_metadata=input_package_metadata)
+        module = find_package_in_registry(
+            registry_path=registry_path, package_metadata=input_package_metadata
+        )
         if module:
             visited_modules[input_package_metadata] = module
             continue
 
-        processed_packages[input_package_metadata] = create_deb_package(registry_path=registry_path, metadata=input_package_metadata)
+        processed_packages[input_package_metadata] = create_deb_package(
+            registry_path=registry_path, metadata=input_package_metadata
+        )
 
     package_stack = list(processed_packages.keys())
 
@@ -64,13 +72,17 @@ def bazelize_deps(registry_path: Path, input_package_metadatas: Set[PackageMetad
             package_stack.pop()
             continue
 
-        module = find_package_in_registry(registry_path=registry_path, package_metadata=package_stack[-1])
+        module = find_package_in_registry(
+            registry_path=registry_path, package_metadata=package_stack[-1]
+        )
         if module:
             visited_modules[package_stack.pop()] = module
             continue
 
         if package_stack[-1] not in processed_packages:
-            processed_packages[package_stack[-1]] = create_deb_package(registry_path=registry_path, metadata=package_stack[-1])
+            processed_packages[package_stack[-1]] = create_deb_package(
+                registry_path=registry_path, metadata=package_stack[-1]
+            )
 
         if not _add_deps_to_stack(
             package_stack[-1],
@@ -80,7 +92,14 @@ def bazelize_deps(registry_path: Path, input_package_metadatas: Set[PackageMetad
         ):
             package_metadata = package_stack.pop()
             package = processed_packages[package_metadata]
-            modularize_package(package=package, modules=visited_modules, s3_config = s3_config)
-            visited_modules[package_metadata] = Module(name=package.name, arch=package.arch, version=package.version, rpaths=package.rpaths)
+            modularize_package(
+                package=package, modules=visited_modules, s3_config=s3_config
+            )
+            visited_modules[package_metadata] = Module(
+                name=package.name,
+                arch=package.arch,
+                version=package.version,
+                rpaths=package.rpaths,
+            )
 
     _print_summary(processed_packages)

@@ -10,6 +10,7 @@ from src.package import PackageMetadata, Package
 
 DEPENDS_ATTR: Final = "Depends"
 
+
 def _is_acceptable_error(err: ByteString):
     if (
         err == "patchelf: not an ELF executable\n"
@@ -64,7 +65,9 @@ def _get_deb_pinned_name(name: str, arch: str = "", version: str = ""):
     return package
 
 
-def _download_package_dot_debian(name: str, arch: str, version: str, pinned_name: str) -> Path:
+def _download_package_dot_debian(
+    name: str, arch: str, version: str, pinned_name: str
+) -> Path:
     subprocess.check_call(
         ["apt-get", "download", pinned_name], stdout=subprocess.DEVNULL
     )
@@ -77,9 +80,11 @@ def _download_package_dot_debian(name: str, arch: str, version: str, pinned_name
             or modified_file == f"{name}_{version}_all.deb"
         ):
             return Path(file).resolve()
-    
+
     current_dir = str(Path.cwd())
-    raise ValueError(f"could not find the downloaded debian package for {pinned_name} in dir: {current_dir}")
+    raise ValueError(
+        f"could not find the downloaded debian package for {pinned_name} in dir: {current_dir}"
+    )
 
 
 def _extract_attribute(
@@ -135,14 +140,17 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
         dep_name, version = dep_name.split(maxsplit=1)
         dep_name = dep_name.split(":")[0]
         version_spec = version[1:-1].split()
-        
+
         # Another workaround: tzdata accesses files from system, it needs more investigation to handle it properly.
         # TODO: find a general way to handle deps accessing files from system.
         if dep_name == "tzdata":
             continue
 
         dep_version = get_package_version(
-            registry_path=registry_path, name=dep_name, arch=arch, version_spec=version_spec
+            registry_path=registry_path,
+            name=dep_name,
+            arch=arch,
+            version_spec=version_spec,
         )
 
         deps.add(PackageMetadata(name=dep_name, arch=arch, version=dep_version))
@@ -207,7 +215,9 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
         return package
 
     # now fillup the transitive deps
-    package.deps = _get_package_deps(registry_path=registry_path, archive_path=archive_path, arch=package.arch)
+    package.deps = _get_package_deps(
+        registry_path=registry_path, archive_path=archive_path, arch=package.arch
+    )
     archive_path.unlink()
 
     return package

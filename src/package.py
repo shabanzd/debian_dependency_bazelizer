@@ -9,6 +9,7 @@ class PackageMetadata:
     arch: str
     version: str
 
+
 @dataclasses.dataclass(frozen=True)
 class PackageFile:
     """File class that contains path of the file and whether or not it is ELF"""
