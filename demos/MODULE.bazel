@@ -1,0 +1,14 @@
+module(
+    name = "demo",
+    version = "1.2.3",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "dependency_bazelizer", version = "")
+local_path_override(
+    module_name = "dependency_bazelizer",
+    path = "../",
+)
+dep_bazelizer = use_extension("@dependency_bazelizer//:input.bzl", "bazelizer")
+dep_bazelizer.input(input_file = "//:deb_packages.in")
+use_repo(dep_bazelizer, "dep_bazelizer")
