@@ -1,0 +1,5 @@
+py_binary(
+    name = "hi",
+    srcs = ["hi.py"],
+    data = ["@hello//:deb_packages.in"],
+)

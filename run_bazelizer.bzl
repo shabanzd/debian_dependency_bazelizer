@@ -7,11 +7,11 @@ def run_bazelizer():
         name = "dependency-bazelizer",
         srcs = [Label("//src:main.py")],
         main = Label("//src:main.py"),
-        #data = [Label("//src:dependency-bazelizer")],
         deps = [
             requirement("click"),
             Label("//src:bazelize_deps"),
             Label("//src:read_input_files"),
+            "@hello//:dep_bazelizer_config"
             ],
 )
 

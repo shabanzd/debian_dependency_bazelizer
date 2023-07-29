@@ -1,13 +1,7 @@
 module(
-    name = "demo",
+    name = "demo_transitive",
     version = "1.2.3",
     compatibility_level = 1,
-)
-
-bazel_dep(name = "demo_transitive", version = "")
-local_path_override(
-    module_name = "demo_transitive",
-    path = "./dep_a/",
 )
 
 bazel_dep(name = "dependency_bazelizer", version = "")
