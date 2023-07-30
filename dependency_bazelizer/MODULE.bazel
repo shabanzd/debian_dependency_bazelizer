@@ -1,3 +1,9 @@
+module(
+    name = "dependency_bazelizer",
+    version = "0.0.1",
+    compatibility_level = 1,
+)
+
 bazel_dep(name = "rules_python", version = "0.21.0")
 pip = use_extension("@rules_python//python:extensions.bzl", "pip")
 

@@ -1,13 +1,14 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
 
-package(default_visibility = ["//tests:__subpackages__"])
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["main_module.py"])
 
 py_binary(
     name = "dependency-bazelizer",
     srcs = ["main.py"],
     main = "main.py",
     tags = ["local"],
-    visibility = ["//visibility:public"],
     deps = [
         ":bazelize_deps",
         ":read_input_files",
@@ -92,3 +93,5 @@ py_library(
     name = "writers",
     srcs = ["writers.py"],
 )
+
+exports_files(["main.py"])
