@@ -1,9 +1,10 @@
 {
   "lockFileVersion": 1,
-  "moduleFileHash": "e7900a013962df0c7f5d9a4980088b05de85db9e19a2a6da4f1c3f8183037fb7",
+  "moduleFileHash": "21395e9a06334acb8be9f869ae4bcf7d9625db38a33cbae5d368aa3dc9408cb1",
   "flags": {
     "cmdRegistries": [
-      "https://bcr.bazel.build/"
+      "file://%workspace%/registry/",
+      "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/"
     ],
     "cmdModuleOverrides": {},
     "allowedYankedVersions": [],
@@ -14,7 +15,7 @@
   },
   "localOverrideHashes": {
     "demo_transitive": "a2fa4d47d12a0d5d73cdf1a9bfd611de584108eee4b16aa7879140f2a05febc1",
-    "dependency_bazelizer": "6b6315d370a8f4954ea44eafcaf8f422f3203d04d6293d2ac4cdef8cc6b618a8",
+    "dependency_bazelizer": "a1e12beac812a0f2685c76571bbb3e25ff36cb29058571ffecb0a1007f3cd296",
     "bazel_tools": "11c49407fdc54b48d69dcd4478440118124b9cd51b2dca5947a6414a585964a1"
   },
   "moduleDepGraph": {
@@ -59,7 +60,8 @@
         "bazel_tools": "bazel_tools@_",
         "local_config_platform": "local_config_platform@_",
         "demo_transitive": "demo_transitive@_",
-        "dependency_bazelizer": "dependency_bazelizer@_"
+        "dependency_bazelizer": "dependency_bazelizer@_",
+        "iproute2_amd64": "iproute2_amd64@5.15.0-1ubuntu2"
       }
     },
     "bazel_tools@_": {
@@ -324,6 +326,33 @@
         "rules_python": "rules_python@0.21.0"
       }
     },
+    "iproute2_amd64@5.15.0-1ubuntu2": {
+      "name": "iproute2_amd64",
+      "version": "5.15.0-1ubuntu2",
+      "key": "iproute2_amd64@5.15.0-1ubuntu2",
+      "repoName": "iproute2_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libcap2_amd64": "libcap2_amd64@2.44-1ubuntu0.22.04.1",
+        "debconf_amd64": "debconf_amd64@1.5.79ubuntu1",
+        "libmnl0_amd64": "libmnl0_amd64@1.0.4-3build2",
+        "libelf1_amd64": "libelf1_amd64@0.188-1",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1",
+        "libbpf0_amd64": "libbpf0_amd64@0.5.0-1ubuntu22.04.1",
+        "libbsd0_amd64": "libbsd0_amd64@0.11.5-1",
+        "libxtables12_amd64": "libxtables12_amd64@1.8.7-1ubuntu5.1",
+        "libselinux1_amd64": "libselinux1_amd64@3.3-1build2"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--iproute2_amd64~5.15.0-1ubuntu2","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/iproute2_amd64~5.15.0-1ubuntu2.tar.gz"],"integrity":"--sha256-4k1plUwcpuuQNgY9m0/ypqsQ3fgVzknM8GpgAlRl1ss=","strip_prefix":"--iproute2_amd64~5.15.0-1ubuntu2","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
     "rules_cc@0.0.2": {
       "name": "rules_cc",
       "version": "0.0.2",
@@ -339,7 +368,7 @@
           "extensionName": "cc_configure",
           "usingModule": "rules_cc@0.0.2",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_cc/0.0.2/MODULE.bazel",
+            "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_cc/0.0.2/MODULE.bazel",
             "line": 10,
             "column": 29
           },
@@ -361,7 +390,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--rules_cc~0.0.2","urls":["--https://github.com/bazelbuild/rules_cc/releases/download/0.0.2/rules_cc-0.0.2.tar.gz"],"integrity":"--sha256-WL/0CVes6Fwt4h6/xy5T7ToNM6+Mwgq9DO7FXGO+feI=","strip_prefix":"--","remote_patches":{"--https://bcr.bazel.build/modules/rules_cc/0.0.2/patches/module_dot_bazel.patch":"--sha256-wwbvBwzp2Z8UJMeLmIfWB7CkQAaVL4L+Hdr2k5oEv/Q="},"remote_patch_strip":0}
+        "attributes": {"name":"--rules_cc~0.0.2","urls":["--https://github.com/bazelbuild/rules_cc/releases/download/0.0.2/rules_cc-0.0.2.tar.gz"],"integrity":"--sha256-WL/0CVes6Fwt4h6/xy5T7ToNM6+Mwgq9DO7FXGO+feI=","strip_prefix":"--","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_cc/0.0.2/patches/module_dot_bazel.patch":"--sha256-wwbvBwzp2Z8UJMeLmIfWB7CkQAaVL4L+Hdr2k5oEv/Q="},"remote_patch_strip":0}
       }
     },
     "rules_java@5.5.0": {
@@ -395,7 +424,7 @@
           "extensionName": "toolchains",
           "usingModule": "rules_java@5.5.0",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_java/5.5.0/MODULE.bazel",
+            "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_java/5.5.0/MODULE.bazel",
             "line": 16,
             "column": 27
           },
@@ -457,7 +486,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--rules_license~0.0.3","urls":["--https://github.com/bazelbuild/rules_license/releases/download/0.0.3/rules_license-0.0.3.tar.gz"],"integrity":"--sha256-AMzA3yExLBJ6xLEogKsPmibBz/mUQtxsWjMXUDYN48M=","strip_prefix":"--","remote_patches":{"--https://bcr.bazel.build/modules/rules_license/0.0.3/patches/module_dot_bazel.patch":"--sha256-yim5cwFqlS1F1UomygmIEM/UQhrkQZyYrwo48WFt4gE="},"remote_patch_strip":0}
+        "attributes": {"name":"--rules_license~0.0.3","urls":["--https://github.com/bazelbuild/rules_license/releases/download/0.0.3/rules_license-0.0.3.tar.gz"],"integrity":"--sha256-AMzA3yExLBJ6xLEogKsPmibBz/mUQtxsWjMXUDYN48M=","strip_prefix":"--","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_license/0.0.3/patches/module_dot_bazel.patch":"--sha256-yim5cwFqlS1F1UomygmIEM/UQhrkQZyYrwo48WFt4gE="},"remote_patch_strip":0}
       }
     },
     "rules_proto@5.3.0-21.7": {
@@ -494,7 +523,7 @@
           "extensionName": "internal_deps",
           "usingModule": "rules_python@0.21.0",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_python/0.21.0/MODULE.bazel",
+            "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_python/0.21.0/MODULE.bazel",
             "line": 14,
             "column": 30
           },
@@ -536,7 +565,7 @@
               "attributeValues": {},
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/0.21.0/MODULE.bazel",
+                "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_python/0.21.0/MODULE.bazel",
                 "line": 15,
                 "column": 22
               }
@@ -557,7 +586,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--rules_python~0.21.0","urls":["--https://github.com/bazelbuild/rules_python/releases/download/0.21.0/rules_python-0.21.0.tar.gz"],"integrity":"--sha256-lHUIKLGARFM+mKEpADtqaAASBAONxHSfQLGVskw49J8=","strip_prefix":"--rules_python-0.21.0","remote_patches":{"--https://bcr.bazel.build/modules/rules_python/0.21.0/patches/module_dot_bazel_version.patch":"--sha256-U/qMVqTtr7u1EEcnrjzYng2Qk4xlqLvxITkBsUjjmGE="},"remote_patch_strip":0}
+        "attributes": {"name":"--rules_python~0.21.0","urls":["--https://github.com/bazelbuild/rules_python/releases/download/0.21.0/rules_python-0.21.0.tar.gz"],"integrity":"--sha256-lHUIKLGARFM+mKEpADtqaAASBAONxHSfQLGVskw49J8=","strip_prefix":"--rules_python-0.21.0","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_python/0.21.0/patches/module_dot_bazel_version.patch":"--sha256-U/qMVqTtr7u1EEcnrjzYng2Qk4xlqLvxITkBsUjjmGE="},"remote_patch_strip":0}
       }
     },
     "platforms@0.0.5": {
@@ -575,7 +604,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--platforms","urls":["--https://github.com/bazelbuild/platforms/releases/download/0.0.5/platforms-0.0.5.tar.gz"],"integrity":"--sha256-N5ETRZsP6va/u1hKkYdMBlB4qmcyIoRqx2X4ZmHCdAc=","strip_prefix":"--","remote_patches":{"--https://bcr.bazel.build/modules/platforms/0.0.5/patches/module_dot_bazel.patch":"--sha256-ztGIEW/NXvzYfWVd8M8Jy+SoyRj3BcmA9IdT2pTk214="},"remote_patch_strip":0}
+        "attributes": {"name":"--platforms","urls":["--https://github.com/bazelbuild/platforms/releases/download/0.0.5/platforms-0.0.5.tar.gz"],"integrity":"--sha256-N5ETRZsP6va/u1hKkYdMBlB4qmcyIoRqx2X4ZmHCdAc=","strip_prefix":"--","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/platforms/0.0.5/patches/module_dot_bazel.patch":"--sha256-ztGIEW/NXvzYfWVd8M8Jy+SoyRj3BcmA9IdT2pTk214="},"remote_patch_strip":0}
       }
     },
     "protobuf@21.7": {
@@ -591,7 +620,7 @@
           "extensionName": "maven",
           "usingModule": "protobuf@21.7",
           "location": {
-            "file": "https://bcr.bazel.build/modules/protobuf/21.7/MODULE.bazel",
+            "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/protobuf/21.7/MODULE.bazel",
             "line": 22,
             "column": 22
           },
@@ -605,7 +634,7 @@
               "attributeValues": {"name":"--maven","artifacts":["--com.google.code.findbugs:jsr305:3.0.2","--com.google.code.gson:gson:2.8.9","--com.google.errorprone:error_prone_annotations:2.3.2","--com.google.j2objc:j2objc-annotations:1.3","--com.google.guava:guava:31.1-jre","--com.google.guava:guava-testlib:31.1-jre","--com.google.truth:truth:1.1.2","--junit:junit:4.13.2","--org.mockito:mockito-core:4.3.1"]},
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/protobuf/21.7/MODULE.bazel",
+                "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/protobuf/21.7/MODULE.bazel",
                 "line": 24,
                 "column": 14
               }
@@ -633,7 +662,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--protobuf~21.7","urls":["--https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protobuf-all-21.7.zip"],"integrity":"--sha256-VJOiH17T/FAuZv7GuUScBqVRztYwAvpIkDxA36jeeko=","strip_prefix":"--protobuf-21.7","remote_patches":{"--https://bcr.bazel.build/modules/protobuf/21.7/patches/add_module_dot_bazel.patch":"--sha256-q3V2+eq0v2XF0z8z+V+QF4cynD6JvHI1y3kI/+rzl5s=","--https://bcr.bazel.build/modules/protobuf/21.7/patches/add_module_dot_bazel_for_examples.patch":"--sha256-O7YP6s3lo/1opUiO0jqXYORNHdZ/2q3hjz1QGy8QdIU=","--https://bcr.bazel.build/modules/protobuf/21.7/patches/relative_repo_names.patch":"--sha256-RK9RjW8T5UJNG7flIrnFiNE9vKwWB+8uWWtJqXYT0w4=","--https://bcr.bazel.build/modules/protobuf/21.7/patches/add_missing_files.patch":"--sha256-Hyne4DG2u5bXcWHNxNMirA2QFAe/2Cl8oMm1XJdkQIY="},"remote_patch_strip":1}
+        "attributes": {"name":"--protobuf~21.7","urls":["--https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protobuf-all-21.7.zip"],"integrity":"--sha256-VJOiH17T/FAuZv7GuUScBqVRztYwAvpIkDxA36jeeko=","strip_prefix":"--protobuf-21.7","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/protobuf/21.7/patches/add_module_dot_bazel.patch":"--sha256-q3V2+eq0v2XF0z8z+V+QF4cynD6JvHI1y3kI/+rzl5s=","--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/protobuf/21.7/patches/add_module_dot_bazel_for_examples.patch":"--sha256-O7YP6s3lo/1opUiO0jqXYORNHdZ/2q3hjz1QGy8QdIU=","--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/protobuf/21.7/patches/relative_repo_names.patch":"--sha256-RK9RjW8T5UJNG7flIrnFiNE9vKwWB+8uWWtJqXYT0w4=","--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/protobuf/21.7/patches/add_missing_files.patch":"--sha256-Hyne4DG2u5bXcWHNxNMirA2QFAe/2Cl8oMm1XJdkQIY="},"remote_patch_strip":1}
       }
     },
     "zlib@1.2.13": {
@@ -651,7 +680,181 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--zlib~1.2.13","urls":["--https://github.com/madler/zlib/archive/refs/tags/v1.2.13.zip"],"integrity":"--sha256-woVpUbvzDjCGGs43ZVldhroT8s8BJ52QH2xiJYxX9P8=","strip_prefix":"--zlib-1.2.13","remote_patches":{"--https://bcr.bazel.build/modules/zlib/1.2.13/patches/add_build_file.patch":"--sha256-Z2ig1F01/dfdG63H+GwYRMcGbW/zAGIUWnKKrwKSEaQ=","--https://bcr.bazel.build/modules/zlib/1.2.13/patches/module_dot_bazel.patch":"--sha256-Nc7xP02Dl6yHQvkiZWSQnlnw1T277yS4cJxxONWJ/Ic="},"remote_patch_strip":0}
+        "attributes": {"name":"--zlib~1.2.13","urls":["--https://github.com/madler/zlib/archive/refs/tags/v1.2.13.zip"],"integrity":"--sha256-woVpUbvzDjCGGs43ZVldhroT8s8BJ52QH2xiJYxX9P8=","strip_prefix":"--zlib-1.2.13","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/zlib/1.2.13/patches/add_build_file.patch":"--sha256-Z2ig1F01/dfdG63H+GwYRMcGbW/zAGIUWnKKrwKSEaQ=","--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/zlib/1.2.13/patches/module_dot_bazel.patch":"--sha256-Nc7xP02Dl6yHQvkiZWSQnlnw1T277yS4cJxxONWJ/Ic="},"remote_patch_strip":0}
+      }
+    },
+    "libcap2_amd64@2.44-1ubuntu0.22.04.1": {
+      "name": "libcap2_amd64",
+      "version": "2.44-1ubuntu0.22.04.1",
+      "key": "libcap2_amd64@2.44-1ubuntu0.22.04.1",
+      "repoName": "libcap2_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libcap2_amd64~2.44-1ubuntu0.22.04.1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libcap2_amd64~2.44-1ubuntu0.22.04.1.tar.gz"],"integrity":"--sha256-yQSpTSQWJolb8huvfDHR+nNd49+U3tgHaTSDCQ/WK4k=","strip_prefix":"--libcap2_amd64~2.44-1ubuntu0.22.04.1","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "debconf_amd64@1.5.79ubuntu1": {
+      "name": "debconf_amd64",
+      "version": "1.5.79ubuntu1",
+      "key": "debconf_amd64@1.5.79ubuntu1",
+      "repoName": "debconf_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--debconf_amd64~1.5.79ubuntu1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/debconf_amd64~1.5.79ubuntu1.tar.gz"],"integrity":"--sha256-DYl7nGaiGiol8DyiHt7AMdANrCRQVWkjHFd0w1PSDfg=","strip_prefix":"--debconf_amd64~1.5.79ubuntu1","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libmnl0_amd64@1.0.4-3build2": {
+      "name": "libmnl0_amd64",
+      "version": "1.0.4-3build2",
+      "key": "libmnl0_amd64@1.0.4-3build2",
+      "repoName": "libmnl0_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libmnl0_amd64~1.0.4-3build2","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libmnl0_amd64~1.0.4-3build2.tar.gz"],"integrity":"--sha256-vtnM85ZjOVJsQ+XD1Do9UQR1glRVQe19LxodfztIY0M=","strip_prefix":"--libmnl0_amd64~1.0.4-3build2","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libelf1_amd64@0.188-1": {
+      "name": "libelf1_amd64",
+      "version": "0.188-1",
+      "key": "libelf1_amd64@0.188-1",
+      "repoName": "libelf1_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "zlib1g_amd64": "zlib1g_amd64@1.2.11.dfsg-2ubuntu9.2",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libelf1_amd64~0.188-1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libelf1_amd64~0.188-1.tar.gz"],"integrity":"--sha256-HcVgMhaPqztyT2SLv1Wd4eEw/eZYSZ97yKC/KFqwwIY=","strip_prefix":"--libelf1_amd64~0.188-1","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libc6_amd64@2.35-0ubuntu3.1": {
+      "name": "libc6_amd64",
+      "version": "2.35-0ubuntu3.1",
+      "key": "libc6_amd64@2.35-0ubuntu3.1",
+      "repoName": "libc6_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libc6_amd64~2.35-0ubuntu3.1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libc6_amd64~2.35-0ubuntu3.1.tar.gz"],"integrity":"--sha256-bSfKRk3J9a9KRD2t96pzU+Ka6DbEpRslQFqU5Q+ZsUQ=","strip_prefix":"--libc6_amd64~2.35-0ubuntu3.1","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libbpf0_amd64@0.5.0-1ubuntu22.04.1": {
+      "name": "libbpf0_amd64",
+      "version": "0.5.0-1ubuntu22.04.1",
+      "key": "libbpf0_amd64@0.5.0-1ubuntu22.04.1",
+      "repoName": "libbpf0_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libelf1_amd64": "libelf1_amd64@0.188-1",
+        "zlib1g_amd64": "zlib1g_amd64@1.2.11.dfsg-2ubuntu9.2",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libbpf0_amd64~0.5.0-1ubuntu22.04.1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libbpf0_amd64~0.5.0-1ubuntu22.04.1.tar.gz"],"integrity":"--sha256-QhcewwiOPwH9Xcd1Eovuw4cMULnNL4mNf8A/66VdNI0=","strip_prefix":"--libbpf0_amd64~0.5.0-1ubuntu22.04.1","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libbsd0_amd64@0.11.5-1": {
+      "name": "libbsd0_amd64",
+      "version": "0.11.5-1",
+      "key": "libbsd0_amd64@0.11.5-1",
+      "repoName": "libbsd0_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libmd0_amd64": "libmd0_amd64@1.0.4-1build1",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libbsd0_amd64~0.11.5-1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libbsd0_amd64~0.11.5-1.tar.gz"],"integrity":"--sha256-UMX81tN77vsDTs1QBpTaGlIQYhfHRG7BsZv86XhovfU=","strip_prefix":"--libbsd0_amd64~0.11.5-1","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libxtables12_amd64@1.8.7-1ubuntu5.1": {
+      "name": "libxtables12_amd64",
+      "version": "1.8.7-1ubuntu5.1",
+      "key": "libxtables12_amd64@1.8.7-1ubuntu5.1",
+      "repoName": "libxtables12_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libxtables12_amd64~1.8.7-1ubuntu5.1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libxtables12_amd64~1.8.7-1ubuntu5.1.tar.gz"],"integrity":"--sha256-I2MlDmHke+j7OfyURQS982OfTkQCo0VB2eLgzz2/CI4=","strip_prefix":"--libxtables12_amd64~1.8.7-1ubuntu5.1","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libselinux1_amd64@3.3-1build2": {
+      "name": "libselinux1_amd64",
+      "version": "3.3-1build2",
+      "key": "libselinux1_amd64@3.3-1build2",
+      "repoName": "libselinux1_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libpcre2-8-0_amd64": "libpcre2-8-0_amd64@10.39-3ubuntu0.1",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libselinux1_amd64~3.3-1build2","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libselinux1_amd64~3.3-1build2.tar.gz"],"integrity":"--sha256-LirIvt+GLnthW3Zy30/pPkmWarCB/0xQTvVaq1xB1Cc=","strip_prefix":"--libselinux1_amd64~3.3-1build2","remote_patches":{},"remote_patch_strip":0}
       }
     },
     "bazel_skylib@1.3.0": {
@@ -694,7 +897,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--rules_pkg~0.7.0","urls":["--https://github.com/bazelbuild/rules_pkg/releases/download/0.7.0/rules_pkg-0.7.0.tar.gz"],"integrity":"--sha256-iimOgydi7aGDBZfWT+fbWBeKqEzVkm121bdE1lWJQcI=","strip_prefix":"--","remote_patches":{"--https://bcr.bazel.build/modules/rules_pkg/0.7.0/patches/module_dot_bazel.patch":"--sha256-4OaEPZwYF6iC71ZTDg6MJ7LLqX7ZA0/kK4mT+4xKqiE="},"remote_patch_strip":0}
+        "attributes": {"name":"--rules_pkg~0.7.0","urls":["--https://github.com/bazelbuild/rules_pkg/releases/download/0.7.0/rules_pkg-0.7.0.tar.gz"],"integrity":"--sha256-iimOgydi7aGDBZfWT+fbWBeKqEzVkm121bdE1lWJQcI=","strip_prefix":"--","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_pkg/0.7.0/patches/module_dot_bazel.patch":"--sha256-4OaEPZwYF6iC71ZTDg6MJ7LLqX7ZA0/kK4mT+4xKqiE="},"remote_patch_strip":0}
       }
     },
     "abseil-cpp@20211102.0": {
@@ -714,7 +917,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--abseil-cpp~20211102.0","urls":["--https://github.com/abseil/abseil-cpp/archive/refs/tags/20211102.0.tar.gz"],"integrity":"--sha256-3PcbnLqNwMqZQMSzFqDHlr6Pq0KwcLtrfKtitI8OZsQ=","strip_prefix":"--abseil-cpp-20211102.0","remote_patches":{"--https://bcr.bazel.build/modules/abseil-cpp/20211102.0/patches/module_dot_bazel.patch":"--sha256-4izqopgGCey4jVZzl/w3M2GVPNohjh2B5TmbThZNvPY="},"remote_patch_strip":0}
+        "attributes": {"name":"--abseil-cpp~20211102.0","urls":["--https://github.com/abseil/abseil-cpp/archive/refs/tags/20211102.0.tar.gz"],"integrity":"--sha256-3PcbnLqNwMqZQMSzFqDHlr6Pq0KwcLtrfKtitI8OZsQ=","strip_prefix":"--abseil-cpp-20211102.0","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/abseil-cpp/20211102.0/patches/module_dot_bazel.patch":"--sha256-4izqopgGCey4jVZzl/w3M2GVPNohjh2B5TmbThZNvPY="},"remote_patch_strip":0}
       }
     },
     "upb@0.0.0-20220923-a547704": {
@@ -737,7 +940,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--upb~0.0.0-20220923-a547704","urls":["--https://github.com/protocolbuffers/upb/archive/a5477045acaa34586420942098f5fecd3570f577.tar.gz"],"integrity":"--sha256-z39x6v+QskwaKLSWRan/A6mmwecTQpHOcJActj5zZLU=","strip_prefix":"--upb-a5477045acaa34586420942098f5fecd3570f577","remote_patches":{"--https://bcr.bazel.build/modules/upb/0.0.0-20220923-a547704/patches/module_dot_bazel.patch":"--sha256-wH4mNS6ZYy+8uC0HoAft/c7SDsq2Kxf+J8dUakXhaB0="},"remote_patch_strip":0}
+        "attributes": {"name":"--upb~0.0.0-20220923-a547704","urls":["--https://github.com/protocolbuffers/upb/archive/a5477045acaa34586420942098f5fecd3570f577.tar.gz"],"integrity":"--sha256-z39x6v+QskwaKLSWRan/A6mmwecTQpHOcJActj5zZLU=","strip_prefix":"--upb-a5477045acaa34586420942098f5fecd3570f577","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/upb/0.0.0-20220923-a547704/patches/module_dot_bazel.patch":"--sha256-wH4mNS6ZYy+8uC0HoAft/c7SDsq2Kxf+J8dUakXhaB0="},"remote_patch_strip":0}
       }
     },
     "rules_jvm_external@4.4.2": {
@@ -753,7 +956,7 @@
           "extensionName": "non_module_deps",
           "usingModule": "rules_jvm_external@4.4.2",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_jvm_external/4.4.2/MODULE.bazel",
+            "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_jvm_external/4.4.2/MODULE.bazel",
             "line": 9,
             "column": 32
           },
@@ -770,7 +973,7 @@
           "extensionName": "maven",
           "usingModule": "rules_jvm_external@4.4.2",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_jvm_external/4.4.2/MODULE.bazel",
+            "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_jvm_external/4.4.2/MODULE.bazel",
             "line": 16,
             "column": 22
           },
@@ -784,7 +987,7 @@
               "attributeValues": {"name":"--rules_jvm_external_deps","artifacts":["--com.google.cloud:google-cloud-core:1.93.10","--com.google.cloud:google-cloud-storage:1.113.4","--com.google.code.gson:gson:2.9.0","--org.apache.maven:maven-artifact:3.8.6","--software.amazon.awssdk:s3:2.17.183"],"lock_file":"--@rules_jvm_external//:rules_jvm_external_deps_install.json"},
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_jvm_external/4.4.2/MODULE.bazel",
+                "file": "https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/rules_jvm_external/4.4.2/MODULE.bazel",
                 "line": 18,
                 "column": 14
               }
@@ -824,7 +1027,64 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--googletest~1.11.0","urls":["--https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz"],"integrity":"--sha256-tIcL8SH/d5W6INILzdhie44Ijy0dqymaAxwQNO3ck9U=","strip_prefix":"--googletest-release-1.11.0","remote_patches":{"--https://bcr.bazel.build/modules/googletest/1.11.0/patches/module_dot_bazel.patch":"--sha256-HuahEdI/n8KCI071sN3CEziX+7qP/Ec77IWayYunLP0="},"remote_patch_strip":0}
+        "attributes": {"name":"--googletest~1.11.0","urls":["--https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz"],"integrity":"--sha256-tIcL8SH/d5W6INILzdhie44Ijy0dqymaAxwQNO3ck9U=","strip_prefix":"--googletest-release-1.11.0","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/googletest/1.11.0/patches/module_dot_bazel.patch":"--sha256-HuahEdI/n8KCI071sN3CEziX+7qP/Ec77IWayYunLP0="},"remote_patch_strip":0}
+      }
+    },
+    "zlib1g_amd64@1.2.11.dfsg-2ubuntu9.2": {
+      "name": "zlib1g_amd64",
+      "version": "1.2.11.dfsg-2ubuntu9.2",
+      "key": "zlib1g_amd64@1.2.11.dfsg-2ubuntu9.2",
+      "repoName": "zlib1g_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--zlib1g_amd64~1.2.11.dfsg-2ubuntu9.2","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/zlib1g_amd64~1.2.11.dfsg-2ubuntu9.2.tar.gz"],"integrity":"--sha256-20/AjcNg1qQMatcVsb7iwRI8Ws9XhLW5X3A/SvLVHfY=","strip_prefix":"--zlib1g_amd64~1.2.11.dfsg-2ubuntu9.2","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libmd0_amd64@1.0.4-1build1": {
+      "name": "libmd0_amd64",
+      "version": "1.0.4-1build1",
+      "key": "libmd0_amd64@1.0.4-1build1",
+      "repoName": "libmd0_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libmd0_amd64~1.0.4-1build1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libmd0_amd64~1.0.4-1build1.tar.gz"],"integrity":"--sha256-EHQGqqy5r2/rNMKgeTQksQ5j7+a/Qt6nHMDtAUqauMs=","strip_prefix":"--libmd0_amd64~1.0.4-1build1","remote_patches":{},"remote_patch_strip":0}
+      }
+    },
+    "libpcre2-8-0_amd64@10.39-3ubuntu0.1": {
+      "name": "libpcre2-8-0_amd64",
+      "version": "10.39-3ubuntu0.1",
+      "key": "libpcre2-8-0_amd64@10.39-3ubuntu0.1",
+      "repoName": "libpcre2-8-0_amd64",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_",
+        "libc6_amd64": "libc6_amd64@2.35-0ubuntu3.1"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {"name":"--libpcre2-8-0_amd64~10.39-3ubuntu0.1","urls":["--https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/debian_test/libpcre2-8-0_amd64~10.39-3ubuntu0.1.tar.gz"],"integrity":"--sha256-hpJcoCd2VXX70AlsAZiVBAcnHlcn9aL3OjmpzDl3lTI=","strip_prefix":"--libpcre2-8-0_amd64~10.39-3ubuntu0.1","remote_patches":{},"remote_patch_strip":0}
       }
     },
     "stardoc@0.5.1": {
@@ -844,7 +1104,7 @@
       "repoSpec": {
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
-        "attributes": {"name":"--stardoc~0.5.1","urls":["--https://github.com/bazelbuild/stardoc/releases/download/0.5.1/stardoc-0.5.1.tar.gz"],"integrity":"--sha256-qoFNrgrEALurLoiB+ZFcb0fElmS/CHxAmhX5BDjSwj4=","strip_prefix":"--","remote_patches":{"--https://bcr.bazel.build/modules/stardoc/0.5.1/patches/module_dot_bazel.patch":"--sha256-UAULCuTpJE7SG0YrR9XLjMfxMRmbP+za3uW9ONZ5rjI="},"remote_patch_strip":0}
+        "attributes": {"name":"--stardoc~0.5.1","urls":["--https://github.com/bazelbuild/stardoc/releases/download/0.5.1/stardoc-0.5.1.tar.gz"],"integrity":"--sha256-qoFNrgrEALurLoiB+ZFcb0fElmS/CHxAmhX5BDjSwj4=","strip_prefix":"--","remote_patches":{"--https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/modules/stardoc/0.5.1/patches/module_dot_bazel.patch":"--sha256-UAULCuTpJE7SG0YrR9XLjMfxMRmbP+za3uW9ONZ5rjI="},"remote_patch_strip":0}
       }
     }
   },

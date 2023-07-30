@@ -1,4 +1,4 @@
-def _concat_input_files_impl(ctx):
+def _dep_bazelizer_config_rule_impl(ctx):
   deb_packages_input_file_str = "deb_packages.in"
   s3_config_file_str = "s3_config_file.json"
   content = ""
@@ -29,15 +29,15 @@ def get_s3_config_file_path() -> str:
     return "{}"
   """.format(deb_packages_path, s3_config_path))
 
-concat_input_files = repository_rule(
-  implementation = _concat_input_files_impl,
+dep_bazelizer_config_rule = repository_rule(
+  implementation = _dep_bazelizer_config_rule_impl,
   attrs = {
       "deb_packages_input_files":  attr.label_list(mandatory = True),
       "s3_config_file": attr.label(mandatory = True),
   },
 )
 
-def _bazelizer_impl(ctx):
+def _dependency_bazelizer_impl(ctx):
   deb_packages_input_files = []
   s3_config_file = None
   for mod in ctx.modules:
@@ -48,13 +48,13 @@ def _bazelizer_impl(ctx):
           fail("s3 config file must be a json file")
         s3_config_file = config.s3_config_file
   
-  concat_input_files(
-    name = "hello",
+  dep_bazelizer_config_rule(
+    name = "dep_bazelizer_config",
     deb_packages_input_files = deb_packages_input_files,
     s3_config_file = s3_config_file,
   )
 
-bazelizer = module_extension(
-  implementation = _bazelizer_impl,
+dependency_bazelizer = module_extension(
+  implementation = _dependency_bazelizer_impl,
   tag_classes = {"config": tag_class(attrs = {"deb_packages_input_file": attr.label(mandatory=True), "s3_config_file": attr.label(mandatory=True)})},
 )

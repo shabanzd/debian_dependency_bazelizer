@@ -5,7 +5,6 @@ import click
 import json
 import os
 
-from dep_bazelizer_config import get_deb_packages_path, get_s3_config_file_path
 from src.bazelize_deps import bazelize_deps
 from src.read_input_files import read_input_files
 
@@ -50,8 +49,7 @@ If path is relative, it is assumed to be relative to the workspace dir.""",
     "--input_file",
     "-if",
     type=click.Path(path_type=Path, dir_okay=False),
-    required=False,
-    default=[Path(get_deb_packages_path())],
+    required=True,
     multiple=True,
     help="""The path to the input file containing the input debian packages.
 If path is relative, it is assumed to be relative to the workspace dir. 
@@ -61,8 +59,7 @@ If there are more than one input file, simply do -if path_to_file for each file.
     "--s3_config_file",
     "-cf",
     type=click.Path(path_type=Path, dir_okay=False),
-    required=False,
-    default=Path(get_s3_config_file_path()),
+    required=True,
     help="""The path to the s3 config file containing the configs like bucket, url, etc.
 If path is relative, it is assumed to be relative to the workspace dir""",
 )

@@ -1,17 +1,16 @@
 load("@rules_python//python:defs.bzl", "py_binary")
 load("@rules_python//python/pip_install:repositories.bzl", "requirement")
 
-def run_bazelizer():
+def run_bazelizer(repository):
     # Execute the command
     py_binary(
         name = "dependency-bazelizer",
-        srcs = [Label("//src:main.py")],
-        main = Label("//src:main.py"),
+        srcs = [Label("//src:main_module.py")],
+        main = Label("//src:main_module.py"),
         deps = [
-            requirement("click"),
             Label("//src:bazelize_deps"),
             Label("//src:read_input_files"),
-            "@hello//:dep_bazelizer_config"
+            repository + "//:dep_bazelizer_config"
             ],
 )
 

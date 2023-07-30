@@ -1,5 +1,0 @@
-/bazel-*
-/modules/*
-/registry/*
-.vscode/settings.json
-__pycache__
