@@ -1,0 +1,2 @@
+load("@dependency_bazelizer//:run_bazelizer.bzl", "run_bazelizer")
+run_bazelizer(repository = "@dep_bazelizer_config")

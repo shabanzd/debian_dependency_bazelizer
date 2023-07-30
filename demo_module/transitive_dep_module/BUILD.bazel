@@ -1,0 +1,5 @@
+py_binary(
+    name = "hi",
+    srcs = ["hi.py"],
+    data = ["@hello//:dep_bazelizer_config"],
+)
