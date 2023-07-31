@@ -1,6 +1,6 @@
 # dependency-bazelizer (WIP)
 
-The dependency bazelizer takes an input list of debian packages, and turns them and their entire transitive dependency subgraphs into ready-to-use, fully bazelizer modules (bzlmods). It also automatically references the bazelized modules in the internal registry of the repo. A demo of how this looks like can be found at: https://www.youtube.com/watch?v=69C_g4QO8xM&t=1s
+The dependency bazelizer takes an input list of debian packages, and turns them and their entire transitive dependency subgraphs into ready-to-use, fully bazelizer modules (bzlmods). It also automatically references the bazelized modules in the internal registry of the repo. A demo of how this looks like can be found here: https://www.youtube.com/watch?v=69C_g4QO8xM&t=1s
 
 So far, the dependency-bazelizer supports debian packages only. The plan is to include Python as well in the following versions.
 
