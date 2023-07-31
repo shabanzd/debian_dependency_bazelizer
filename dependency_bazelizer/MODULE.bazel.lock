@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 1,
-  "moduleFileHash": "6b6315d370a8f4954ea44eafcaf8f422f3203d04d6293d2ac4cdef8cc6b618a8",
+  "moduleFileHash": "a1e12beac812a0f2685c76571bbb3e25ff36cb29058571ffecb0a1007f3cd296",
   "flags": {
     "cmdRegistries": [
       "file://%workspace%/registry/",
