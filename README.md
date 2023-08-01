@@ -1,8 +1,8 @@
 # dependency-bazelizer (WIP)
 
-The dependency bazelizer takes an input list of debian packages, and turns them and their entire transitive dependency subgraphs into ready-to-use, fully bazelizer modules (bzlmods). It also automatically references the bazelized modules in the internal registry of the repo. A demo of how this looks like can be found at#: <https://www.youtube.com/watch?v=69C_g4QO8xM&t=1s>
+The `dependency-bazelizer` takes an input list of debian packages, and turns them and their entire transitive dependency subgraphs into ready-to-use, fully bazelizer modules (bzlmods). It also automatically references the bazelized modules in the internal registry of the repo. A demo of how this looks like can be found at#: <https://www.youtube.com/watch?v=69C_g4QO8xM&t=1s>
 
-So far, the dependency-bazelizer supports debian packages only. The plan is to include Python as well in the following versions.
+So far, the `dependency-bazelizer` supports debian packages only. The plan is to include Python as well in the following versions.
 
 ## Summary
 
@@ -10,7 +10,7 @@ Up until `Bazel 5`, Bazel had not been able to resolve dependency graphs. As a r
 
 Since `Bazel 6` and the introduction of `bzlmod`s, the approach described above is no longer the only option.
 
-The `dependency-bazelizer` is a tool that takes input packages of different types. The tool then turns those packages, in addition to their entire dependency graphs, into `bzlmod`s and references them in an internal `registry`. The freshly generated `bzlmod`s are ready to be resolved and consumed directly by `Bazel`. This eliminates the need to have package managers running in repository rules in order to resolve dependency graphs for `Bazel`.
+The `dependency-bazelizer` is a tool that takes input packages of different types, then turns those packages, in addition to their entire dependency graphs, into `bzlmod`s and references them in an internal `registry`. The freshly generated `bzlmod`s are ready to be resolved and consumed directly by `Bazel`. This eliminates the need to have package managers running in repository rules in order to resolve dependency graphs for `Bazel`.
 
 A bonus added feature, is that the modules access their transitive runtime dependencies directly from the runfiles; not from sysroot or a custom sysroot.
 
@@ -42,29 +42,15 @@ graph LR;
     C --> D;
 ```
 
+Since it is not necessary for this tool to be implemented as a repository rule, I decided to do it entirely in python. This could make the code base easier to test and collaborate on.
+
 ## Give it a try
 
 ### Requirements
 
-In order to try the dependency-bazelizer, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the dependency-bazelizer itself on your chosen platform. You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
+In order to try the `dependency-bazelizer`, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the `dependency-bazelizer` itself on your chosen platform. You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
 
-* clone the repo.
-* `cd dependency-bazelizer`
-* fill up the deb_packages.in file with the deb packages you want to modularize. Name and architecture of the package are mandatory, and the package needs to follow the format: `name:arch=version`
-* `bazelisk run //src:dependency-bazelizer`
-
-Now you have will have the dependencies, listed in the deb_packages.in, modularized, alongside their entire transitive dependency graphs! :partying_face:
-
-The `dependency-bazelizer` locate the new modules in the folder `modules/`. If you navigate there and run `ldd` on any ELF file in the `modules/` dir, you should be able to see that the ELF file accesses its runtime deps from the modules not the system:
-
-![WhatsApp Image 2023-05-03 at 09 57 56](https://user-images.githubusercontent.com/8200878/235862696-463d4bb1-d65c-4a8a-b8a5-379daf435ca6.jpeg)
-
-Since the file structure and naming matches that in the runfiles, you can expect the same results once you run a program.
-
-The `dependency-bazelizer` also adds an internal registry referencing those modules at `registry/`. In the .bazelrc, I already added the internal registry as the main bazel registry, with the Bazel Central Registry as a fallback. So as soon as you modularize the desired dependencies, you can go ahead and play around with them!
-
-If this is the first time you play around with this tool, this video will help you get started:
-<https://www.youtube.com/watch?v=LFV-H7djEYw>
+The [Youtube Demo](<https://www.youtube.com/watch?v=69C_g4QO8xM&t=1s>) mentioned above, shows how to use the `depedenncy-bazelizer` as an interactive tool (the first part of the video), and as a module with an extension (the latter part of the video).
 
 ## Nerdy details
 
@@ -76,13 +62,13 @@ The problem above has a solution: RPaths! Rpaths are both searched before `LD_LI
 
 But how does a dependency know the `rpath` of its transitive runtime deps ?
 
-I will answer this with an art work:
+I will answer this with an art work :art: :
 
 <img width="1612" alt="Screenshot 2023-05-02 at 16 27 38" src="https://user-images.githubusercontent.com/8200878/235696979-3784c0a4-a2c8-42b4-a8d3-605a18f55652.png">
 
 <img width="1563" alt="Screenshot 2023-05-02 at 16 28 17" src="https://user-images.githubusercontent.com/8200878/235697542-3f043ecf-8e0d-48b2-8824-08847f2a7489.png">
 
-So basically dependency B needs to be processed ahead of dependency A. It also needs to self declare all the parent directories of all the ELF files in it. In other words, the dependency graph needs to be processed in a **topological order**.
+So basically dependency B needs to be processed ahead of dependency A. It also needs to self-declare all the parent directories of all the ELF files in it. In other words, the dependency graph needs to be processed in a **topological order**.
 
 ### Code Workflow - Debian Only
 
