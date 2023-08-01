@@ -1,7 +1,7 @@
-py_binary(
-    name = "iproute2-demo",
-    srcs = ["iproute2_demo.py"],
-    main = "iproute2_demo.py",
-    data = ["@iproute2_amd64//:all_files"],
-    visibility = ["//visibility:public"],
-)
+#py_binary(
+#    name = "iproute2-demo",
+#    srcs = ["iproute2_demo.py"],
+#    main = "iproute2_demo.py",
+#    data = ["@iproute2_amd64//:all_files"],
+#    visibility = ["//visibility:public"],
+#)
