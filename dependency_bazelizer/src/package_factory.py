@@ -76,7 +76,7 @@ def _download_package_dot_debian(
     for file in files:
         modified_file = file.replace("%3a", ":")
         if (
-            modified_file == f"{name}{version}{arch}.deb"
+            modified_file == f"{name}_{version}_{arch}.deb"
             or modified_file == f"{name}_{version}_all.deb"
         ):
             return Path(file).resolve()
