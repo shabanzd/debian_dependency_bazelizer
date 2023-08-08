@@ -1,4 +1,4 @@
-from typing import ByteString, Final
+from typing import Final
 from pathlib import Path
 
 import os
@@ -11,14 +11,14 @@ from src.package import PackageMetadata, Package
 DEPENDS_ATTR: Final = "Depends"
 
 
-def _is_acceptable_error(err: ByteString):
-    if (
-        err == "patchelf: not an ELF executable\n"
-        or err == "patchelf: missing ELF header\n"
-        or err == "patchelf: open: Permission denied\n"
-    ):
-        return True
-
+def _is_acceptable_error(err: str):
+    for e in [
+        "not an ELF executable",
+        "missing ELF header",
+        "Permission denied",
+        ]:
+        if e in err:
+            return True
     return False
 
 
@@ -76,7 +76,7 @@ def _download_package_dot_debian(
     for file in files:
         modified_file = file.replace("%3a", ":")
         if (
-            modified_file == f"{name}_{version}_{arch}.deb"
+            modified_file == f"{name}{version}{arch}.deb"
             or modified_file == f"{name}_{version}_all.deb"
         ):
             return Path(file).resolve()
