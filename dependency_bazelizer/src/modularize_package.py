@@ -6,6 +6,9 @@ import os
 import subprocess
 import tarfile
 
+from azure.identity import DefaultAzureCredential
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+
 from src.module import Module
 from src.package import Package, PackageMetadata
 from src.registry import add_package_to_registry
@@ -85,6 +88,19 @@ def _upload_archive_to_s3_bucket(file: Path, s3_config: Dict[str, str]):
     client.upload_file(file_str, s3_config[UPLOAD_BUCKET], upload_file_key)
 
 
+def _upload_archive_to_azure_bucket(file: Path, config: Dict[str, str]):
+    file_str = os.fspath(file)
+    upload_file_key = file_str
+
+    if PREFIX in s3_config:
+        upload_file_key = f"{config[PREFIX]}/" + file_str
+
+    blob_client = blob_service_client.get_blob_client(container=config[UPLOAD_BUCKET], blob=upload_file_key)
+
+    with open(file=file_str, mode="rb") as data:
+        blob_client.upload_blob(data)
+
+
 def _repackage_deb_package(package: Package):
     # create empty WORKSPACE file
     Path(package.package_dir / Path("WORKSPACE")).touch()
@@ -104,7 +120,7 @@ def modularize_package(
     """Turns package into a module and adds it to local registry."""
     _rpath_patch_elf_files(package=package, modules=modules)
     debian_module_tar = _repackage_deb_package(package)
-    _upload_archive_to_s3_bucket(file=debian_module_tar, s3_config=s3_config)
+    _upload_archive_to_azure_bucket(file=debian_module_tar, s3_config=s3_config)
 
     full_url = ""
     if DOWNLOAD_URL not in s3_config and PREFIX in s3_config:
