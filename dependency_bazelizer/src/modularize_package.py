@@ -16,6 +16,9 @@ from src.writers import write_build_file, write_module_file
 
 BUILD_FILE: Final = Path("BUILD")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
+STORAGE_PROVIDER: Final = "storage_provider"
+STORAGE_PROVIDER_AZURE: Final = "azure"
+STORAGE_PROVIDER_AWS: Final = "aws"
 UPLOAD_BUCKET: Final = "upload_bucket"
 UPLOAD_URL: Final = "upload_url"
 PREFIX: Final = "prefix"
@@ -89,13 +92,17 @@ def _upload_archive_to_s3_bucket(file: Path, s3_config: Dict[str, str]):
 
 
 def _upload_archive_to_azure_bucket(file: Path, config: Dict[str, str]):
-    file_str = os.fspath(file)
-    upload_file_key = file_str
+    account_url = config[UPLOAD_URL]
+    container = config[UPLOAD_BUCKET]
+    blob = os.fspath(file)
+    if PREFIX in config:
+        blob = f"{config[PREFIX]}/" + blob
 
-    if PREFIX in s3_config:
-        upload_file_key = f"{config[PREFIX]}/" + file_str
+    print(f"{account_url}/{container}/{blob}")
 
-    blob_client = blob_service_client.get_blob_client(container=config[UPLOAD_BUCKET], blob=upload_file_key)
+    blob_service_client = BlobServiceClient(account_url, credential=DefaultAzureCredential())
+
+    blob_client = blob_service_client.get_blob_client(container=container, blob=blob)
 
     with open(file=file_str, mode="rb") as data:
         blob_client.upload_blob(data)
@@ -120,7 +127,10 @@ def modularize_package(
     """Turns package into a module and adds it to local registry."""
     _rpath_patch_elf_files(package=package, modules=modules)
     debian_module_tar = _repackage_deb_package(package)
-    _upload_archive_to_azure_bucket(file=debian_module_tar, s3_config=s3_config)
+    if s3_config[STORAGE_PROVIDER] == STORAGE_PROVIDER_AZURE:
+        _upload_archive_to_azure_bucket(file=debian_module_tar, config=s3_config)
+    if s3_config[STORAGE_PROVIDER] == STORAGE_PROVIDER_AWS:
+        _upload_archive_to_s3_bucket(file=debian_module_tar, s3_config=s3_config)
 
     full_url = ""
     if DOWNLOAD_URL not in s3_config and PREFIX in s3_config:
