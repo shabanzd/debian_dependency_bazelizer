@@ -3,7 +3,7 @@ import sys
 
 from click.testing import CliRunner
 from pathlib import Path
-from src.main import main, _get_s3_config
+from src.main import main, _get_storage_config
 
 
 def test_main():
@@ -21,33 +21,33 @@ def test_main():
 
     result = runner.invoke(main, ["-if", "./tests/ci_inputs/deb_packages.in"])
     assert result.exit_code != 0
-    assert "Error: Missing option '--s3_config_file' / '-cf'" in result.output
+    assert "Error: Missing option '--storage_config_file' / '-cf'" in result.output
 
 
-def test_get_s3_config_wrong_extension():
+def test_get_storage_config_wrong_extension():
     "Test wrong s3 config file extension."
     with pytest.raises(
         ValueError,
-        match="The file '../_main/tests/resources/s3_config.txt' must be a .json file.",
+        match="The file '../_main/tests/resources/storage_config.txt' must be a .json file.",
     ):
-        _get_s3_config(Path("../_main/tests/resources/s3_config.txt"))
+        _get_storage_config(Path("../_main/tests/resources/storage_config.txt"))
 
 
-def test_get_s3_config_missing_url():
+def test_get_storage_config_missing_url():
     "Test wrong s3 config file - missing mandatory attr: upload_url."
     with pytest.raises(ValueError, match="missing mandatory config: upload_url."):
-        _get_s3_config(Path("../_main/tests/resources/missing_url_s3_config.json"))
+        _get_storage_config(Path("../_main/tests/resources/missing_url_storage_config.json"))
 
 
-def test_get_s3_config_missing_url():
+def test_get_storage_config_missing_url():
     "Test wrong s3 config file - missing mandatory attr: upload_bucket."
     with pytest.raises(ValueError, match="missing mandatory config: upload_bucket."):
-        _get_s3_config(Path("../_main/tests/resources/missing_bucket_s3_config.json"))
+        _get_storage_config(Path("../_main/tests/resources/missing_bucket_storage_config.json"))
 
 
-def test_get_s3_config_missing_url():
+def test_get_storage_config_missing_url():
     "Test correct s3 config file."
-    config = _get_s3_config(Path("../_main/tests/resources/correct_s3_config.json"))
+    config = _get_storage_config(Path("../_main/tests/resources/correct_storage_config.json"))
     assert len(config) == 2
 
 

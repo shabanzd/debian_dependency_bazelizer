@@ -45,9 +45,9 @@ py_test(
         "@pip//:click_pkg",
     ],
     data = [
-        "resources/s3_config.txt",
-        "resources/correct_s3_config.json",
-        "resources/missing_bucket_s3_config.json",
-        "resources/missing_url_s3_config.json",
+        "resources/storage_config.txt",
+        "resources/correct_storage_config.json",
+        "resources/missing_bucket_storage_config.json",
+        "resources/missing_url_storage_config.json",
     ]
 )

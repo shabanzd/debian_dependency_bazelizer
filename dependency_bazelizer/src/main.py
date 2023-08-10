@@ -16,20 +16,20 @@ BAZEL_WORKSPACE_DIR: Final = (
 MANDATORY_CONFIGS: Final = ["upload_bucket", "upload_url"]
 
 
-def _get_s3_config(json_config_file: Path):
+def _get_storage_config(json_config_file: Path):
     if json_config_file.suffix != ".json":
         path_str = str(json_config_file)
         raise ValueError(f"The file '{path_str}' must be a .json file.")
 
     with open(json_config_file, encoding="utf-8") as json_config:
-        s3_config = json.load(json_config)
+        storage_config = json.load(json_config)
 
-    _verify_s3_config(s3_config)
+    _verify_storage_config(storage_config)
 
-    return s3_config
+    return storage_config
 
 
-def _verify_s3_config(configs: Dict[str, str]):
+def _verify_storage_config(configs: Dict[str, str]):
     for mandatory_config in MANDATORY_CONFIGS:
         if mandatory_config not in configs:
             raise ValueError(f"missing mandatory config: {mandatory_config}.")
@@ -56,20 +56,20 @@ If path is relative, it is assumed to be relative to the workspace dir.
 If there are more than one input file, simply do -if path_to_file for each file.""",
 )
 @click.option(
-    "--s3_config_file",
+    "--storage_config_file",
     "-cf",
     type=click.Path(path_type=Path, dir_okay=False),
     required=True,
     help="""The path to the s3 config file containing the configs like bucket, url, etc.
 If path is relative, it is assumed to be relative to the workspace dir""",
 )
-def main(registry_path: Path, input_file: List[Path], s3_config_file: Path):
+def main(registry_path: Path, input_file: List[Path], storage_config_file: Path):
     """Turns input deb packages into modules referenced by a local registry."""
     if not registry_path.is_absolute():
         registry_path = Path(BAZEL_WORKSPACE_DIR) / registry_path
 
-    if not s3_config_file.is_absolute():
-        s3_config_file = Path(BAZEL_WORKSPACE_DIR) / s3_config_file
+    if not storage_config_file.is_absolute():
+        storage_config_file = Path(BAZEL_WORKSPACE_DIR) / storage_config_file
 
     input_files = [
         file if file.is_absolute() else Path(BAZEL_WORKSPACE_DIR) / file
@@ -83,7 +83,7 @@ def main(registry_path: Path, input_file: List[Path], s3_config_file: Path):
 
     bazelize_deps(
         registry_path=registry_path,
-        s3_config=_get_s3_config(s3_config_file),
+        storage_config=_get_storage_config(storage_config_file),
         input_package_metadatas=read_input_files(
             registry_path=registry_path, input_files=input_files
         ),
