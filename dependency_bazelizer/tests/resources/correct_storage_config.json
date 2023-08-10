@@ -1,4 +1,10 @@
 {
-    "upload_bucket": "dependency-bazelizer",
-    "upload_url": "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com"
+    "storage": {
+        "upload_url": "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com",
+        "aws_s3_config": {
+            "region": "us-west-2",
+            "bucket": "buildbuddy-bucket",
+            "credentials_profile": "other-profile"
+        }
+  }
 }

@@ -70,8 +70,6 @@ def _rpath_patch_elf_files(package: Package, modules: Dict[PackageMetadata, Modu
 def _upload_archive_to_s3_bucket(file: Path, storage_config: Dict[str, str]):
     client = boto3.client(
         "s3",
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
         endpoint_url=storage_config[UPLOAD_URL],
         verify=False,
     )
