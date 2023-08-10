@@ -7,7 +7,7 @@ import subprocess
 import tarfile
 
 from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from azure.storage.blob import BlobClient
 
 from src.module import Module
 from src.package import Package, PackageMetadata
@@ -91,19 +91,25 @@ def _upload_archive_to_s3_bucket(file: Path, s3_config: Dict[str, str]):
     client.upload_file(file_str, s3_config[UPLOAD_BUCKET], upload_file_key)
 
 
-def _upload_archive_to_azure_bucket(file: Path, config: Dict[str, str]):
-    account_url = config[UPLOAD_URL]
-    container = config[UPLOAD_BUCKET]
-    blob = os.fspath(file)
+def _upload_archive_to_azure_storage_container(file: Path, config: Dict[str, str]):
+    azure_storage_account_name = "xxx"
+    azure_storage_account_key = "xxx"
+    azure_storage_container_name = "xxx"
+
+    file_str = os.fspath(file)
+    blob = file_str 
     if PREFIX in config:
         blob = f"{config[PREFIX]}/" + blob
 
-    print(f"{account_url}/{container}/{blob}")
-
-    blob_service_client = BlobServiceClient(account_url, credential=DefaultAzureCredential())
-
-    blob_client = blob_service_client.get_blob_client(container=container, blob=blob)
-
+    blob_client = BlobClient(
+        account_url=f"https://{azure_storage_account_name}.blob.core.windows.net",
+        container_name=container_name,
+        blob_name=blob,
+        credential={
+            "account_name": azure_storage_account_name,
+            "account_key": azure_storage_account_key,
+        },
+    )
     with open(file=file_str, mode="rb") as data:
         blob_client.upload_blob(data)
 
@@ -128,7 +134,7 @@ def modularize_package(
     _rpath_patch_elf_files(package=package, modules=modules)
     debian_module_tar = _repackage_deb_package(package)
     if s3_config[STORAGE_PROVIDER] == STORAGE_PROVIDER_AZURE:
-        _upload_archive_to_azure_bucket(file=debian_module_tar, config=s3_config)
+        _upload_archive_to_azure_storage_container(file=debian_module_tar, config=s3_config)
     if s3_config[STORAGE_PROVIDER] == STORAGE_PROVIDER_AWS:
         _upload_archive_to_s3_bucket(file=debian_module_tar, s3_config=s3_config)
 
