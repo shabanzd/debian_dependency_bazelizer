@@ -6,6 +6,9 @@ import os
 import subprocess
 import tarfile
 
+from azure.identity import DefaultAzureCredential
+from azure.storage.blob import BlobClient
+
 from src.module import Module
 from src.package import Package, PackageMetadata
 from src.registry import add_package_to_registry
@@ -13,6 +16,9 @@ from src.writers import write_build_file, write_module_file
 
 BUILD_FILE: Final = Path("BUILD")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
+STORAGE_PROVIDER: Final = "storage_provider"
+STORAGE_PROVIDER_AZURE: Final = "azure"
+STORAGE_PROVIDER_AWS: Final = "aws"
 UPLOAD_BUCKET: Final = "upload_bucket"
 UPLOAD_URL: Final = "upload_url"
 PREFIX: Final = "prefix"
@@ -85,6 +91,29 @@ def _upload_archive_to_s3_bucket(file: Path, s3_config: Dict[str, str]):
     client.upload_file(file_str, s3_config[UPLOAD_BUCKET], upload_file_key)
 
 
+def _upload_archive_to_azure_storage_container(file: Path, config: Dict[str, str]):
+    azure_storage_account_name = "xxx"
+    azure_storage_account_key = "xxx"
+    azure_storage_container_name = "xxx"
+
+    file_str = os.fspath(file)
+    blob = file_str 
+    if PREFIX in config:
+        blob = f"{config[PREFIX]}/" + blob
+
+    blob_client = BlobClient(
+        account_url=f"https://{azure_storage_account_name}.blob.core.windows.net",
+        container_name=container_name,
+        blob_name=blob,
+        credential={
+            "account_name": azure_storage_account_name,
+            "account_key": azure_storage_account_key,
+        },
+    )
+    with open(file=file_str, mode="rb") as data:
+        blob_client.upload_blob(data)
+
+
 def _repackage_deb_package(package: Package):
     # create empty WORKSPACE file
     Path(package.package_dir / Path("WORKSPACE")).touch()
@@ -104,7 +133,10 @@ def modularize_package(
     """Turns package into a module and adds it to local registry."""
     _rpath_patch_elf_files(package=package, modules=modules)
     debian_module_tar = _repackage_deb_package(package)
-    _upload_archive_to_s3_bucket(file=debian_module_tar, s3_config=s3_config)
+    if s3_config[STORAGE_PROVIDER] == STORAGE_PROVIDER_AZURE:
+        _upload_archive_to_azure_storage_container(file=debian_module_tar, config=s3_config)
+    if s3_config[STORAGE_PROVIDER] == STORAGE_PROVIDER_AWS:
+        _upload_archive_to_s3_bucket(file=debian_module_tar, s3_config=s3_config)
 
     full_url = ""
     if DOWNLOAD_URL not in s3_config and PREFIX in s3_config:

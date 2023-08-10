@@ -65,6 +65,8 @@ py_library(
         ":registry",
         ":writers",
         "@pip//:boto3_pkg",
+        "@pip//:azure_identity_pkg",
+        "@pip//:azure_storage_blob_pkg",
     ],
 )
 
