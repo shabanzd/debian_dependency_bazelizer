@@ -4,6 +4,14 @@ The `dependency-bazelizer` takes an input list of debian packages, and turns the
 
 So far, the `dependency-bazelizer` supports debian packages only. The plan is to include Python as well in the following versions.
 
+## Give it a try
+
+### Requirements
+
+In order to try the `dependency-bazelizer`, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed (preferably version 0.10). The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the `dependency-bazelizer` itself on your chosen platform. You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
+
+The [Youtube Demo](<https://www.youtube.com/watch?v=69C_g4QO8xM&t=1s>) mentioned above, shows how to use the `depedenncy-bazelizer` as an interactive tool (the first part of the video), and as a module with an extension (the latter part of the video).
+
 ## Summary
 
 Up until `Bazel 5`, Bazel had not been able to resolve dependency graphs. As a result, Bazel needed a dependency manager to run during every build to build the transitive dependency graph of each dependency. Since this process needed to run early in the build, repository rules for package managers were developed and became the norm.
@@ -43,14 +51,6 @@ graph LR;
 ```
 
 Since it is not necessary for this tool to be implemented as a repository rule, I decided to do it entirely in python. This could make the code base easier to test and collaborate on.
-
-## Give it a try
-
-### Requirements
-
-In order to try the `dependency-bazelizer`, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed. The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the `dependency-bazelizer` itself on your chosen platform. You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
-
-The [Youtube Demo](<https://www.youtube.com/watch?v=69C_g4QO8xM&t=1s>) mentioned above, shows how to use the `depedenncy-bazelizer` as an interactive tool (the first part of the video), and as a module with an extension (the latter part of the video).
 
 ## Nerdy details
 
