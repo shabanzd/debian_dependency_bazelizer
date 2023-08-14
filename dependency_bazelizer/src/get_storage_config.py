@@ -13,7 +13,10 @@ MANDATORY_STORAGE_CONFIGS: Final = {
 def _verify_storage_config(configs: Dict[str, Any]):
     for mandatory_config in MANDATORY_CONFIGS:
         if mandatory_config not in configs:
-            raise ValueError(f"missing mandatory config: {mandatory_config}.")
+            configs_str = ", ".join(configs)
+            raise ValueError(
+                f"missing mandatory config: {mandatory_config}. Found configs are: {configs_str}"
+            )
 
     storage_conf = configs[STORAGE]
     if len(storage_conf) > 1:
@@ -27,8 +30,11 @@ def _verify_storage_config(configs: Dict[str, Any]):
         )
 
     for mandatory_config in MANDATORY_STORAGE_CONFIGS[storage]:
-        if mandatory_config not in configs:
-            raise ValueError(f"missing mandatory storage config: {mandatory_config}.")
+        if mandatory_config not in storage_conf[storage]:
+            configs_str = ", ".join(configs)
+            raise ValueError(
+                f"missing mandatory storage config: {mandatory_config}. Found storage configs are: {configs_str}"
+            )
 
 
 def get_storage_config(json_config_file: Path):
