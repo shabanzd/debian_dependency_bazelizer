@@ -12,6 +12,7 @@ py_binary(
     deps = [
         ":bazelize_deps",
         ":read_input_files",
+        ":get_storage_config",
         "@pip//:click_pkg",
     ],
 )
@@ -23,6 +24,11 @@ py_library(
         ":version",
         ":package",
     ],
+)
+
+py_library(
+    name = "get_storage_config",
+    srcs = ["get_storage_config.py"],
 )
 
 py_library(

@@ -1,11 +1,11 @@
 from pathlib import Path
-from typing import Final, Dict, List
+from typing import Final, List
 
 import click
-import json
 import os
 
 from src.bazelize_deps import bazelize_deps
+from src.get_storage_config import get_storage_config
 from src.read_input_files import read_input_files
 
 BAZEL_WORKSPACE_DIR: Final = (
@@ -13,27 +13,6 @@ BAZEL_WORKSPACE_DIR: Final = (
     or os.environ.get("TEST_UNDECLARED_OUTPUTS_DIR")
     or os.environ.get("TEST_TMPDIR")
 )
-MANDATORY_CONFIGS: Final = ["upload_bucket", "upload_url"]
-
-
-def _get_storage_config(json_config_file: Path):
-    if json_config_file.suffix != ".json":
-        path_str = str(json_config_file)
-        raise ValueError(f"The file '{path_str}' must be a .json file.")
-
-    with open(json_config_file, encoding="utf-8") as json_config:
-        storage_config = json.load(json_config)
-
-    _verify_storage_config(storage_config)
-
-    return storage_config
-
-
-def _verify_storage_config(configs: Dict[str, str]):
-    for mandatory_config in MANDATORY_CONFIGS:
-        if mandatory_config not in configs:
-            raise ValueError(f"missing mandatory config: {mandatory_config}.")
-
 
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.option(
@@ -83,7 +62,7 @@ def main(registry_path: Path, input_file: List[Path], storage_config_file: Path)
 
     bazelize_deps(
         registry_path=registry_path,
-        storage_config=_get_storage_config(storage_config_file),
+        storage_config=get_storage_config(storage_config_file),
         input_package_metadatas=read_input_files(
             registry_path=registry_path, input_files=input_files
         ),
