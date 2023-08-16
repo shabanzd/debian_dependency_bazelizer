@@ -5,8 +5,8 @@ import click
 import os
 
 from src.bazelize_deps import bazelize_deps
-from src.get_storage_config import get_storage_config
 from src.read_input_files import read_input_files
+from src.storage import create_storage
 
 BAZEL_WORKSPACE_DIR: Final = (
     os.environ.get("BUILD_WORKSPACE_DIRECTORY")
@@ -62,7 +62,7 @@ def main(registry_path: Path, input_file: List[Path], storage_config_file: Path)
 
     bazelize_deps(
         registry_path=registry_path,
-        storage_config=get_storage_config(storage_config_file),
+        storage=create_storage(storage_config_file),
         input_package_metadatas=read_input_files(
             registry_path=registry_path, input_files=input_files
         ),

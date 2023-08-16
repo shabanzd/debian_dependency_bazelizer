@@ -47,11 +47,11 @@ py_test(
 )
 
 py_test(
-    name = "test_get_storage_config",
+    name = "test_storage",
     timeout = "short",
-    srcs = ["test_get_storage_config.py"],
+    srcs = ["test_storage.py"],
     deps = [
-        "//src:get_storage_config",
+        "//src:storage",
         "@pip//:pytest_pkg",
     ],
     data = [

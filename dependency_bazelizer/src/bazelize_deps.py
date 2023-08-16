@@ -6,6 +6,7 @@ from src.module import Module
 from src.modularize_package import modularize_package
 from src.package import Package, PackageMetadata
 from src.registry import find_package_in_registry
+from src.storage import Storage
 
 
 def _add_deps_to_stack(
@@ -46,7 +47,7 @@ def _print_summary(deb_package_cache: Dict[str, Package]):
 def bazelize_deps(
     registry_path: Path,
     input_package_metadatas: Set[PackageMetadata],
-    storage_config: Dict[str, str],
+    storage: Storage,
 ) -> None:
     visited_modules: Dict[PackageMetadata, Module] = dict()
     # will be used as a stack for the DFS algorithm
