@@ -10,5 +10,5 @@ local_path_override(
     path = "../",
 )
 bazelizer = use_extension("@dependency_bazelizer//:input.bzl", "bazelizer")
-bazelizer.config(deb_packages_input_file = "//:deb_packages.in", s3_config_file = "//:s3_config.json")
+bazelizer.config(deb_packages_input_file = "//:deb_packages.in", storage_config_file = "//:storage_config.json")
 use_repo(bazelizer, "hello")

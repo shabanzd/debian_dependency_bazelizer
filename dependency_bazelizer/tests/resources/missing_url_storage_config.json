@@ -1,0 +1,8 @@
+{
+    "storage": {
+        "aws_s3": {
+            "bucket": "buildbuddy-bucket",
+            "credentials_profile": "other-profile"
+        }
+    }
+}

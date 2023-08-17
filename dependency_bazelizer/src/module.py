@@ -43,7 +43,7 @@ class Module:
     name: str
     arch: str
     version: str
-    rpaths: Set[Path] = dataclasses.field(default_factory=set)
+    rpaths: Set[str] = dataclasses.field(default_factory=set)
 
     def module_name(self):
         """Architecture is appended to the module name to accommodate for the case of debian

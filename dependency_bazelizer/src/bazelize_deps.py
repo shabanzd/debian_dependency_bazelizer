@@ -1,4 +1,4 @@
-from typing import Dict, List, Set
+from typing import Iterable, Dict, List, Set
 from pathlib import Path
 
 from src.package_factory import create_deb_package
@@ -6,12 +6,13 @@ from src.module import Module
 from src.modularize_package import modularize_package
 from src.package import Package, PackageMetadata
 from src.registry import find_package_in_registry
+from src.storage import Storage
 
 
 def _add_deps_to_stack(
     package_metadata: PackageMetadata,
     package_stack: List[PackageMetadata],
-    visited_modules: Set[PackageMetadata],
+    visited_modules: Iterable[PackageMetadata],
     deb_package_cache: Dict[PackageMetadata, Package],
 ):
     deps_added = False
@@ -25,7 +26,7 @@ def _add_deps_to_stack(
     return deps_added
 
 
-def _print_summary(deb_package_cache: Dict[str, Package]):
+def _print_summary(deb_package_cache: Dict[PackageMetadata, Package]):
     if not deb_package_cache:
         print("=========================")
         print("No packages were modularized")
@@ -46,12 +47,13 @@ def _print_summary(deb_package_cache: Dict[str, Package]):
 def bazelize_deps(
     registry_path: Path,
     input_package_metadatas: Set[PackageMetadata],
-    s3_config: Dict[str, str],
+    storage: Storage,
 ) -> None:
-    visited_modules: Dict[PackageMetadata, Module] = dict()
+    """This function bazelizes deps in a topological order."""
+    visited_modules: Dict[PackageMetadata, Module] = {}
     # will be used as a stack for the DFS algorithm
     package_stack: List[PackageMetadata] = []
-    processed_packages: Dict[PackageMetadata, Package] = dict()
+    processed_packages: Dict[PackageMetadata, Package] = {}
 
     for input_package_metadata in input_package_metadatas:
         module = find_package_in_registry(
@@ -93,7 +95,7 @@ def bazelize_deps(
             package_metadata = package_stack.pop()
             package = processed_packages[package_metadata]
             modularize_package(
-                package=package, modules=visited_modules, s3_config=s3_config
+                package=package, modules=visited_modules, storage=storage
             )
             visited_modules[package_metadata] = Module(
                 name=package.name,

@@ -1,7 +1,6 @@
 from typing import Dict, Final, Set
 from pathlib import Path
 
-import boto3
 import os
 import subprocess
 import tarfile
@@ -9,6 +8,7 @@ import tarfile
 from src.module import Module
 from src.package import Package, PackageMetadata
 from src.registry import add_package_to_registry
+from src.storage import Storage
 from src.writers import write_build_file, write_module_file
 
 BUILD_FILE: Final = Path("BUILD")
@@ -67,24 +67,6 @@ def _rpath_patch_elf_files(package: Package, modules: Dict[PackageMetadata, Modu
         )
 
 
-def _upload_archive_to_s3_bucket(file: Path, s3_config: Dict[str, str]):
-    client = boto3.client(
-        "s3",
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        endpoint_url=s3_config[UPLOAD_URL],
-        verify=False,
-    )
-
-    file_str = os.fspath(file)
-    upload_file_key = file_str
-
-    if PREFIX in s3_config:
-        upload_file_key = f"{s3_config[PREFIX]}/" + file_str
-
-    client.upload_file(file_str, s3_config[UPLOAD_BUCKET], upload_file_key)
-
-
 def _repackage_deb_package(package: Package):
     # create empty WORKSPACE file
     Path(package.package_dir / Path("WORKSPACE")).touch()
@@ -99,26 +81,16 @@ def _repackage_deb_package(package: Package):
 
 
 def modularize_package(
-    package: Package, modules: Dict[PackageMetadata, Module], s3_config: Dict[str, str]
+    package: Package, modules: Dict[PackageMetadata, Module], storage: Storage
 ):
     """Turns package into a module and adds it to local registry."""
     _rpath_patch_elf_files(package=package, modules=modules)
     debian_module_tar = _repackage_deb_package(package)
-    _upload_archive_to_s3_bucket(file=debian_module_tar, s3_config=s3_config)
-
-    full_url = ""
-    if DOWNLOAD_URL not in s3_config and PREFIX in s3_config:
-        full_url = f"{s3_config[UPLOAD_BUCKET]}/{s3_config[PREFIX]}/{debian_module_tar}"
-    elif DOWNLOAD_URL not in s3_config:
-        full_url = f"{s3_config[UPLOAD_BUCKET]}/{debian_module_tar}"
-    elif DOWNLOAD_URL in s3_config and PREFIX in s3_config:
-        full_url = f"{s3_config[DOWNLOAD_URL]}/{s3_config[PREFIX]}/{debian_module_tar}"
-    else:
-        full_url = f"{s3_config[DOWNLOAD_URL]}/{debian_module_tar}"
+    storage.upload_file(file=debian_module_tar)
 
     add_package_to_registry(
         package=package,
-        debian_module_tar=debian_module_tar,
-        full_url=full_url,
+        debian_module_tar=str(debian_module_tar),
+        full_url=storage.get_download_url(debian_module_tar),
     )
     debian_module_tar.unlink()

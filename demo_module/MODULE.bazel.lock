@@ -43,7 +43,7 @@
           "tags": [
             {
               "tagName": "config",
-              "attributeValues": {"deb_packages_input_file":"--//:deb_packages.in","s3_config_file":"--//:s3_config.json"},
+              "attributeValues": {"deb_packages_input_file":"--//:deb_packages.in","storage_config_file":"--//:storage_config.json"},
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
@@ -234,7 +234,7 @@
           "tags": [
             {
               "tagName": "config",
-              "attributeValues": {"deb_packages_input_file":"--//:deb_packages.in","s3_config_file":"--//:s3_config.json"},
+              "attributeValues": {"deb_packages_input_file":"--//:deb_packages.in","storage_config_file":"--//:storage_config.json"},
               "devDependency": false,
               "location": {
                 "file": "@@demo_transitive~override//:MODULE.bazel",
@@ -1410,7 +1410,7 @@
         "hello": {
           "bzlFile": "@@dependency_bazelizer~override//:input.bzl",
           "ruleClassName": "concat_input_files",
-          "attributes": {"name":"--dependency_bazelizer~override~bazelizer~hello","deb_packages_input_files":["@@//:deb_packages.in","@@demo_transitive~override//:deb_packages.in"],"s3_config_file":"@@//:s3_config.json"}
+          "attributes": {"name":"--dependency_bazelizer~override~bazelizer~hello","deb_packages_input_files":["@@//:deb_packages.in","@@demo_transitive~override//:deb_packages.in"],"storage_config_file":"@@//:storage_config.json"}
         }
       }
     },
@@ -1655,7 +1655,7 @@
         "dep_bazelizer_config": {
           "bzlFile": "@@dependency_bazelizer~override//:input.bzl",
           "ruleClassName": "dep_bazelizer_config_rule",
-          "attributes": {"name":"--dependency_bazelizer~override~dependency_bazelizer~dep_bazelizer_config","deb_packages_input_files":["@@//:deb_packages.in"],"s3_config_file":"@@//:s3_config.json"}
+          "attributes": {"name":"--dependency_bazelizer~override~dependency_bazelizer~dep_bazelizer_config","deb_packages_input_files":["@@//:deb_packages.in"],"storage_config_file":"@@//:storage_config.json"}
         }
       }
     }

@@ -44,10 +44,21 @@ py_test(
         "@pip//:pytest_pkg",
         "@pip//:click_pkg",
     ],
+)
+
+py_test(
+    name = "test_storage",
+    timeout = "short",
+    srcs = ["test_storage.py"],
+    deps = [
+        "//src:storage",
+        "@pip//:pytest_pkg",
+    ],
     data = [
-        "resources/s3_config.txt",
-        "resources/correct_s3_config.json",
-        "resources/missing_bucket_s3_config.json",
-        "resources/missing_url_s3_config.json",
+        "resources/storage_config.txt",
+        "resources/correct_storage_config.json",
+        "resources/missing_storage_storage_config.json",
+        "resources/missing_bucket_storage_config.json",
+        "resources/missing_url_storage_config.json",
     ]
 )

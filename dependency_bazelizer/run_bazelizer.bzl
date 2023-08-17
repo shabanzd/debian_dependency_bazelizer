@@ -10,6 +10,7 @@ def run_bazelizer(repository):
         deps = [
             Label("//src:bazelize_deps"),
             Label("//src:read_input_files"),
+            Label("//src:storage"),
             repository + "//:dep_bazelizer_config"
             ],
 )
