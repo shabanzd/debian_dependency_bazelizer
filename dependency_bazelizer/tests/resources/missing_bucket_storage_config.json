@@ -1,5 +1,5 @@
 {
-    "upload_url": "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com",
+    "download_url": "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com",
     "storage": {
         "aws_s3": {
             "credentials_profile": "other-profile"

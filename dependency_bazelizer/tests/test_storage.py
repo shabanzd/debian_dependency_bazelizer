@@ -14,7 +14,7 @@ def test_get_storage_config_wrong_extension():
 
 def test_get_storage_config_missing_url():
     "Test wrong s3 config file - missing mandatory attr: upload_url."
-    with pytest.raises(ValueError, match="missing mandatory config: upload_url."):
+    with pytest.raises(ValueError, match="missing mandatory config: download_url."):
         create_storage(
             Path("../_main/tests/resources/missing_url_storage_config.json")
         )
@@ -39,8 +39,8 @@ def test_get_storage_config_correct():
     storage = create_storage(
         Path("../_main/tests/resources/correct_storage_config.json")
     )
-    assert storage.upload_url == "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com"
-    assert storage.get_download_url(Path("foo.bar")) == f"https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/{PREFIX}/foo.bar"
+    assert storage.download_url == "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com"
+    assert storage.get_download_url(Path("foo.bar")) == f"https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com/{PREFIX}/foo.bar"
 
 
 if __name__ == "__main__":

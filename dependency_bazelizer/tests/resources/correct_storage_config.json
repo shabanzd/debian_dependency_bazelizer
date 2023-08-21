@@ -1,10 +1,10 @@
 {
-        "upload_url": "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com",
+        "download_url": "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com",
         "storage": {
             "aws_s3": {
                 "bucket": "buildbuddy-bucket",
                 "credentials_profile": "other-profile",
-                "download_url": "https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev"
+                "upload_url": "https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev"
             }
         }
 }

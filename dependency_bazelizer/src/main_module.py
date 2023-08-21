@@ -14,10 +14,12 @@ BAZEL_WORKSPACE_DIR: Final = (
     or os.environ.get("TEST_TMPDIR")
 )
 
+BAZEL_WORKSPACE_DIR_STR: Final = BAZEL_WORKSPACE_DIR if BAZEL_WORKSPACE_DIR else ""
+
 
 def main_module():
     """Turns input deb packages into modules referenced by a local registry."""
-    registry_path = Path().joinpath(BAZEL_WORKSPACE_DIR, "registry")
+    registry_path = Path().joinpath(BAZEL_WORKSPACE_DIR_STR, "registry")
 
     bazelize_deps(
         registry_path=registry_path,
