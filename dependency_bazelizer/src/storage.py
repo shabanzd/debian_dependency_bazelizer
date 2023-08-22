@@ -18,7 +18,7 @@ UNKNOWN_STORAGE: Final = "unknown"
 AWS_S3: Final = "aws_s3"
 FILES_PATH: Final = "path"
 MANDATORY_CONFIGS: Final = [DOWNLOAD_URL, STORAGE]
-SUPPORTED_STORAGES: Final = [AWS_S3]
+SUPPORTED_STORAGES: Final = [AWS_S3, UNKNOWN_STORAGE]
 MANDATORY_AWS_S3_STORAGE_CONFIGS: Final = [BUCKET, UPLOAD_URL]
 MANDATORY_FILE_STORAGE_CONFIGS: Final = [FILES_PATH]
 PREFIX: Final = "dependency_bazelizer"
@@ -99,7 +99,7 @@ class FileStorage(Storage):
             if mandatory_config not in file_storage_specific_config:
                 configs_str = ", ".join(file_storage_specific_config.keys())
                 raise ValueError(
-                    f"missing mandatory storage config for file storage: {mandatory_config}. Found storage configs are: {configs_str}"
+                    f"missing mandatory storage config for unknown/file storage: {mandatory_config}. Found storage configs are: {configs_str}"
                 )
     
     def upload_file(self, file: Path):

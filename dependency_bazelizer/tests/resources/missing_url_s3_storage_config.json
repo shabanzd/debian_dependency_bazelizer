@@ -1,7 +1,7 @@
 {
-    "download_url": "https://a13880696afbb75cf78cdb89324aafbc.r2.cloudflarestorage.com",
     "storage": {
         "aws_s3": {
+            "bucket": "my-bucket",
             "credentials_profile": "other-profile"
         }
     }
