@@ -61,7 +61,6 @@ py_test(
         "resources/missing_storage_s3_storage_config.json",
         "resources/missing_bucket_s3_storage_config.json",
         "resources/missing_url_s3_storage_config.json",
-        "resources/missing_url_unknown_storage_config.json",
         "resources/missing_path_unknown_storage_config.json",
     ]
 )
