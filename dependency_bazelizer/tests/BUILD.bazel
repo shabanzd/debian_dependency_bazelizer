@@ -56,9 +56,11 @@ py_test(
     ],
     data = [
         "resources/storage_config.txt",
-        "resources/correct_storage_config.json",
-        "resources/missing_storage_storage_config.json",
-        "resources/missing_bucket_storage_config.json",
-        "resources/missing_url_storage_config.json",
+        "resources/correct_s3_storage_config.json",
+        "resources/correct_unknown_storage_config.json",
+        "resources/missing_storage_s3_storage_config.json",
+        "resources/missing_bucket_s3_storage_config.json",
+        "resources/missing_url_s3_storage_config.json",
+        "resources/missing_path_unknown_storage_config.json",
     ]
 )

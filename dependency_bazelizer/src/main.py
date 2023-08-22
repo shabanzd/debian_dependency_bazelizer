@@ -14,13 +14,15 @@ BAZEL_WORKSPACE_DIR: Final = (
     or os.environ.get("TEST_TMPDIR")
 )
 
-@click.command(context_settings=dict(ignore_unknown_options=True))
+BAZEL_WORKSPACE_DIR_STR: Final = BAZEL_WORKSPACE_DIR if BAZEL_WORKSPACE_DIR else ""
+
+@click.command(context_settings={"ignore_unknown_options": True})
 @click.option(
     "--registry_path",
     "-rp",
     type=click.Path(path_type=Path, file_okay=False),
     required=False,
-    default=Path().joinpath(BAZEL_WORKSPACE_DIR, "registry"),
+    default=Path().joinpath(BAZEL_WORKSPACE_DIR_STR, "registry"),
     help="""The path to the directory where the local registry will reside.
 If path is relative, it is assumed to be relative to the workspace dir.""",
 )
@@ -45,13 +47,13 @@ If path is relative, it is assumed to be relative to the workspace dir""",
 def main(registry_path: Path, input_file: List[Path], storage_config_file: Path):
     """Turns input deb packages into modules referenced by a local registry."""
     if not registry_path.is_absolute():
-        registry_path = Path(BAZEL_WORKSPACE_DIR) / registry_path
+        registry_path = Path(BAZEL_WORKSPACE_DIR_STR) / registry_path
 
     if not storage_config_file.is_absolute():
-        storage_config_file = Path(BAZEL_WORKSPACE_DIR) / storage_config_file
+        storage_config_file = Path(BAZEL_WORKSPACE_DIR_STR) / storage_config_file
 
     input_files = [
-        file if file.is_absolute() else Path(BAZEL_WORKSPACE_DIR) / file
+        file if file.is_absolute() else Path(BAZEL_WORKSPACE_DIR_STR) / file
         for file in input_file
     ]
 
