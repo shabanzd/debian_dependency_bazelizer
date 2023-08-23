@@ -18,18 +18,20 @@ In order to use the `dependency-bazelizer` as an interactive tool, and get to kn
 
 * clone the repo.
 * `cd dependency_bazelizer`
-* run the `dependency-bazelizer` and provide the [input file](#input-file) and the [config file](#config_file) as follows:
+* run the `dependency-bazelizer` and provide the [input file](#input-file) and the [config file](#config-file) as follows:
 `bazelisk run //src:dependency-bazelizer -- -if /path/to/input_file.in -cf /path/to/storage_config.json`
 
 ### Input file
+The input file is the file containing the debian packages to be turned into bzlmods. Similar to:
+
 ```
 # The input deb package needs to follow the template: 
 # name:arch=version. Where name and arch are mandatory, and version is optional.
-# iproute2 without a version to test implicit version resolution
-patchelf:amd64
+deb_package1:amd64=1.2.3
+deb_package2:amd64=1.2.3
 ```
 
-### <a name="config_file"></a> Config file
+### Config file
 
 
 ## Summary
