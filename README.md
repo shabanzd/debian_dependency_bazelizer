@@ -18,7 +18,7 @@ In order to use the `dependency-bazelizer` as an interactive tool, and get to kn
 
 * clone the repo.
 * `cd dependency_bazelizer`
-* run the `dependency-bazelizer` and provide the [input file](Input-file) and the [config file](#config_file) as follows:
+* run the `dependency-bazelizer` and provide the [input file](#input-file) and the [config file](#config_file) as follows:
 `bazelisk run //src:dependency-bazelizer -- -if /path/to/input_file.in -cf /path/to/storage_config.json`
 
 ### Input file
