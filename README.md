@@ -21,6 +21,37 @@ In order to use the `dependency-bazelizer` as an interactive tool, and get to kn
 * run the `dependency-bazelizer` and provide the [input file](#input-file) and the [config file](#config-file) as follows:
 `bazelisk run //src:dependency-bazelizer -- -if /path/to/input_file.in -cf /path/to/storage_config.json`
 
+### Using the dependency-bazelizer as bzlmod:
+
+An example of this usage is provided in the [demo_module](https://github.com/shabanzd/dependency-bazelizer/tree/main/demo_module) directory.
+
+What is needed to get started is the following:
+
+* In the `MODULE.bazel`, add:
+```
+# since the dependency bazelizer is not in the BCR yet, downloading it and
+# referring to it with local_path_override is currently the only option.
+# This should be nicer once the dependency bazelizer is uploaded to the BCR.
+bazel_dep(name = "dependency_bazelizer", version = "")
+local_path_override(
+    module_name = "dependency_bazelizer",
+    path = "../dependency_bazelizer/",
+)
+dependency_bazelizer = use_extension("@dependency_bazelizer//:input.bzl", "dependency_bazelizer")
+dependency_bazelizer.config(deb_packages_input_file = "//:input_file.in", storage_config_file = "//:storage_config.json")
+use_repo(dependency_bazelizer, "dep_bazelizer_config")
+```
+where deb_packages_input_file and the storage_config_file of the config tag class expect an [input file](#input-file) and a [config file](#config-file) respectively.
+
+* Add the following to the `BUILD` file:
+```
+load("@dependency_bazelizer//:run_bazelizer.bzl", "run_bazelizer")
+run_bazelizer(repository = "@dep_bazelizer_config")
+```
+* call `bazelisk run //path/to/build/file:dependency-bazelizer`
+
+
+
 ### Input file
 The input file is the file containing the debian packages to be turned into bzlmods. Similar to:
 
@@ -32,6 +63,33 @@ deb_package2:amd64=1.2.3
 ```
 
 ### Config file
+The storage config file must be written in compliance with one of the following schemas:
+
+* For the `AWS S3` storage: 
+```javascript
+{
+        "download_url": "https://mydownloadurl.com", // mandatory
+        "storage": {
+            "aws_s3": {
+                "bucket": "mybucket", // mandatory
+                "credentials_profile": "other-profile", // optional
+                "upload_url": "https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev" // mandatory
+            }
+        }
+}
+```
+
+* For the `unknown` storage, which means that the files tars are dumped somewhere and the user will take care of uploading them to the storage of their choice: 
+```javascript
+{
+        "download_url": "https://mydownloadurl.com", // mandatory
+        "storage": {
+            "unknown": {
+                "path": "mydir" // mandatory
+            }
+        }
+}
+```
 
 
 ## Summary
@@ -74,7 +132,7 @@ graph LR;
 
 Since it is not necessary for this tool to be implemented as a repository rule, I decided to do it entirely in python. This could make the code base easier to test and collaborate on.
 
-## Nerdy details
+## Nerdy details / Contributor zone
 
 The work is not done by adding a `MODULE.bazel` to a package and making sure that this module fetches the needed transitive dependencies. The pre-compiled C/C++ files in a package don't only expect their transitive runtime dependencies to exist on the system, but also to exist in a specific predefined location (`/bin/` for example). However, we don't want the transitive dependencies to be accessed directly from the system, we want the transitive deps in the runfiles to be the ones used ! This makes the problem way more exciting :wink:
 
