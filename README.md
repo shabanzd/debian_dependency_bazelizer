@@ -4,13 +4,27 @@ The `dependency-bazelizer` takes an input list of debian packages, and turns the
 
 So far, the `dependency-bazelizer` supports debian packages only. The plan is to include Python as well in the following versions.
 
-## Give it a try
+## Getting started
 
 ### Requirements
 
 In order to try the `dependency-bazelizer`, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed (preferably version 0.10). The reason `patchelf` was not bazelized is that I don't know where this script will run (ubuntu, wsl ... etc). In case you are interested in bazelizing the `patchelf` dependency, you can easily do that using the `dependency-bazelizer` itself on your chosen platform. You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
 
 The [Youtube Demo](<https://www.youtube.com/watch?v=69C_g4QO8xM&t=1s>) mentioned above, shows how to use the `depedenncy-bazelizer` as an interactive tool (the first part of the video), and as a module with an extension (the latter part of the video).
+
+### Using the dependency-bazelizer as an interactive tool
+
+In order to use the `dependency-bazelizer` as an interactive tool, and get to know its features, you will simply need to:
+
+* clone the repo.
+* `cd dependency_bazelizer`
+* run the `dependency-bazelizer` and provide the [input file](#input_file) and the [config file](#config_file) as follows:
+`bazelisk run //src:dependency-bazelizer -- -if /path/to/input_file.in -cf /path/to/storage_config.json`
+
+### <a name="input_file"></a> Input file
+
+### <a name="input_file"></a> Config file
+
 
 ## Summary
 
