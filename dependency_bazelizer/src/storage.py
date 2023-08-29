@@ -1,6 +1,7 @@
 import abc
 import json
 import os
+import shutil
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -74,17 +75,18 @@ class S3Storage(Storage):
         upload_file_key = PREFIX + "/" + file_str
 
         client.upload_file(file_str, self.bucket, upload_file_key)
+        
     
     def get_download_url(self, file: Path) -> str:
         """Gets the download endpoint of the file."""
         full_url = f"{self.upload_url}/{self.bucket}/{PREFIX}/{str(file)}"
         if self.download_url:
-            full_url = f"{self.download_url}/{PREFIX}/{str(file)}"
+            full_url = f"{self.download_url}/{PREFIX}/{str(file.name)}"
         
         return full_url
 
 
-class FileStorage(Storage):
+class UnknownStorage(Storage):
     """Storage to dump files on system. User later uploads them to storage."""
     def __init__(self, file_storage_specific_config: Dict[str, str], download_url: str):
         super().__init__(download_url=download_url)
@@ -104,11 +106,11 @@ class FileStorage(Storage):
     
     def upload_file(self, file: Path):
         self.path.mkdir(exist_ok=True , parents=True)
-        file.rename(self.path / file.name)
+        shutil.copy(file, self.path / file.name)
     
     def get_download_url(self, file: Path) -> str:
         """Gets the download endpoint of the file."""
-        full_url = f"{self.download_url}/{str(file)}"
+        full_url = f"{self.download_url}/{str(file.name)}"
         
         return full_url
 
@@ -148,6 +150,6 @@ def create_storage(json_config_file: Path) -> Storage:
         return S3Storage(aws_s3_specific_configs=config, download_url=download_url)
     
     if storage == UNKNOWN_STORAGE:
-        return FileStorage(file_storage_specific_config=config, download_url=download_url)
+        return UnknownStorage(file_storage_specific_config=config, download_url=download_url)
 
     raise ValueError("Could not create Storage object. Storage Config is wrong.")
