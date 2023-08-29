@@ -1,7 +1,0 @@
-# enable bzlmod
-common --enable_bzlmod
-
-
-# Testing
-test --test_output=errors
-test --test_env=PYTEST_ADDOPTS="--color=yes --showlocals --tb=short -vv"
