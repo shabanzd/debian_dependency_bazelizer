@@ -85,12 +85,12 @@ def modularize_package(
 ):
     """Turns package into a module and adds it to local registry."""
     _rpath_patch_elf_files(package=package, modules=modules)
-    debian_module_tar = _repackage_deb_package(package)
-    storage.upload_file(file=debian_module_tar)
+    module_tar = _repackage_deb_package(package)
+    storage.upload_file(file=module_tar)
 
     add_package_to_registry(
         package=package,
-        debian_module_tar=str(debian_module_tar),
-        full_url=storage.get_download_url(debian_module_tar),
+        debian_module_tar=str(module_tar),
+        full_url=storage.get_download_url(module_tar),
     )
-    debian_module_tar.unlink()
+    module_tar.unlink()
