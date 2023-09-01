@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: bazel test //... && cd -
+      - run: bazel test //...
       - run: bazel run //src:dependency-bazelizer -- -if ./tests/ci_inputs/deb_packages.in -cf ./tests/ci_inputs/storage_config.json -if ./tests/ci_inputs/deb_packages_2.in
       - run: bazel run //src:dependency-bazelizer -- -if ./tests/ci_inputs/deb_packages.in -cf ./tests/ci_inputs/storage_config.json
       - run: bazel run //src:dependency-bazelizer -- -if ./tests/ci_inputs/deb_packages.in -cf ./tests/ci_inputs/unknown_storage_config.json
