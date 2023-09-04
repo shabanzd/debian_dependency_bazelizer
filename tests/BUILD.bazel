@@ -1,4 +1,5 @@
 load("@rules_python//python:defs.bzl", "py_test")
+load("@pip//:requirements.bzl", "requirement")
 
 py_test(
     name = "test_modularize_package",
@@ -6,7 +7,7 @@ py_test(
     srcs = ["test_modularize_package.py"],
     deps = [
         "//src:modularize_package",
-        "@pip//:pytest_pkg",
+        requirement("pytest"),
     ],
 )
 
@@ -16,8 +17,8 @@ py_test(
     srcs = ["test_version.py"],
     deps = [
         "//src:version",
-        "@pip//:pytest_pkg",
-        "@pip//:pytest_mock_pkg",
+        requirement("pytest"),
+        requirement("pytest_mock"),
     ],
 )
 
@@ -27,7 +28,7 @@ py_test(
     srcs = ["test_read_input_files.py"],
     deps = [
         "//src:read_input_files",
-        "@pip//:pytest_pkg",
+        requirement("pytest"),
     ],
     data = [
         "resources/faulty_input.in",
@@ -41,8 +42,8 @@ py_test(
     srcs = ["test_main.py"],
     deps = [
         "//src:dependency-bazelizer",
-        "@pip//:pytest_pkg",
-        "@pip//:click_pkg",
+        requirement("pytest"),
+        requirement("click"),
     ],
 )
 
@@ -52,7 +53,7 @@ py_test(
     srcs = ["test_storage.py"],
     deps = [
         "//src:storage",
-        "@pip//:pytest_pkg",
+        requirement("pytest"),
     ],
     data = [
         "resources/storage_config.txt",
