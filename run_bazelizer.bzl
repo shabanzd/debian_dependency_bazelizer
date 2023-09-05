@@ -1,5 +1,4 @@
 load("@rules_python//python:defs.bzl", "py_binary")
-load("@rules_python//python/pip_install:repositories.bzl", "requirement")
 
 def run_bazelizer(repository):
     # Execute the command
