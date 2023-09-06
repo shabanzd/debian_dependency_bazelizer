@@ -6,7 +6,7 @@ import os
 from dep_bazelizer_config import get_deb_packages_path, get_storage_config_file_path
 from src.bazelize_deps import bazelize_deps
 from src.read_input_files import read_input_files
-from src.storage import Storage
+from src.storage import create_storage
 
 BAZEL_WORKSPACE_DIR: Final = (
     os.environ.get("BUILD_WORKSPACE_DIRECTORY")
@@ -23,7 +23,7 @@ def main_module():
 
     bazelize_deps(
         registry_path=registry_path,
-        storage=Storage(Path(get_storage_config_file_path())),
+        storage=create_storage(Path(get_storage_config_file_path())),
         input_package_metadatas=read_input_files(
             registry_path=registry_path, input_files=[Path(get_deb_packages_path())]
         )
