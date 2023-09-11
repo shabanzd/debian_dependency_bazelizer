@@ -27,19 +27,23 @@ def get_deb_packages_path() -> str:
     return "{}"
 def get_storage_config_file_path() -> str:
     return "{}"
-  """.format(deb_packages_path, storage_config_path))
+def get_local_registry_path() -> str:
+    return "{}"
+  """.format(deb_packages_path, storage_config_path, local_registry_path))
 
 dep_bazelizer_config_rule = repository_rule(
   implementation = _dep_bazelizer_config_rule_impl,
   attrs = {
       "deb_packages_input_files":  attr.label_list(mandatory = True),
       "storage_config_file": attr.label(mandatory = True),
+      "local_registry_path": attr.label(mandatory = False),
   },
 )
 
 def _dependency_bazelizer_impl(ctx):
   deb_packages_input_files = []
   storage_config_file = None
+  local_registry_path = None
   for mod in ctx.modules:
     for config in mod.tags.config:
         deb_packages_input_files.append(config.deb_packages_input_file)
@@ -47,14 +51,24 @@ def _dependency_bazelizer_impl(ctx):
         if not ctx.path(config.storage_config_file).basename.endswith(".json"):
           fail("s3 config file must be a json file")
         storage_config_file = config.storage_config_file
+        local_registry_path = config.local_registry_path
   
   dep_bazelizer_config_rule(
     name = "dep_bazelizer_config",
     deb_packages_input_files = deb_packages_input_files,
     storage_config_file = storage_config_file,
+    local_registry_path = local_registry_path,
   )
 
 dependency_bazelizer = module_extension(
   implementation = _dependency_bazelizer_impl,
-  tag_classes = {"config": tag_class(attrs = {"deb_packages_input_file": attr.label(mandatory=True), "storage_config_file": attr.label(mandatory=True)})},
+  tag_classes = {
+    "config": tag_class(
+      attrs = {
+        "deb_packages_input_file": attr.label(mandatory=True),
+        "local_registry_path": attr.label(mandatory=False),
+        "storage_config_file": attr.label(mandatory=True)
+      }
+    )
+  },
 )
