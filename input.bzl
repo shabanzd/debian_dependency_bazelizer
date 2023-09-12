@@ -29,7 +29,7 @@ def get_storage_config_file_path() -> str:
     return "{}"
 def get_registry_path_relative_to_root() -> str:
     return "{}"
-  """.format(deb_packages_path, storage_config_path, registry_path_relative_to_root))
+  """.format(deb_packages_path, storage_config_path, ctx.attr.registry_path_relative_to_root))
 
 dep_bazelizer_config_rule = repository_rule(
   implementation = _dep_bazelizer_config_rule_impl,

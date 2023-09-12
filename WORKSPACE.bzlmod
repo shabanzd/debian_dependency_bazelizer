@@ -1,0 +1,7 @@
+load("//:input.bzl", "dep_bazelizer_config_rule")
+dep_bazelizer_config_rule(
+    name = "extension",
+    deb_packages_input_files = ["//:deb_packages.in"], 
+    storage_config_file = "//:storage_config.json",
+    registry_path_relative_to_root = "my_registry"
+)
