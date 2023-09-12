@@ -53,6 +53,9 @@ def _dependency_bazelizer_impl(ctx):
         storage_config_file = config.storage_config_file
         registry_path_relative_to_root = config.registry_path_relative_to_root
   
+  if not registry_path_relative_to_root:
+    registry_path_relative_to_root = "registry"
+  
   dep_bazelizer_config_rule(
     name = "dep_bazelizer_config",
     deb_packages_input_files = deb_packages_input_files,
