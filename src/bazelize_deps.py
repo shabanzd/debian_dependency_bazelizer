@@ -95,7 +95,7 @@ def bazelize_deps(
             package_metadata = package_stack.pop()
             package = processed_packages[package_metadata]
             modularize_package(
-                package=package, modules=visited_modules, storage=storage
+                registry_path=registry_path, package=package, modules=visited_modules, storage=storage
             )
             visited_modules[package_metadata] = Module(
                 name=package.name,

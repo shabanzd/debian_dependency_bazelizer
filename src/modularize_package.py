@@ -81,7 +81,7 @@ def _repackage_deb_package(package: Package):
 
 
 def modularize_package(
-    package: Package, modules: Dict[PackageMetadata, Module], storage: Storage
+    registry_path: Path, package: Package, modules: Dict[PackageMetadata, Module], storage: Storage
 ):
     """Turns package into a module and adds it to local registry."""
     _rpath_patch_elf_files(package=package, modules=modules)
@@ -89,6 +89,7 @@ def modularize_package(
     storage.upload_file(file=module_tar)
 
     add_package_to_registry(
+        registry_path=registry_path,
         package=package,
         debian_module_tar=str(module_tar),
         full_url=storage.get_download_url(module_tar),

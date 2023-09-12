@@ -14,7 +14,6 @@ from src.version import get_version_from_registry
 from src.writers import write_module_file, write_file
 
 BAZEL_WORKSPACE_DIRECTORY_ENV: Final = "BUILD_WORKSPACE_DIRECTORY"
-REGISTRY_DIR: Final = Path("registry")
 MODULES_DIR: Final = Path("modules")
 RPATHS_DOT_TXT: Final = Path("rpaths.txt")
 METADATA_DOT_JSON: Final = Path("metadata.json")
@@ -25,16 +24,12 @@ MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
 BAZEL_REGISTRY_DOT_JSON: Final = Path("bazel_registry.json")
 
 
-def _get_registry_path() -> Path:
-    return Path(os.environ[BAZEL_WORKSPACE_DIRECTORY_ENV]) / REGISTRY_DIR
+def _get_module_path_in_registry(registry_path: Path, module_name: str) -> Path:
+    return registry_path / module_name
 
 
-def _get_module_path_in_registry(module_name: str) -> Path:
-    return _get_registry_path() / MODULES_DIR / module_name
-
-
-def _get_module_version_path_in_registry(module_name: str, module_version: str):
-    return _get_module_path_in_registry(module_name) / module_version
+def _get_module_version_path_in_registry(registry_path: Path, module_name: str, module_version: str):
+    return _get_module_path_in_registry(registry_path, module_name) / module_version
 
 
 def _json_dump(json_file, obj, sort_keys=True):
@@ -43,7 +38,7 @@ def _json_dump(json_file, obj, sort_keys=True):
         file.write("\n")
 
 
-def _get_integrity_for_file(debian_module_tar: Path):
+def _get_integrity_for_file(debian_module_tar: str):
     files_content = subprocess.check_output(["cat", debian_module_tar])
     hash = hashlib.sha256(files_content).digest()
     hash_base64 = base64.b64encode(hash).decode()
@@ -75,6 +70,7 @@ def find_package_in_registry(
     with open(
         file=Path(
             _get_module_version_path_in_registry(
+                registry_path = registry_path,
                 module_name=package.module_name(),
                 module_version=package.module_version(),
             ),
@@ -88,16 +84,16 @@ def find_package_in_registry(
     return package
 
 
-def add_package_to_registry(package: Package, debian_module_tar: str, full_url: str):
+def add_package_to_registry(registry_path: Path, package: Package, debian_module_tar: str, full_url: str):
     """Adds modularized package to local registry"""
     module_name = get_module_name(name=package.name, arch=package.arch)
     module_version = get_module_version(package.version)
     module_path_in_registry = _get_module_version_path_in_registry(
-        module_name=module_name, module_version=module_version
+        registry_path = registry_path, module_name=module_name, module_version=module_version
     )
     module_path_in_registry.mkdir(parents=True, exist_ok=True)
 
-    metadata_path = Path(_get_module_path_in_registry(module_name), METADATA_DOT_JSON)
+    metadata_path = Path(_get_module_path_in_registry(registry_path, module_name), METADATA_DOT_JSON)
 
     metadata: Any
 
@@ -120,7 +116,7 @@ def add_package_to_registry(package: Package, debian_module_tar: str, full_url: 
     }
 
     _json_dump(Path.joinpath(module_path_in_registry, SOURCE_DOT_JSON), source_json)
-    _json_dump(Path.joinpath(_get_registry_path(), BAZEL_REGISTRY_DOT_JSON), {})
+    _json_dump(Path.joinpath(registry_path, BAZEL_REGISTRY_DOT_JSON), {})
     write_module_file(
         package=package, file=Path.joinpath(module_path_in_registry, MODULE_DOT_BAZEL)
     )
