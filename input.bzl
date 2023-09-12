@@ -69,7 +69,7 @@ dependency_bazelizer = module_extension(
     "config": tag_class(
       attrs = {
         "deb_packages_input_file": attr.label(mandatory=True),
-        "registry_path_relative_to_root": attr.label(mandatory=False),
+        "registry_path_relative_to_root": attr.string(mandatory=False),
         "storage_config_file": attr.label(mandatory=True)
       }
     )
