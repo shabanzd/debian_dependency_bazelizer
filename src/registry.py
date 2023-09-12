@@ -25,7 +25,7 @@ BAZEL_REGISTRY_DOT_JSON: Final = Path("bazel_registry.json")
 
 
 def _get_module_path_in_registry(registry_path: Path, module_name: str) -> Path:
-    return registry_path / module_name
+    return registry_path / MODULES_DIR / module_name
 
 
 def _get_module_version_path_in_registry(registry_path: Path, module_name: str, module_version: str):
