@@ -36,7 +36,7 @@ dep_bazelizer_config_rule = repository_rule(
   attrs = {
       "deb_packages_input_files":  attr.label_list(mandatory = True),
       "storage_config_file": attr.label(mandatory = True),
-      "registry_path_relative_to_root": attr.label(mandatory = False),
+      "registry_path_relative_to_root": attr.string(mandatory = False),
   },
 )
 
