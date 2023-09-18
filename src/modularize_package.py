@@ -19,22 +19,14 @@ PREFIX: Final = "prefix"
 DOWNLOAD_URL: Final = "download_url"
 
 
-def _get_dep_rpath_set(rpaths: Set[str], prefix: str):
-    rpath_set: Set[str] = set()
-
-    for rpath in rpaths:
-        rpath_str = prefix + os.fspath(rpath)
-        rpath_set.add(rpath_str)
-
-    return rpath_set
+def _get_dep_rpath_set(rpaths: Set[str], prefix: str) -> Set[str]:
+    return {prefix + rpath for rpath in rpaths}
 
 
 def _concatentate_rpaths(
-    package: Package, prefix: str, processed_packages: Dict[PackageMetadata, Package]
+    package: Package, prefix: str, processed_packages: Dict[PackageMetadata, Module]
 ):
     rpath_set: Set[str] = set()
-
-    _get_dep_rpath_set(package.rpaths, prefix)
 
     if not package.deps:
         return rpath_set
@@ -44,7 +36,7 @@ def _concatentate_rpaths(
             raise ValueError(
                 f"dependency: {dep.name} has not been processed. Dependencies must be processed in a topoligcal order"
             )
-        rpath_set.update(_get_dep_rpath_set(processed_packages[dep].rpaths, prefix))
+        rpath_set.update(_get_dep_rpath_set(set(processed_packages[dep].rpaths.values()), prefix))
 
     return rpath_set
 
