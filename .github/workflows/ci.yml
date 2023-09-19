@@ -14,6 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: bazel test //...
+      - run: sudo apt-get update
       - run: bazel run //src:dependency-bazelizer -- -if ./tests/ci_inputs/deb_packages.in -cf ./tests/ci_inputs/storage_config.json -if ./tests/ci_inputs/deb_packages_2.in
       - run: bazel run //src:dependency-bazelizer -- -if ./tests/ci_inputs/deb_packages.in -cf ./tests/ci_inputs/storage_config.json
       - run: bazel run //src:dependency-bazelizer -- -if ./tests/ci_inputs/deb_packages.in -cf ./tests/ci_inputs/unknown_storage_config.json
