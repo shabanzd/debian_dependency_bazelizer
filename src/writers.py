@@ -43,6 +43,7 @@ exports_files([
 py_library(
     name = "paths",
     srcs = ["paths.py"],
+    data = [":all_files"],
 )
 
 """
