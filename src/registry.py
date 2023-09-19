@@ -67,14 +67,13 @@ def find_module_in_registry(
         version=found_version,
         arch=package_metadata.arch,
     )
- 
-    module.rpaths = json.loads(
-        os.fspath(_get_module_version_path_in_registry(
+    rpaths_json_path = _get_module_version_path_in_registry(
             registry_path = registry_path,
             module_name=module.module_name(),
             module_version=module.module_version()
-        ) / RPATHS_DOT_JSON))
-
+        ) / RPATHS_DOT_JSON
+    module.rpaths = json.load(rpaths_json_path.open(encoding="utf-8"))
+        
     return module
 
 
