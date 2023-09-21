@@ -1,5 +1,4 @@
-from typing import Set
-from pathlib import Path
+from typing import Dict
 import dataclasses
 
 
@@ -43,7 +42,7 @@ class Module:
     name: str
     arch: str
     version: str
-    rpaths: Set[str] = dataclasses.field(default_factory=set)
+    rpaths: Dict[str, str] = dataclasses.field(default_factory=dict)
 
     def module_name(self):
         """Architecture is appended to the module name to accommodate for the case of debian

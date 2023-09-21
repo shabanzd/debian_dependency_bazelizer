@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict
 import os
 
 from src.package import Package
@@ -39,6 +40,12 @@ exports_files([
 
 {exports_files}
 
+py_library(
+    name = "paths",
+    srcs = ["paths.py"],
+    data = [":all_files"],
+)
+
 """
 
 
@@ -69,6 +76,14 @@ def _create_module_file_content(package: Package):
 )
 {bazel_deps}"""
 
+def _create_paths_python_file_content(rpaths: Dict[str, str]):
+    rpaths_str = str(rpaths)
+    return f"""
+def paths():
+    return {rpaths_str}
+
+"""
+
 
 def write_file(content: str, file: Path):
     "Writes content in a MODULE.bazel file declaring the package as a module and listing its bazel_deps"
@@ -84,3 +99,7 @@ def write_module_file(package: Package, file: Path):
 def write_build_file(package: Package, file: Path):
     "Writes a BUILD file exporting the list of files"
     write_file(_create_build_file_content(package), file)
+
+def write_python_path_file(rpaths: Dict[str, str], file: Path):
+    "Writes a python file exposing the paths of ELF files"
+    write_file(_create_paths_python_file_content(rpaths), file)

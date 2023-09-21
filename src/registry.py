@@ -15,7 +15,7 @@ from src.writers import write_module_file, write_file
 
 BAZEL_WORKSPACE_DIRECTORY_ENV: Final = "BUILD_WORKSPACE_DIRECTORY"
 MODULES_DIR: Final = Path("modules")
-RPATHS_DOT_TXT: Final = Path("rpaths.txt")
+RPATHS_DOT_JSON: Final = Path("rpaths.json")
 METADATA_DOT_JSON: Final = Path("metadata.json")
 SOURCE_DOT_JSON: Final = Path("source.json")
 VERSION_DOT_TXT: Final = Path("version.txt")
@@ -45,7 +45,7 @@ def _get_integrity_for_file(debian_module_tar: str):
     return f"sha256-{hash_base64}"
 
 
-def find_package_in_registry(
+def find_module_in_registry(
     registry_path: Path,
     package_metadata: PackageMetadata,
 ) -> Optional[Module]:
@@ -62,26 +62,19 @@ def find_package_in_registry(
     if not found_version:
         return None
 
-    package = Module(
+    module = Module(
         name=package_metadata.name,
         version=found_version,
         arch=package_metadata.arch,
     )
-    with open(
-        file=Path(
-            _get_module_version_path_in_registry(
-                registry_path = registry_path,
-                module_name=package.module_name(),
-                module_version=package.module_version(),
-            ),
-            RPATHS_DOT_TXT,
-        ),
-        mode="r",
-        encoding="utf-8",
-    ) as file:
-        package.rpaths = set(file.read().splitlines())
-
-    return package
+    rpaths_json_path = _get_module_version_path_in_registry(
+            registry_path = registry_path,
+            module_name=module.module_name(),
+            module_version=module.module_version()
+        ) / RPATHS_DOT_JSON
+    module.rpaths = json.load(rpaths_json_path.open(encoding="utf-8"))
+        
+    return module
 
 
 def add_package_to_registry(registry_path: Path, package: Package, debian_module_tar: str, full_url: str):
@@ -120,9 +113,6 @@ def add_package_to_registry(registry_path: Path, package: Package, debian_module
     write_module_file(
         package=package, file=Path.joinpath(module_path_in_registry, MODULE_DOT_BAZEL)
     )
-    write_file(
-        "\n".join([os.fspath(path) for path in package.rpaths]),
-        Path.joinpath(module_path_in_registry, RPATHS_DOT_TXT),
-    )
+    _json_dump(Path.joinpath(module_path_in_registry, RPATHS_DOT_JSON), package.rpaths)
     write_file(package.version, Path.joinpath(module_path_in_registry, VERSION_DOT_TXT))
     write_file(package.name, Path.joinpath(module_path_in_registry, NAME_DOT_TXT))

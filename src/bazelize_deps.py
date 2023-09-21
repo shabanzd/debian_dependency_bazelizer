@@ -5,7 +5,7 @@ from src.package_factory import create_deb_package
 from src.module import Module
 from src.modularize_package import modularize_package
 from src.package import Package, PackageMetadata
-from src.registry import find_package_in_registry
+from src.registry import find_module_in_registry
 from src.storage import Storage
 
 
@@ -56,7 +56,7 @@ def bazelize_deps(
     processed_packages: Dict[PackageMetadata, Package] = {}
 
     for input_package_metadata in input_package_metadatas:
-        module = find_package_in_registry(
+        module = find_module_in_registry(
             registry_path=registry_path, package_metadata=input_package_metadata
         )
         if module:
@@ -74,7 +74,7 @@ def bazelize_deps(
             package_stack.pop()
             continue
 
-        module = find_package_in_registry(
+        module = find_module_in_registry(
             registry_path=registry_path, package_metadata=package_stack[-1]
         )
         if module:

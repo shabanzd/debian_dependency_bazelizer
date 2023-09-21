@@ -212,7 +212,7 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
 
         package.elf_files.add(file_path)
         # register the parent of the ELF file as an rpath
-        package.rpaths.add(Path(package.prefix / file_path.parent))
+        package.rpaths[file_path.name] = os.fspath(package.prefix / file_path.parent)
 
     # The next check is needed since libc6 is cyclic with libcrypt1.
     # I assume libc6 does not have deps in this case :D

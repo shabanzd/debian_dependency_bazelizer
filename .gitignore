@@ -3,3 +3,5 @@
 /registry/*
 .vscode/settings.json
 __pycache__
+/my_registry/*
+/mydir/*

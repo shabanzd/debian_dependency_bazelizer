@@ -142,14 +142,14 @@ def _satisfies_specifications(pkg_version: DebianVersion, version_spec: str) -> 
     return True
 
 
-def get_compatibility_level(version_string: str) -> str:
+def get_compatibility_level(version_string: str) -> int:
     """Returns compatibility_level for a certain debian version."""
     deb_version = DebianVersion(version_string)
     epoch = str(deb_version.epoch) if deb_version.epoch is not None else ""
 
     # for two versions to have the same compatibility level, the epoch and major version need to be equal
     # this silly solution simply concatenates both =D
-    return epoch + deb_version.version.split(".", maxsplit=1)[0]
+    return int(epoch + deb_version.version.split(".", maxsplit=1)[0])
 
 
 def compare_version_strings(version_1: str, version_2: str) -> int:

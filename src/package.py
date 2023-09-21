@@ -1,4 +1,4 @@
-from typing import Set
+from typing import Dict, Set
 from pathlib import Path
 import dataclasses
 
@@ -33,4 +33,4 @@ class Package:
     files: Set[PackageFile] = dataclasses.field(default_factory=set)
     elf_files: Set[Path] = dataclasses.field(default_factory=set)
     nonelf_files: Set[Path] = dataclasses.field(default_factory=set)
-    rpaths: Set[str] = dataclasses.field(default_factory=set)
+    rpaths: Dict[str, str] = dataclasses.field(default_factory=dict)
