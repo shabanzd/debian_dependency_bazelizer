@@ -43,9 +43,10 @@ exports_files([
 {exports_files}
 
 py_library(
-    name = "paths",
+    name = "{package.name}_paths",
     srcs = ["paths.py"],
     data = [":all_files"],
+    visibility = ["//visibility:public"],
 )
 
 """
@@ -80,8 +81,8 @@ def _create_module_file_content(package: Package):
 
 def _create_paths_python_file_content(rpaths: Dict[str, str]):
     rpaths_str = str(rpaths)
-    return f"""
-def paths():
+    return f"""def paths():
+    "Returns a dict of ELF files mapped to their relative location in the runfiles."
     return {rpaths_str}
 
 """
@@ -104,7 +105,8 @@ def write_build_file(package: Package, file: Path):
 
 def write_python_path_file(rpaths: Dict[str, str], file: Path):
     "Writes a python file exposing the paths of ELF files"
-    write_file(_create_paths_python_file_content(rpaths), file)
+    full_rpaths = {key: "../" + value + "/" + key for key, value in rpaths.items()}
+    write_file(_create_paths_python_file_content(full_rpaths), file)
 
 def json_dump(json_file, obj, sort_keys=True):
     "Dumps json content into json file"
