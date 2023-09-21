@@ -9,11 +9,12 @@ from src.module import Module
 from src.package import Package, PackageMetadata
 from src.registry import add_package_to_registry
 from src.storage import Storage
-from src.writers import write_build_file, write_module_file, write_python_path_file
+from src.writers import write_build_file, write_module_file, write_python_path_file, json_dump
 
 BUILD_FILE: Final = Path("BUILD")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
 PATHS_DOT_PY: Final = Path("paths.py")
+RPATHS_DOT_JSON: Final = Path("rpaths.json")
 UPLOAD_BUCKET: Final = "upload_bucket"
 UPLOAD_URL: Final = "upload_url"
 PREFIX: Final = "prefix"
@@ -65,7 +66,8 @@ def _repackage_deb_package(package: Package):
     Path(package.package_dir / Path("WORKSPACE")).touch()
     write_build_file(package, Path(package.package_dir / BUILD_FILE))
     write_module_file(package, Path(package.package_dir / MODULE_DOT_BAZEL))
-    write_python_path_file(package.rpaths, Path(package.package_dir / PATHS_DOT_PY))
+    write_python_path_file(package.rpaths, package.package_dir / PATHS_DOT_PY)
+    json_dump(package.package_dir / RPATHS_DOT_JSON, package.rpaths)
     debian_module_tar = Path(package.prefix + ".tar.gz")
     # repackage Debian Module as a tarball.
     with tarfile.open(debian_module_tar, "w:gz") as tar:
