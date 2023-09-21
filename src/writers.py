@@ -44,7 +44,7 @@ exports_files([
 
 py_library(
     name = "{package.name}_paths",
-    srcs = ["paths.py"],
+    srcs = ["{package.name}_paths.py"],
     data = [":all_files"],
     visibility = ["//visibility:public"],
 )
