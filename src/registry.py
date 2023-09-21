@@ -5,13 +5,12 @@ from pathlib import Path
 import base64
 import hashlib
 import json
-import os
 import subprocess
 
 from src.module import Module, get_module_name, get_module_version
 from src.package import Package, PackageMetadata
 from src.version import get_version_from_registry
-from src.writers import write_module_file, write_file
+from src.writers import write_module_file, write_file, json_dump
 
 BAZEL_WORKSPACE_DIRECTORY_ENV: Final = "BUILD_WORKSPACE_DIRECTORY"
 MODULES_DIR: Final = Path("modules")
@@ -30,12 +29,6 @@ def _get_module_path_in_registry(registry_path: Path, module_name: str) -> Path:
 
 def _get_module_version_path_in_registry(registry_path: Path, module_name: str, module_version: str):
     return _get_module_path_in_registry(registry_path, module_name) / module_version
-
-
-def _json_dump(json_file, obj, sort_keys=True):
-    with open(file=json_file, mode="w", encoding="utf-8") as file:
-        json.dump(obj, file, indent=4, sort_keys=sort_keys)
-        file.write("\n")
 
 
 def _get_integrity_for_file(debian_module_tar: str):
@@ -100,7 +93,7 @@ def add_package_to_registry(registry_path: Path, package: Package, debian_module
             "versions": [module_version],
         }
 
-    _json_dump(metadata_path, metadata)
+    json_dump(metadata_path, metadata)
 
     source_json = {
         "integrity": _get_integrity_for_file(debian_module_tar),
@@ -108,11 +101,11 @@ def add_package_to_registry(registry_path: Path, package: Package, debian_module
         "strip_prefix": package.prefix,
     }
 
-    _json_dump(Path.joinpath(module_path_in_registry, SOURCE_DOT_JSON), source_json)
-    _json_dump(Path.joinpath(registry_path, BAZEL_REGISTRY_DOT_JSON), {})
+    json_dump(Path.joinpath(module_path_in_registry, SOURCE_DOT_JSON), source_json)
+    json_dump(Path.joinpath(registry_path, BAZEL_REGISTRY_DOT_JSON), {})
     write_module_file(
         package=package, file=Path.joinpath(module_path_in_registry, MODULE_DOT_BAZEL)
     )
-    _json_dump(Path.joinpath(module_path_in_registry, RPATHS_DOT_JSON), package.rpaths)
+    json_dump(Path.joinpath(module_path_in_registry, RPATHS_DOT_JSON), package.rpaths)
     write_file(package.version, Path.joinpath(module_path_in_registry, VERSION_DOT_TXT))
     write_file(package.name, Path.joinpath(module_path_in_registry, NAME_DOT_TXT))

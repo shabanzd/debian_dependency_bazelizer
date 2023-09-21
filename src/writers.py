@@ -1,5 +1,7 @@
 from pathlib import Path
 from typing import Dict
+
+import json
 import os
 
 from src.package import Package
@@ -103,3 +105,9 @@ def write_build_file(package: Package, file: Path):
 def write_python_path_file(rpaths: Dict[str, str], file: Path):
     "Writes a python file exposing the paths of ELF files"
     write_file(_create_paths_python_file_content(rpaths), file)
+
+def json_dump(json_file, obj, sort_keys=True):
+    "Dumps json content into json file"
+    with open(file=json_file, mode="w", encoding="utf-8") as file:
+        json.dump(obj, file, indent=4, sort_keys=sort_keys)
+        file.write("\n")
