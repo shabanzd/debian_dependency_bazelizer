@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Final
 
 import json
 import os
@@ -7,6 +7,7 @@ import os
 from src.package import Package
 from src.module import get_module_name, get_module_version
 
+RPATHS_DOT_JSON: Final = "rpaths.json"
 
 def _create_build_file_content(package: Package):
     dep_targets = []
@@ -35,6 +36,7 @@ def _create_build_file_content(package: Package):
     exports_files = f"""
 exports_files([
     {files_str}
+    {RPATHS_DOT_JSON},
 ])
 """
 
