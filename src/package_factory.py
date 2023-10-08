@@ -8,6 +8,8 @@ from src.version import get_package_version, get_compatibility_level
 from src.module import get_module_name, get_module_version
 from src.package import PackageMetadata, Package
 
+from patchelf_paths import paths
+
 DEPENDS_ATTR: Final = "Depends"
 
 
@@ -26,7 +28,7 @@ def _is_patchable_elf_file(file: Path) -> bool:
     "Tries to print rpath in order to tell if file is ELF or not"
     try:
         old_rpath = subprocess.run(
-            ["patchelf", "--print-rpath", file.resolve()],
+            [paths()["patchelf"], "--print-rpath", file.resolve()],
             check=True,
             capture_output=True,
             encoding="utf-8",
@@ -36,13 +38,13 @@ def _is_patchable_elf_file(file: Path) -> bool:
             old_rpath = "$ORIGIN"
 
         _ = subprocess.run(
-            ["patchelf", "--remove-rpath", file.resolve()],
+            [paths()["patchelf"], "--remove-rpath", file.resolve()],
             check=True,
             capture_output=True,
             encoding="utf-8",
         ).stdout
         _ = subprocess.run(
-            ["patchelf", "--force-rpath", "--set-rpath", old_rpath, file.resolve()],
+            [paths()["patchelf"], "--force-rpath", "--set-rpath", old_rpath, file.resolve()],
             check=True,
             capture_output=True,
             encoding="utf-8",
