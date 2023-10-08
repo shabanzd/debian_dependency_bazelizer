@@ -54,6 +54,7 @@ py_library(
         ":version",
         ":module",
         ":package",
+        "@patchelf_amd64//:patchelf_paths",
     ],
 )
 
@@ -75,6 +76,7 @@ py_library(
         ":registry",
         ":writers",
         ":storage",
+        "@patchelf_amd64//:patchelf_paths",
     ],
 )
 
