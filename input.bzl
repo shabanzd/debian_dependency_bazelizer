@@ -1,7 +1,7 @@
 def _dep_bazelizer_config_rule_impl(ctx):
   deb_packages_input_file_str = "deb_packages.in"
   storage_config_file_str = "storage_config_file.json"
-  content = ctx.read(ctx.path(":deb_packages.in"))
+  content = "patchelf:amd64=0.10-2build1"
   for input_file in ctx.attr.deb_packages_input_files:
     content += ("\n" + ctx.read(ctx.path(input_file)))
   
