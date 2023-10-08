@@ -11,6 +11,8 @@ from src.registry import add_package_to_registry
 from src.storage import Storage
 from src.writers import write_build_file, write_module_file, write_python_path_file, json_dump
 
+from patchelf_paths import paths 
+
 BUILD_FILE: Final = Path("BUILD")
 MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
 RPATHS_DOT_JSON: Final = Path("rpaths.json")
@@ -49,7 +51,7 @@ def _rpath_patch_elf_files(package: Package, modules: Dict[PackageMetadata, Modu
         rpaths_set.add("$ORIGIN")
         subprocess.run(
             [
-                "patchelf",
+                paths()["patchelf"],
                 "--force-rpath",
                 "--set-rpath",
                 ":".join(rpaths_set),
