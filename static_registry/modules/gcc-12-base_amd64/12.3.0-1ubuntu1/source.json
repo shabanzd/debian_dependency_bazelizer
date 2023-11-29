@@ -1,5 +1,0 @@
-{
-    "integrity": "sha256-SmJFk4f1UfwWw2RDCg92LSX9GL5zu3auwkcYeH0UTag=",
-    "strip_prefix": "gcc-12-base_amd64~12.3.0-1ubuntu1",
-    "url": "https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/dependency_bazelizer/gcc-12-base_amd64~12.3.0-1ubuntu1.tar.gz"
-}
