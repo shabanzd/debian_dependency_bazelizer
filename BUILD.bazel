@@ -2,6 +2,15 @@ load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
 compile_pip_requirements(
     name = "requirements",
-    extra_args = ["--resolver=backtracking"],
+    timeout = "moderate",
+    extra_args = [
+        "--allow-unsafe",
+        "--emit-index-url",
+        "--resolver=backtracking",
+        "--pip-args",
+        "--index-url=https://pypi.python.org/simple",
+        "--upgrade",
+    ],
+    requirements_in = "requirements.in",
+    requirements_txt = "requirements.txt",
 )
-
