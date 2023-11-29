@@ -1,0 +1,5 @@
+module(
+    name = "gcc-12-base_amd64",
+    version = "12.3.0-1ubuntu1",
+    compatibility_level = 12,
+)

@@ -36,7 +36,7 @@ def _create_build_file_content(package: Package):
     exports_files = f"""
 exports_files([
     {files_str}
-    {RPATHS_DOT_JSON},
+    "{RPATHS_DOT_JSON}",
 ])
 """
 

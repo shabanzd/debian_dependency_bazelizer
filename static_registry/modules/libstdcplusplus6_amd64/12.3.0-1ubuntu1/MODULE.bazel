@@ -1,0 +1,9 @@
+module(
+    name = "libstdcplusplus6_amd64",
+    version = "12.3.0-1ubuntu1",
+    compatibility_level = 12,
+)
+
+bazel_dep(name = "libc6_amd64", version = "2.35-0ubuntu3.4")
+bazel_dep(name = "libgcc-s1_amd64", version = "12.3.0-1ubuntu1")
+bazel_dep(name = "gcc-12-base_amd64", version = "12.3.0-1ubuntu1")
