@@ -1,5 +1,5 @@
 {
-    "integrity": "sha256-Xq/wdvIcIjcYUuQxhEEs+6eO9Ym3iKXCL6O8PwwzEKI=",
+    "integrity": "sha256-mJ5xFr3dGC+33MceW2wP87VbIRvoQFMX8QPlOCFIHWk=",
     "strip_prefix": "libc6_amd64~2.35-0ubuntu3.4",
     "url": "https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev/dependency_bazelizer/libc6_amd64~2.35-0ubuntu3.4.tar.gz"
 }
