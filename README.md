@@ -37,9 +37,6 @@ local_path_override(
     module_name = "dependency_bazelizer",
     path = "../dependency_bazelizer/",
 )
-dependency_bazelizer = use_extension("@dependency_bazelizer//:input.bzl", "dependency_bazelizer")
-dependency_bazelizer.config(deb_packages_input_file = "//:input_file.in", storage_config_file = "//:storage_config.json")
-use_repo(dependency_bazelizer, "dep_bazelizer_config")
 ```
 where deb_packages_input_file and the storage_config_file of the config tag class expect an [input file](#input-file) and a [config file](#config-file) respectively.
 
