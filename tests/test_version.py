@@ -87,7 +87,7 @@ def test_get_version_from_registry_with_ubuntu_revision(
     assert version == "3.0.1-1ubuntu1", "Expected version with Ubuntu revision"
 
 
-def test_get_version_from_registry_with_epoch(
+def test_get_version_from_registry_with_epoch_2(
     mocker: pytest_mock.MockerFixture,
 ):
     _mock_away_get_versions(

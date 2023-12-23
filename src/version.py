@@ -1,6 +1,6 @@
 from packaging import version as packaging_version, specifiers as packaging_specifiers
 from pathlib import Path
-from typing import Final, List, Optional, Tuple
+from typing import Final, List, Optional
 
 import dataclasses
 import functools
@@ -46,7 +46,7 @@ class DebianVersion:
         debian_version = debian_version.split("-")[0]
         self.version = re.split("[^0-9.]", debian_version)[0].rstrip(".")
 
-        epoch = "" if self.epoch == None else str(self.epoch)
+        epoch = "" if not self.epoch else str(self.epoch)
         self.semantic_version = epoch + self.version
 
 

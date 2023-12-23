@@ -83,7 +83,7 @@ def read_input_files(
                 continue
 
             package_name_arch = input_package.split("=")[0]
-            if not package_name_arch in input_packages_dict:
+            if package_name_arch not in input_packages_dict:
                 input_packages_dict[package_name_arch] = set()
 
             input_packages_dict[package_name_arch].add(input_package)
