@@ -45,8 +45,15 @@ exports_files([
 {exports_files}
 
 py_library(
-    name = "{package.name}_paths",
-    srcs = ["{package.name}_paths.py"],
+    name = "{package.module_name}_paths_py",
+    srcs = ["{package.module_name}_paths.py"],
+    data = [":all_files"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "{package.module_name}_paths_cc",
+    hdrs = ["{package.module_name}_paths.hh"],
     data = [":all_files"],
     visibility = ["//visibility:public"],
 )
@@ -89,12 +96,36 @@ def _create_paths_python_file_content(rpaths: Dict[str, str]):
 
 """
 
+def _get_cpp_map_from_python_dict(python_dict: Dict[str, str]):
+    s = "{"
+    for item in python_dict.items():
+        s = f"{s}{{\"{item[0]}\", \"{item[1]}\"}}, "
+
+    return s[:-2] + "}"
+
+def _create_paths_cpp_file_content(rpaths: Dict[str, str], package_name: str):
+    map_str = _get_cpp_map_from_python_dict(rpaths)
+    return f"""
+#pragma once
+
+#include <map>
+#include <string>
+
+namespace {package_name}_paths
+{{
+/// Returns the paths of executables in {package_name}_paths.
+inline std::map<std::string, std::string> paths()
+{{
+    return {map_str};
+}}
+}}
+
+"""
 
 def write_file(content: str, file: Path):
     "Writes content in a MODULE.bazel file declaring the package as a module and listing its bazel_deps"
     with open(file, "w") as file_to_write:
         file_to_write.write(content)
-
 
 def write_module_file(package: Package, file: Path):
     "Writes a MODULE.bazel file declaring the package as a module and listing its bazel_deps"
@@ -109,6 +140,11 @@ def write_python_path_file(rpaths: Dict[str, str], file: Path):
     "Writes a python file exposing the paths of ELF files"
     full_rpaths = {key: "../" + value + "/" + key for key, value in rpaths.items()}
     write_file(_create_paths_python_file_content(full_rpaths), file)
+    
+def write_cpp_path_file(rpaths: Dict[str, str], package_name: str, file: Path):
+    "Writes a python file exposing the paths of ELF files"
+    full_rpaths = {key: "../" + value + "/" + key for key, value in rpaths.items()}
+    write_file(_create_paths_cpp_file_content(full_rpaths, package_name), file)
 
 def json_dump(json_file, obj, sort_keys=True):
     "Dumps json content into json file"

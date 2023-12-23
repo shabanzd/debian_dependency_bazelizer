@@ -25,6 +25,7 @@ class Package:
     name: str = ""
     arch: str = ""
     version: str = ""
+    module_name: str = ""
     pinned_name: str = ""
     prefix: str = ""
     compatibility_level: int = 0

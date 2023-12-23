@@ -20,6 +20,8 @@ def get_module_name(name: str, arch: str):
     module_name = module_name.replace("+", "plus")
     if module_name[0].isdigit():
         module_name = f"package_{module_name}"
+    # for beauty reasons, replace "-" with "_"
+    module_name = module_name.replace("-", "_")
 
     return module_name
 
