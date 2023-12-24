@@ -1,0 +1,7 @@
+py_binary(
+    name = "iproute2-demo",
+    srcs = ["iproute2_demo.py"],
+    main = "iproute2_demo.py",
+    deps = ["@iproute2_amd64//:iproute2_paths"],
+    visibility = ["//visibility:public"],
+)
