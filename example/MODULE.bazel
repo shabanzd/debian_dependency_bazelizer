@@ -5,9 +5,7 @@ module(
 )
 
 bazel_dep(name = "rules_python", version = "0.27.1")
-
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
-
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 python.toolchain(
     is_default = True,
