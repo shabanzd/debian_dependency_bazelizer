@@ -65,7 +65,7 @@ def test_get_version_from_registry_with_epoch(mocker: pytest_mock.MockerFixture)
         registry_path=Path("/test/path"),
         name="test_package",
         arch="test_arch",
-        version_spec=">=2.0.0",
+        version_spec=">=1:2.0.0",
     )
 
     assert version == "1:2.0.0", "Expected version with epoch"
