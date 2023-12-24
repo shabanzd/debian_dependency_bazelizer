@@ -1,4 +1,3 @@
-load("@python_versions//3.8:defs.bzl", compile_pip_requirements_3_8 = "compile_pip_requirements")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
 compile_pip_requirements(
@@ -14,20 +13,4 @@ compile_pip_requirements(
     ],
     requirements_in = "requirements.in",
     requirements_txt = "requirements.txt",
-)
-
-
-compile_pip_requirements_3_8(
-    name = "requirements_3_8",
-    timeout = "moderate",
-    extra_args = [
-        "--allow-unsafe",
-        "--emit-index-url",
-        "--resolver=backtracking",
-        "--pip-args",
-        "--index-url=https://pypi.python.org/simple",
-        "--upgrade",
-    ],
-    requirements_in = "requirements.in",
-    requirements_txt = "requirements_lock_3_8.txt",
 )
