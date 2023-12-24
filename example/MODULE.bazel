@@ -1,0 +1,32 @@
+module(
+    name = "demo",
+    version = "1.2.3",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "rules_python", version = "0.27.1")
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+
+python.toolchain(
+    is_default = True,
+    python_version = "3.11",
+)
+
+pip.parse(
+    hub_name = "demo_deps",
+    python_version = "3.11",
+    requirements_lock = "//:requirements.txt",
+)
+
+use_repo(pip, "demo_deps")
+
+bazel_dep(name = "dependency_bazelizer", version = "")
+local_path_override(
+    module_name = "dependency_bazelizer",
+    path = "../",
+)
+
+#bazel_dep(name="iproute2_amd64", version="5.15.0-1ubuntu2")
