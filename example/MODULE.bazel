@@ -9,15 +9,14 @@ bazel_dep(name = "rules_python", version = "0.27.1")
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-
 python.toolchain(
     is_default = True,
-    python_version = "3.11",
+    python_version = "3.8.18",
 )
 
 pip.parse(
     hub_name = "demo_deps",
-    python_version = "3.11",
+    python_version = "3.8.18",
     requirements_lock = "//:requirements.txt",
 )
 
@@ -29,4 +28,6 @@ local_path_override(
     path = "../",
 )
 
+# Uncomment the bazel dep below after running the //:dependency-bazelizer
+# and run the demo in the /demo subdir.
 #bazel_dep(name="iproute2_amd64", version="5.15.0-1ubuntu2")
