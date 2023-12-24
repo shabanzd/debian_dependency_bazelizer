@@ -3,8 +3,6 @@ name: CI
 on:
   push:
     tags: ["*"]
-    branches-ignore:
-      - 'main'
   pull_request:
   workflow_dispatch:
 
