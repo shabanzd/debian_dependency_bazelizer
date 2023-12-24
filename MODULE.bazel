@@ -8,16 +8,29 @@ bazel_dep(name = "rules_python", version = "0.27.1")
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 
 pip.parse(
-    hub_name = "pip",
+    hub_name = "dep_bazelizer_deps",
     python_version = "3.11",
     requirements_lock = "//:requirements.txt",
 )
 
-use_repo(pip, "pip")
+pip.parse(
+    hub_name = "dep_bazelizer_deps",
+    python_version = "3.8",
+    requirements_lock = "//:requirements_lock_3_8.txt",
+)
 
+use_repo(pip, "dep_bazelizer_deps")
+
+PYTHON_NAME_38 = "python_3_8"
+PYTHON_NAME_311 = "python_3_11"
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+use_repo(python, PYTHON_NAME_38, PYTHON_NAME_311, "python_versions")
 
 python.toolchain(
     is_default = True,
     python_version = "3.11",
+)
+
+python.toolchain(
+    python_version = "3.8",
 )
