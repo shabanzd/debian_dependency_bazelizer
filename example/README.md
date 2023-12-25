@@ -1,1 +1,1 @@
-# dependency-bazelizer-demo
+# debian_dependency_bazelizer_example

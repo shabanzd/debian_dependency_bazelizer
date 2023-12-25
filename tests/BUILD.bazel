@@ -41,7 +41,7 @@ py_test(
     timeout = "short",
     srcs = ["test_main.py"],
     deps = [
-        "//src:dependency-bazelizer",
+        "//src:debian_dependency_bazelizer",
         requirement("pytest"),
         requirement("click"),
     ],

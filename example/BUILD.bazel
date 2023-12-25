@@ -1,4 +1,4 @@
-load("@dependency_bazelizer//:run_bazelizer.bzl", "run_bazelizer")
+load("@debian_dependency_bazelizer//:run_bazelizer.bzl", "run_bazelizer")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
 run_bazelizer()
