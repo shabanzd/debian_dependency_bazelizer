@@ -1,3 +1,6 @@
+[![CI status](https://img.shields.io/github/actions/workflow/status/shabanzd/debian_dependency_bazelizer/ci.yml?branch=main)](https://github.com/shabanzd/debian_dependency_bazelizer/actions)
+[![MIT License](https://img.shields.io/github/license/shabanzd/debian_dependency_bazelizer)](https://github.com/shabanzd/debian_dependency_bazelizer/blob/main/LICENSE)
+
 # debian_dependency_bazelizer
 
 The `debian_dependency_bazelizer` takes an input list of debian packages, and turns them and their entire transitive dependency subgraphs into ready-to-use, fully bazelized modules (bzlmods). It also automatically references the bazelized modules in the internal registry of the repo. The `debian_dependency_bazelizer` in its current form is intended to be used in the root module, where a local private bazel registry makes sense.
