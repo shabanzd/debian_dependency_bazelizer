@@ -7,7 +7,7 @@ package(default_visibility = ["//visibility:public"])
 exports_files(["main_module.py"])
 
 py_binary(
-    name = "dependency-bazelizer",
+    name = "debian_dependency_bazelizer",
     srcs = ["main.py"],
     main = "main.py",
     tags = ["local"],
