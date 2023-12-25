@@ -8,7 +8,7 @@ The `debian_dependency_bazelizer` takes an input list of debian packages, and tu
 
 In order to try the `debian_dependency_bazelizer`, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed (preferably version 0.10). You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
 
-### Using the debian-dependency-bazelizer
+### Using the debian_dependency_bazelizer
 
 In order to use the `debian_dependency_bazelizer`, please apply the following steps:
 
@@ -72,7 +72,7 @@ The storage config file must be written in compliance with one of the following 
 }
 ```
 
-An example usage can be found at: https://github.com/shabanzd/bazel_dependency_bazelizer/tree/main/example
+An example usage can be found at: https://github.com/shabanzd/debian_dependency_bazelizer/tree/main/example
 
 ## Summary
 
@@ -80,7 +80,7 @@ Up until `Bazel 5`, Bazel had not been able to resolve dependency graphs. As a r
 
 Since `Bazel 6` and the introduction of `bzlmod`s, the approach described above is no longer the only option.
 
-The `debian-dependency-bazelizer` is a tool that takes input packages of different types, then turns those packages, in addition to their entire dependency graphs, into `bzlmod`s and references them in an internal `registry`. The freshly generated `bzlmod`s are ready to be resolved and consumed directly by `Bazel`. This eliminates the need to have package managers running in repository rules in order to resolve dependency graphs for `Bazel`. Another benefit the `debian_dependency_bazelizer` provides, is that the modules created by the tool access their transitive runtime dependencies directly from the runfiles; not from sysroot or a custom sysroot.
+The `debian_dependency_bazelizer` is a tool that takes input packages of different types, then turns those packages, in addition to their entire dependency graphs, into `bzlmod`s and references them in an internal `registry`. The freshly generated `bzlmod`s are ready to be resolved and consumed directly by `Bazel`. This eliminates the need to have package managers running in repository rules in order to resolve dependency graphs for `Bazel`. Another benefit the `debian_dependency_bazelizer` provides, is that the modules created by the tool access their transitive runtime dependencies directly from the runfiles; not from sysroot or a custom sysroot.
 
 ### What if every dependency was a bzlmod?
 
