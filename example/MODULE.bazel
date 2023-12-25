@@ -20,12 +20,12 @@ pip.parse(
 
 use_repo(pip, "demo_deps")
 
-bazel_dep(name = "dependency_bazelizer", version = "")
+bazel_dep(name = "debian_dependency_bazelizer", version = "")
 local_path_override(
-    module_name = "dependency_bazelizer",
+    module_name = "debian_dependency_bazelizer",
     path = "../",
 )
 
-# Uncomment the bazel dep below after running the //:dependency-bazelizer
+# Uncomment the bazel dep below after running the //:debian_dependency_bazelizer
 # and run the demo in the /demo subdir.
 #bazel_dep(name="iproute2_amd64", version="5.15.0-1ubuntu2")
