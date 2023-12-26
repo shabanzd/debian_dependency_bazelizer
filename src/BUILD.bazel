@@ -4,8 +4,6 @@ load("@dep_bazelizer_deps//:requirements.bzl", "requirement")
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["main_module.py"])
-
 py_binary(
     name = "debian_dependency_bazelizer",
     srcs = ["main.py"],

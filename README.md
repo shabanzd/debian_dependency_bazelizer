@@ -22,7 +22,6 @@ In order to use the `debian_dependency_bazelizer`, please apply the following st
 # This should be nicer once the debian dependency bazelizer is uploaded to the BCR.
 bazel_dep(name = "debian_dependency_bazelizer", version = "0.0.1")
 ```
-where deb_packages_input_file and the storage_config_file of the config tag class expect an [input file](#input-file) and a [config file](#config-file) respectively.
 
 * Add the following to the `BUILD` file:
 ```

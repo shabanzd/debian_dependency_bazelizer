@@ -19,7 +19,7 @@ BAZEL_WORKSPACE_DIR_STR: Final = BAZEL_WORKSPACE_DIR if BAZEL_WORKSPACE_DIR else
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option(
     "--registry_path",
-    "-rp",
+    "-r",
     type=click.Path(path_type=Path, file_okay=False),
     required=False,
     default=Path().joinpath(BAZEL_WORKSPACE_DIR_STR, "registry"),
@@ -28,7 +28,7 @@ If path is relative, it is assumed to be relative to the workspace dir.""",
 )
 @click.option(
     "--input_file",
-    "-if",
+    "-i",
     type=click.Path(path_type=Path, dir_okay=False),
     required=True,
     multiple=True,
@@ -37,20 +37,20 @@ If path is relative, it is assumed to be relative to the workspace dir.
 If there are more than one input file, simply do -if path_to_file for each file.""",
 )
 @click.option(
-    "--storage_config_file",
-    "-cf",
+    "--config_file",
+    "-c",
     type=click.Path(path_type=Path, dir_okay=False),
     required=True,
     help="""The path to the s3 config file containing the configs like bucket, url, etc.
 If path is relative, it is assumed to be relative to the workspace dir""",
 )
-def main(registry_path: Path, input_file: List[Path], storage_config_file: Path):
+def main(registry_path: Path, input_file: List[Path], config_file: Path):
     """Turns input deb packages into modules referenced by a local registry."""
     if not registry_path.is_absolute():
         registry_path = Path(BAZEL_WORKSPACE_DIR_STR) / registry_path
 
-    if not storage_config_file.is_absolute():
-        storage_config_file = Path(BAZEL_WORKSPACE_DIR_STR) / storage_config_file
+    if not config_file.is_absolute():
+        config_file = Path(BAZEL_WORKSPACE_DIR_STR) / config_file
 
     input_files = [
         file if file.is_absolute() else Path(BAZEL_WORKSPACE_DIR_STR) / file
@@ -64,7 +64,7 @@ def main(registry_path: Path, input_file: List[Path], storage_config_file: Path)
 
     bazelize_deps(
         registry_path=registry_path,
-        storage=create_storage(storage_config_file),
+        storage=create_storage(config_file),
         input_package_metadatas=read_input_files(
             registry_path=registry_path, input_files=input_files
         ),
