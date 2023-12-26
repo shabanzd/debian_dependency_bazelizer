@@ -14,7 +14,7 @@ jobs:
       - run: bazel test //...
 
   run-main:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, debian-latest]
     steps:
       - uses: actions/checkout@v3
       - run: bazel run //src:debian_dependency_bazelizer -- -i ./tests/ci_inputs/deb_packages.in -c ./tests/ci_inputs/storage_config.json -i ./tests/ci_inputs/deb_packages_2.in
