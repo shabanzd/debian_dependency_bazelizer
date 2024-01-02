@@ -3,9 +3,6 @@ common --registry=file://%workspace%/my_registry/
 common --registry=file://%workspace%/static_registry/
 # fallback to Bazel Central registry
 common --registry=https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/
-# enable bzlmod
-common --enable_bzlmod
-
 
 # Testing
 test --test_output=errors
