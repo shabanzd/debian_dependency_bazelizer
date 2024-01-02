@@ -11,6 +11,6 @@ compile_pip_requirements(
         "--index-url=https://pypi.python.org/simple",
         "--upgrade",
     ],
-    requirements_in = "requirements.in",
+    src = "requirements.in",
     requirements_txt = "requirements.txt",
 )
