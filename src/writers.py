@@ -146,7 +146,7 @@ def write_cpp_path_file(rpaths: Dict[str, str], package_name: str, file: Path):
     full_rpaths = {key: "../" + value + "/" + key for key, value in rpaths.items()}
     write_file(_create_paths_cpp_file_content(full_rpaths, package_name), file)
 
-def json_dump(json_file, obj, sort_keys=True):
+def json_dump(json_file: Path, obj: Dict[Any, Any], sort_keys=True):
     "Dumps json content into json file"
     with open(file=json_file, mode="w", encoding="utf-8") as file:
         json.dump(obj, file, indent=4, sort_keys=sort_keys)
