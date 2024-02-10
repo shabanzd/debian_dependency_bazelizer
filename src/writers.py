@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Final
+from typing import Any, Dict, Final
 
 import json
 import os
