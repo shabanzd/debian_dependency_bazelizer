@@ -123,7 +123,7 @@ inline std::map<std::string, std::string> paths()
 """
 
 def write_file(content: str, file: Path):
-    "Writes content in a MODULE.bazel file declaring the package as a module and listing its bazel_deps"
+    "Writes a file content"
     with open(file, "w") as file_to_write:
         file_to_write.write(content)
 

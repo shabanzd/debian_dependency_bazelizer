@@ -12,7 +12,6 @@ from src.package import Package, PackageMetadata
 from src.version import get_version_from_registry
 from src.writers import write_module_file, write_file, json_dump
 
-BAZEL_WORKSPACE_DIRECTORY_ENV: Final = "BUILD_WORKSPACE_DIRECTORY"
 MODULES_DIR: Final = Path("modules")
 RPATHS_DOT_JSON: Final = Path("rpaths.json")
 METADATA_DOT_JSON: Final = Path("metadata.json")
