@@ -70,7 +70,7 @@ def _repackage_deb_package(package: Package):
     json_dump(package.package_dir / RPATHS_DOT_JSON, package.rpaths)
     debian_module_tar = Path(package.prefix + ".tar.gz")
     # repackage Debian Module as a tarball.
-    with tarfile.open(debian_module_tar, "w:gz", dereference=True) as tar:
+    with tarfile.open(debian_module_tar, "w:gz") as tar:
         tar.add(package.package_dir.relative_to(Path(".").resolve()))
 
     return debian_module_tar
