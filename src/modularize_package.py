@@ -68,9 +68,9 @@ def _repackage_deb_package(package: Package):
     write_python_path_file(package.rpaths, package.package_dir / Path(package.module_name + "_paths.py"))
     write_cpp_path_file(package.rpaths, package.name, package.package_dir / Path(package.module_name  + "_paths.hh"))
     json_dump(package.package_dir / RPATHS_DOT_JSON, package.rpaths)
-    debian_module_tar = Path(package.prefix + ".tar.gz")
+    debian_module_tar = Path(package.prefix_version + ".tar.gz")
     # repackage Debian Module as a tarball.
-    with tarfile.open(debian_module_tar, "w:gz", dereference=True) as tar:
+    with tarfile.open(debian_module_tar, "w:gz") as tar:
         tar.add(package.package_dir.relative_to(Path(".").resolve()))
 
     return debian_module_tar

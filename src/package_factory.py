@@ -179,7 +179,8 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
-    package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}~{get_module_version(metadata.version)}"
+    package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}~"
+    package.prefix_version = package.prefix + metadata.version
     package.compatibility_level = get_compatibility_level(metadata.version)
     # path to package.deb
     archive_path = _download_package_dot_debian(
