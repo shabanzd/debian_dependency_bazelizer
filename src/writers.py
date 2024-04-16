@@ -8,8 +8,13 @@ from src.package import Package
 from src.module import get_module_name, get_module_version
 
 RPATHS_DOT_JSON: Final = "rpaths.json"
+LINUX_PLATFORM: Final = "@platforms//os:linux"
+X86_64_CPU: Final = "@platforms//cpu:x86_64"
 
 def _create_build_file_content(package: Package):
+    if package.arch != "amd64":
+        raise ValueError("Only amd64 architecture is supported for now")
+
     dep_targets = []
     for dep in package.deps:
         module_name = get_module_name(name=dep.name, arch=dep.arch)
@@ -48,6 +53,10 @@ py_library(
     name = "{package.module_name}_paths_py",
     srcs = ["{package.module_name}_paths.py"],
     data = [":all_files"],
+    target_compatible_with = [
+        {LINUX_PLATFORM},
+        {X86_64_CPU},
+    ],
     visibility = ["//visibility:public"],
 )
 
@@ -55,6 +64,10 @@ cc_library(
     name = "{package.module_name}_paths_cc",
     hdrs = ["{package.module_name}_paths.hh"],
     data = [":all_files"],
+    target_compatible_with = [
+        {LINUX_PLATFORM},
+        {X86_64_CPU},
+    ],
     visibility = ["//visibility:public"],
 )
 

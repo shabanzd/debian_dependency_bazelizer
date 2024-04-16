@@ -1,6 +1,6 @@
 """File containing an input file reader for deb packages."""
 from collections import defaultdict
-from typing import Dict, Iterable, List, Set
+from typing import Dict, Iterable, Set
 from pathlib import Path
 
 import functools
@@ -12,7 +12,6 @@ from src.version import (
     compare_version_strings,
 )
 
-
 def _get_package_metadata(registry_path: Path, pinned_package: str) -> PackageMetadata:
     _check_entry(pinned_package)
     # entries format: name:arch=version
@@ -22,6 +21,9 @@ def _get_package_metadata(registry_path: Path, pinned_package: str) -> PackageMe
 
     if "=" in arch_version:
         arch, version = arch_version.split("=")
+    
+    if arch != "amd64":
+        raise ValueError(f"Unsupported architecture {arch}. Only amd64 arch is supported so far.")
 
     if not version:
         version = get_package_version(registry_path=registry_path, name=name, arch=arch)
@@ -67,7 +69,7 @@ def _get_unique_pacakges(package_versions: Iterable[str]) -> Set[str]:
 
 
 def read_input_files(
-    registry_path: Path, input_files: List[Path]
+    registry_path: Path, input_files: Iterable[Path]
 ) -> Set[PackageMetadata]:
     """Reads input files and returns a Set of PackageMetadatas."""
     input_packages_dict: Dict[str, Set[str]] = {}
