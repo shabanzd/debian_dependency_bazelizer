@@ -28,7 +28,6 @@ class Package:
     module_name: str = ""
     pinned_name: str = ""
     prefix: str = ""
-    prefix_version: str = ""
     compatibility_level: int = 0
     package_dir: Path = Path()
     deps: Set[PackageMetadata] = dataclasses.field(default_factory=set)

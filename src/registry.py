@@ -97,7 +97,7 @@ def add_package_to_registry(registry_path: Path, package: Package, debian_module
     source_json = {
         "integrity": _get_integrity_for_file(debian_module_tar),
         "url": full_url,
-        "strip_prefix": package.prefix_version,
+        "strip_prefix": package.prefix,
     }
 
     json_dump(Path.joinpath(module_path_in_registry, SOURCE_DOT_JSON), source_json)
