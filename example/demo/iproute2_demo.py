@@ -1,5 +1,5 @@
 import subprocess
-from iproute2_paths import paths
+from iproute2_amd64_paths import paths
 
 def main():
     print(subprocess.check_output(["ldd", paths()["ip"]], encoding="utf-8"))
