@@ -8,8 +8,13 @@ from src.package import Package
 from src.module import get_module_name, get_module_version
 
 RPATHS_DOT_JSON: Final = "rpaths.json"
+LINUX_PLATFORM: Final = "@platforms//os:linux"
+X86_64_CPU: Final = "@platforms//cpu:x86_64"
 
 def _create_build_file_content(package: Package):
+    if package.arch != "amd64":
+        raise ValueError("Only amd64 architecture is supported for now")
+
     dep_targets = []
     for dep in package.deps:
         module_name = get_module_name(name=dep.name, arch=dep.arch)
@@ -23,7 +28,10 @@ def _create_build_file_content(package: Package):
         ]
     )
 
-    file_group = f"""filegroup(
+    file_group = f"""
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+filegroup(
     name = "all_files",
     srcs = [
       {files_str}
@@ -48,6 +56,10 @@ py_library(
     name = "{package.module_name}_paths_py",
     srcs = ["{package.module_name}_paths.py"],
     data = [":all_files"],
+    target_compatible_with = [
+        "{LINUX_PLATFORM}",
+        "{X86_64_CPU}",
+    ],
     visibility = ["//visibility:public"],
 )
 
@@ -55,6 +67,10 @@ cc_library(
     name = "{package.module_name}_paths_cc",
     hdrs = ["{package.module_name}_paths.hh"],
     data = [":all_files"],
+    target_compatible_with = [
+        "{LINUX_PLATFORM}",
+        "{X86_64_CPU}",
+    ],
     visibility = ["//visibility:public"],
 )
 
@@ -69,17 +85,15 @@ def _create_module_file_content(package: Package):
     if not get_module_version(package.version):
         raise ValueError("can't create module for a package without a version")
 
-    bazel_deps = ""
-
-    if package.deps:
-        bazel_dep_list = []
-        for dep in package.deps:
-            module_name = get_module_name(name=dep.name, arch=dep.arch)
-            module_version = get_module_version(dep.version)
-            bazel_dep_list.append(
-                f"""bazel_dep(name = "{module_name}", version = "{module_version}")"""
-            )
-        bazel_deps = "\n" + "\n".join(bazel_dep_list) + "\n"
+    bazel_dep_list = ["""bazel_dep(name = "rules_cc", version = "0.0.9")""", """bazel_dep(name = "platforms", version = "0.0.6")"""]
+    for dep in package.deps:
+        module_name = get_module_name(name=dep.name, arch=dep.arch)
+        module_version = get_module_version(dep.version)
+        bazel_dep_list.append(
+            f"""bazel_dep(name = "{module_name}", version = "{module_version}")"""
+        )
+    
+    bazel_deps = "\n" + "\n".join(bazel_dep_list) + "\n"
 
     return f"""module(
     name = \"{get_module_name(name=package.name, arch=package.arch)}\",
