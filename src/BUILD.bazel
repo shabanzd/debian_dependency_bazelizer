@@ -27,7 +27,12 @@ py_library(
 py_library(
     name = "storage",
     srcs = ["storage.py"],
-    deps = ["@poetry//:boto3"],
+    deps = [
+        "@poetry//:boto3",
+        # Adding the urllib3 transitive dependency of boto3 here to work around
+        # https://github.com/shabanzd/debian_dependency_bazelizer/pull/65#issuecomment-2264218951
+        "@poetry//:urllib3",
+    ],
 )
 
 py_library(
