@@ -1,4 +1,6 @@
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@dep_bazelizer_deps//:requirements.bzl", "requirement")
 
 compile_pip_requirements(
     name = "requirements",
@@ -13,4 +15,17 @@ compile_pip_requirements(
     ],
     src = "requirements.in",
     requirements_txt = "requirements.txt",
+)
+
+py_binary(
+    name = "debian_dependency_bazelizer",
+    srcs = ["main.py"],
+    main = "main.py",
+    tags = ["local"],
+    deps = [
+        "//src:bazelize_deps",
+        "//src:read_input_files",
+        requirement("click"),
+    ],
+    visibility = ["//visibility:public"],
 )

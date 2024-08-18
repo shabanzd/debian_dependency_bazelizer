@@ -3,7 +3,7 @@ import sys
 
 from click.testing import CliRunner
 
-from src.main import main
+from main import main
 
 
 def test_main():

@@ -1,5 +1,3 @@
-# Internal registry for custom packages hosted inside the monorepo.
-common --registry=file://%workspace%/static_registry/
 # fallback to Bazel Central registry
 common --registry=https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/
 
