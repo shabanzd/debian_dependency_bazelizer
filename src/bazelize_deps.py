@@ -6,7 +6,6 @@ from src.module import Module
 from src.modularize_package import modularize_package
 from src.package import Package, PackageMetadata
 from src.registry import find_module_in_registry
-from src.storage import Storage
 
 
 def _add_deps_to_stack(
@@ -47,7 +46,7 @@ def _print_summary(deb_package_cache: Dict[PackageMetadata, Package]):
 def bazelize_deps(
     registry_path: Path,
     input_package_metadatas: Set[PackageMetadata],
-    storage: Storage,
+    modules_path: Path,
 ) -> None:
     """This function bazelizes deps in a topological order."""
     visited_modules: Dict[PackageMetadata, Module] = {}
@@ -95,7 +94,7 @@ def bazelize_deps(
             package_metadata = package_stack.pop()
             package = processed_packages[package_metadata]
             modularize_package(
-                registry_path=registry_path, package=package, modules=visited_modules, storage=storage
+                registry_path=registry_path, package=package, modules=visited_modules, modules_path=modules_path
             )
             visited_modules[package_metadata] = Module(
                 name=package.name,

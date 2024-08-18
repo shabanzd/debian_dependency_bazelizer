@@ -10,7 +10,6 @@ def run_bazelizer():
         deps = [
             Label("//src:bazelize_deps"),
             Label("//src:read_input_files"),
-            Label("//src:storage"),
             requirement("click")
             ],
 )
