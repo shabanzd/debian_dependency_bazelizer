@@ -188,53 +188,7 @@ def compare_debian_versions(version_1: DebianVersion, version_2: DebianVersion) 
     return 0
 
 
-def get_version_from_registry(
-    registry_path: Path, name: str, arch: str, version_spec: str
-) -> str:
-    "Get a compliant version from registry."
-    module_name = get_module_name(name=name, arch=arch)
-    modules_path = registry_path / "modules"
-    module_path = modules_path / module_name
+def get_package_version(name: str, arch: str) -> str:
+    "Get package version from apt-cache."
 
-    if not module_path.exists():
-        logger.info(
-            f"module {module_name} not found in local bazel registry, expected path: {module_path} does not exist."
-        )
-        return ""
-
-    debian_versions = _get_versions(module_path)
-    if not debian_versions:
-        raise ValueError(
-            f"package: {module_name}, exists in registry modules, but has no versions"
-        )
-
-    debian_versions.sort(
-        reverse=True, key=functools.cmp_to_key(compare_debian_versions)
-    )
-    # find the highest version that matches the version_specifier
-    for deb_version in debian_versions:
-        if version_spec and not _satisfies_specifications(deb_version, version_spec):
-            continue
-
-        logger.debug(
-            "Found version: %s:%s",
-            deb_version.epoch,
-            deb_version.version,
-        )
-
-        return deb_version.raw_version
-
-    return ""
-
-
-def get_package_version(
-    registry_path: Path, name: str, arch: str, version_spec: str = ""
-) -> str:
-    "Get package version by trying to first get it from registry, if not possible get it from apt-cache."
-    dep_version = get_version_from_registry(
-        registry_path=registry_path, name=name, arch=arch, version_spec=version_spec
-    )
-    if not dep_version:
-        dep_version = _get_deb_package_version_from_aptcache(name, arch)
-
-    return dep_version
+    return _get_deb_package_version_from_aptcache(name, arch)

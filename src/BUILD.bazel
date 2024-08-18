@@ -33,7 +33,6 @@ py_library(
         ":modularize_package",
         ":module",
         ":package",
-        ":registry",
     ],
 )
 
@@ -62,7 +61,6 @@ py_library(
     deps = [
         ":module",
         ":package",
-        ":registry",
         ":writers",
     ],
 )
@@ -75,17 +73,6 @@ py_library(
 py_library(
     name = "package",
     srcs = ["package.py"],
-)
-
-py_library(
-    name = "registry",
-    srcs = ["registry.py"],
-    deps = [
-        ":version",
-        ":module",
-        ":package",
-        ":writers",
-    ],
 )
 
 py_library(

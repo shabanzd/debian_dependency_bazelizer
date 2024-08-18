@@ -11,7 +11,6 @@ def test_main():
     runner = CliRunner()
     result = runner.invoke(main, ["--help"])
     assert result.exit_code == 0
-    assert "-r" in result.output
     assert "-i" in result.output
     assert "-m" in result.output
 

@@ -5,7 +5,6 @@ from src.package_factory import create_deb_package
 from src.module import Module
 from src.modularize_package import modularize_package
 from src.package import Package, PackageMetadata
-from src.registry import find_module_in_registry
 
 
 def _add_deps_to_stack(
@@ -44,7 +43,6 @@ def _print_summary(deb_package_cache: Dict[PackageMetadata, Package]):
 
 
 def bazelize_deps(
-    registry_path: Path,
     input_package_metadatas: Set[PackageMetadata],
     modules_path: Path,
 ) -> None:
@@ -55,16 +53,7 @@ def bazelize_deps(
     processed_packages: Dict[PackageMetadata, Package] = {}
 
     for input_package_metadata in input_package_metadatas:
-        module = find_module_in_registry(
-            registry_path=registry_path, package_metadata=input_package_metadata
-        )
-        if module:
-            visited_modules[input_package_metadata] = module
-            continue
-
-        processed_packages[input_package_metadata] = create_deb_package(
-            registry_path=registry_path, metadata=input_package_metadata
-        )
+        processed_packages[input_package_metadata] = create_deb_package(metadata=input_package_metadata)
 
     package_stack = list(processed_packages.keys())
 
@@ -73,17 +62,8 @@ def bazelize_deps(
             package_stack.pop()
             continue
 
-        module = find_module_in_registry(
-            registry_path=registry_path, package_metadata=package_stack[-1]
-        )
-        if module:
-            visited_modules[package_stack.pop()] = module
-            continue
-
         if package_stack[-1] not in processed_packages:
-            processed_packages[package_stack[-1]] = create_deb_package(
-                registry_path=registry_path, metadata=package_stack[-1]
-            )
+            processed_packages[package_stack[-1]] = create_deb_package(metadata=package_stack[-1])
 
         if not _add_deps_to_stack(
             package_stack[-1],
@@ -94,7 +74,7 @@ def bazelize_deps(
             package_metadata = package_stack.pop()
             package = processed_packages[package_metadata]
             modularize_package(
-                registry_path=registry_path, package=package, modules=visited_modules, modules_path=modules_path
+                package=package, modules=visited_modules, modules_path=modules_path
             )
             visited_modules[package_metadata] = Module(
                 name=package.name,

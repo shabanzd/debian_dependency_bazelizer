@@ -5,7 +5,7 @@ import os
 import subprocess
 
 from src.version import get_package_version, get_compatibility_level
-from src.module import get_module_name, get_module_version
+from src.module import get_module_name
 from src.package import PackageMetadata, Package
 
 DEPENDS_ATTR: Final = "Depends"
@@ -107,7 +107,7 @@ def _extract_attribute(
     )
 
 
-def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
+def _get_package_deps(archive_path: Path, arch: str):
     deps_str = _extract_attribute(
         subprocess.check_output(["dpkg-deb", "-I", archive_path], encoding="utf-8"),
         DEPENDS_ATTR,
@@ -153,7 +153,6 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
             continue
 
         dep_version = get_package_version(
-            registry_path=registry_path,
             name=dep_name,
             arch=arch,
             version_spec=version_spec,
@@ -164,7 +163,7 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
     return deps
 
 
-def create_deb_package(registry_path: Path, metadata: PackageMetadata):
+def create_deb_package(metadata: PackageMetadata):
     """Factory function to create deb packages."""
     if not metadata.name or not metadata.arch or not metadata.version:
         raise ValueError(
@@ -223,9 +222,7 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
         return package
 
     # now fillup the transitive deps
-    package.deps = _get_package_deps(
-        registry_path=registry_path, archive_path=archive_path, arch=package.arch
-    )
+    package.deps = _get_package_deps(archive_path=archive_path, arch=package.arch)
     archive_path.unlink()
 
     return package

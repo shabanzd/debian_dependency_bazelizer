@@ -1,6 +1,6 @@
 """File containing an input file reader for deb packages."""
 from collections import defaultdict
-from typing import Dict, Iterable, Set
+from typing import Dict, Iterable
 from pathlib import Path
 
 import functools
@@ -12,7 +12,7 @@ from src.version import (
     compare_version_strings,
 )
 
-def _get_package_metadata(registry_path: Path, pinned_package: str) -> PackageMetadata:
+def _get_package_metadata(pinned_package: str) -> PackageMetadata:
     _check_entry(pinned_package)
     # entries format: name:arch=version
     name, arch_version = pinned_package.split(":", maxsplit=1)
@@ -26,7 +26,7 @@ def _get_package_metadata(registry_path: Path, pinned_package: str) -> PackageMe
         raise ValueError(f"Unsupported architecture {arch}. Only amd64 arch is supported so far.")
 
     if not version:
-        version = get_package_version(registry_path=registry_path, name=name, arch=arch)
+        version = get_package_version(name=name, arch=arch)
 
     return PackageMetadata(name=name, arch=arch, version=version)
 
@@ -44,7 +44,7 @@ def _check_entry(entry: str) -> bool:
     return True
 
 
-def _get_unique_pacakges(package_versions: Iterable[str]) -> Set[str]:
+def _get_unique_pacakges(package_versions: set[str]) -> set[str]:
     if len(package_versions) == 1:
         return {package_versions.pop()}
 
@@ -68,11 +68,9 @@ def _get_unique_pacakges(package_versions: Iterable[str]) -> Set[str]:
     }
 
 
-def read_input_files(
-    registry_path: Path, input_files: Iterable[Path]
-) -> Set[PackageMetadata]:
+def read_input_files(input_files: Iterable[Path]) -> set[PackageMetadata]:
     """Reads input files and returns a Set of PackageMetadatas."""
-    input_packages_dict: Dict[str, Set[str]] = {}
+    input_packages_dict: Dict[str, set[str]] = {}
     for input_file in input_files:
         input_packages = input_file.read_text().splitlines()
 
@@ -91,7 +89,7 @@ def read_input_files(
             input_packages_dict[package_name_arch].add(input_package)
 
     return {
-        _get_package_metadata(registry_path=registry_path, pinned_package=entry)
+        _get_package_metadata(pinned_package=entry)
         for entries in input_packages_dict.values()
         for entry in _get_unique_pacakges(entries)
     }
