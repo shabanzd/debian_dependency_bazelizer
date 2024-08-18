@@ -10,14 +10,12 @@ def test_assertion_when_package_has_no_arch():
     """Input file with entries that don't have architecture, should fail."""
     with pytest.raises(ValueError, match="Entry 'iproute2' has unexpected format, expected 'name:arch=version' or 'name:arch'"):
         read_input_files(
-            registry_path=Path("../resources/registry"),
             input_files=[Path("../_main/tests/resources/faulty_input.in").resolve()]
         )
 
 def test_correct_input_file():
     """Tests correct input files."""
     metadatas = read_input_files(
-                    registry_path=Path("../resources/registry"),
                     input_files=[Path("../_main/tests/resources/correct_input.in").resolve()]
                 )
     assert len(metadatas) == 3
@@ -28,7 +26,6 @@ def test_correct_input_file():
 def test_duplicate_input_files():
     """Tests duplicate input files."""
     metadatas = read_input_files(
-                    registry_path=Path("../resources/registry"),
                     input_files=[
                                 Path("../_main/tests/resources/correct_input.in").resolve(),
                                 Path("../_main/tests/resources/correct_input.in").resolve()
@@ -43,7 +40,6 @@ def test_arm_input_files():
     """Tests arm input files."""
     with pytest.raises(ValueError) as e:
         read_input_files(
-                    registry_path=Path("../resources/registry"),
                     input_files=[
                                 Path("../_main/tests/resources/arm_input.in").resolve(),
                                 ]

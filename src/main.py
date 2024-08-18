@@ -20,15 +20,6 @@ def _get_path(path: Path) -> Path:
 
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option(
-    "--registry_path",
-    "-r",
-    type=click.Path(path_type=Path, file_okay=False),
-    required=False,
-    default=Path().joinpath(BAZEL_WORKSPACE_DIR_STR, "registry"),
-    help="""The path to the directory where the local registry will reside.
-If path is relative, it is assumed to be relative to the workspace dir.""",
-)
-@click.option(
     "--input_file",
     "-i",
     type=click.Path(path_type=Path, dir_okay=False),
@@ -46,8 +37,8 @@ If there are more than one input file, simply do -if path_to_file for each file.
     help="""The path to dump the modules to. 
     If path is relative, it is assumed to be relative to the workspace dir.""",
 )
-def main(registry_path: Path, input_file: List[Path], modules_path: Path):
-    """Turns input deb packages into modules referenced by a local registry."""
+def main(input_file: List[Path], modules_path: Path):
+    """Turns input deb packages into modules and dumps it in modules_path."""
     input_files = [
         file if file.is_absolute() else Path(BAZEL_WORKSPACE_DIR_STR) / file
         for file in input_file
@@ -59,11 +50,8 @@ def main(registry_path: Path, input_file: List[Path], modules_path: Path):
             raise ValueError(f"{input_file_str} does not exist")
 
     bazelize_deps(
-        registry_path=_get_path(registry_path),
         modules_path=_get_path(modules_path),
-        input_package_metadatas=read_input_files(
-            registry_path=registry_path, input_files=input_files
-        ),
+        input_package_metadatas=read_input_files(input_files=input_files),
     )
 
 
