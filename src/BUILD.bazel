@@ -4,18 +4,6 @@ load("@dep_bazelizer_deps//:requirements.bzl", "requirement")
 
 package(default_visibility = ["//visibility:public"])
 
-py_binary(
-    name = "debian_dependency_bazelizer",
-    srcs = ["main.py"],
-    main = "main.py",
-    tags = ["local"],
-    deps = [
-        ":bazelize_deps",
-        ":read_input_files",
-        requirement("click"),
-    ],
-)
-
 py_library(
     name = "read_input_files",
     srcs = ["read_input_files.py"],
@@ -79,5 +67,3 @@ py_library(
     name = "writers",
     srcs = ["writers.py"],
 )
-
-exports_files(["main.py"])
