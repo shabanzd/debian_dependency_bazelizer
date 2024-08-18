@@ -33,6 +33,7 @@ py_test(
     data = [
         "resources/faulty_input.in",
         "resources/correct_input.in",
+        "resources/arm_input.in",
     ]
 )
 
