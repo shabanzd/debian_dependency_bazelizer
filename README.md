@@ -21,14 +21,7 @@ In order to use the `debian_dependency_bazelizer`, please apply the following st
 bazel_dep(name = "debian_dependency_bazelizer", version = "0.0.1")
 ```
 
-* Add the following to the `BUILD` file:
-
-```
-load("@debian_dependency_bazelizer//:run_bazelizer.bzl", "run_bazelizer")
-run_bazelizer()
-```
-
-* call `bazel run //:debian_dependency_bazelizer`
+* call `bazel run @debian_dependency_bazelizer --`
 
 The `debian_dependency_bazelizer` takes the following arguments:
 
