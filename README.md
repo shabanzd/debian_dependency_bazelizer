@@ -16,6 +16,7 @@ In order to try the `debian_dependency_bazelizer`, you need a linux distribution
 In order to use the `debian_dependency_bazelizer`, please apply the following steps:
 
 * In the `MODULE.bazel`, add:
+
 ```
 # since the debian dependency bazelizer is not in the BCR yet, downloading it
 # and referencing it in your repository's bazel registry is assumed to be your task :D
@@ -24,18 +25,22 @@ bazel_dep(name = "debian_dependency_bazelizer", version = "0.0.1")
 ```
 
 * Add the following to the `BUILD` file:
+
 ```
 load("@debian_dependency_bazelizer//:run_bazelizer.bzl", "run_bazelizer")
 run_bazelizer()
 ```
+
 * call `bazel run //:debian_dependency_bazelizer`
 
 The `debian_dependency_bazelizer` takes the following arguments:
 
-### Registry path: 
+### Registry path
+
 The registry path is the path to the local bazel registry. Don't forget to add this path to your .bazelrc as a fallback registry.
 
 ### Input file
+
 The input file is the file containing the debian packages to be turned into bzlmods. Similar to:
 
 ```
@@ -45,33 +50,10 @@ deb_package1:amd64=1.2.3
 deb_package2:amd64=1.2.3
 ```
 
-### Config file
-The storage config file must be written in compliance with one of the following schemas:
+### Modules path
 
-* For the `AWS S3` storage: 
-```javascript
-{
-        "download_url": "https://mydownloadurl.com", // mandatory
-        "storage": {
-            "aws_s3": {
-                "bucket": "mybucket", // mandatory
-                "credentials_profile": "other-profile", // optional
-                "upload_url": "https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev" // mandatory
-            }
-        }
-}
-```
+The path to which the modules are dumped. It is up to the user to decide where to upload them and how to access them.
 
-* For the `unknown` storage, which means that the files tars are dumped somewhere and the user will take care of uploading them to the storage of their choice: 
-```javascript
-{
-        "download_url": "https://mydownloadurl.com", // mandatory
-        "storage": {
-            "unknown": {
-                "path": "mydir" // mandatory
-            }
-        }
-}
 ```
 
 An example usage can be found at: https://github.com/shabanzd/debian_dependency_bazelizer/tree/main/example
