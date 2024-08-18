@@ -1,6 +1,6 @@
 """File containing an input file reader for deb packages."""
 from collections import defaultdict
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Set
 from pathlib import Path
 
 import functools
@@ -44,7 +44,7 @@ def _check_entry(entry: str) -> bool:
     return True
 
 
-def _get_unique_pacakges(package_versions: set[str]) -> set[str]:
+def _get_unique_pacakges(package_versions: Set[str]) -> Set[str]:
     if len(package_versions) == 1:
         return {package_versions.pop()}
 
@@ -68,9 +68,9 @@ def _get_unique_pacakges(package_versions: set[str]) -> set[str]:
     }
 
 
-def read_input_files(input_files: Iterable[Path]) -> set[PackageMetadata]:
+def read_input_files(input_files: Iterable[Path]) -> Set[PackageMetadata]:
     """Reads input files and returns a Set of PackageMetadatas."""
-    input_packages_dict: Dict[str, set[str]] = {}
+    input_packages_dict: Dict[str, Set[str]] = {}
     for input_file in input_files:
         input_packages = input_file.read_text().splitlines()
 
