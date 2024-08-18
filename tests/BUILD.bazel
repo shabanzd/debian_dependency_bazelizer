@@ -26,6 +26,7 @@ py_test(
     timeout = "short",
     srcs = ["test_read_input_files.py"],
     data = [
+        "resources/arm_input.in",
         "resources/correct_input.in",
         "resources/faulty_input.in",
     ],
