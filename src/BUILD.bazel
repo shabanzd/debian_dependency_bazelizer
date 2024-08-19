@@ -1,6 +1,4 @@
-load("@rules_python//python:defs.bzl", "py_binary", "py_library")
-load("@dep_bazelizer_deps//:requirements.bzl", "requirement")
-
+load("@rules_python//python:defs.bzl", "py_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,8 +6,8 @@ py_library(
     name = "read_input_files",
     srcs = ["read_input_files.py"],
     deps = [
-        ":version",
         ":package",
+        ":version",
     ],
 )
 
@@ -17,10 +15,10 @@ py_library(
     name = "bazelize_deps",
     srcs = ["bazelize_deps.py"],
     deps = [
-        ":package_factory",
         ":modularize_package",
         ":module",
         ":package",
+        ":package_factory",
     ],
 )
 
@@ -28,9 +26,9 @@ py_library(
     name = "package_factory",
     srcs = ["package_factory.py"],
     deps = [
-        ":version",
         ":module",
         ":package",
+        ":version",
     ],
 )
 
@@ -39,8 +37,8 @@ py_library(
     srcs = ["version.py"],
     deps = [
         ":module",
-        requirement("packaging"),
-        ],
+        "@poetry//:packaging",
+    ],
 )
 
 py_library(

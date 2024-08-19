@@ -5,34 +5,12 @@ module(
     bazel_compatibility = [">=7.0.0"],
 )
 
-bazel_dep(name = "rules_python", version = "0.27.1")
+bazel_dep(name = "rules_python", version = "0.35.0")
+bazel_dep(name = "ofiuco", version = "0.3.7")
 
-PYTHON_VERSIONS = [
-    "3.8",
-    "3.9",
-    "3.10",
-    "3.11",
-]
-
-python = use_extension("@rules_python//python/extensions:python.bzl", "python")
-
-[
-    python.toolchain(
-        is_default = python_version == PYTHON_VERSIONS[-1],
-        python_version = python_version,
-    )
-    for python_version in PYTHON_VERSIONS
-]
-
-pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-
-[
-    pip.parse(
-        hub_name = "dep_bazelizer_deps",
-        python_version = python_version,
-        requirements_lock = "//:requirements.txt",
-    )
-    for python_version in PYTHON_VERSIONS
-]
-
-use_repo(pip, "dep_bazelizer_deps")
+poetry = use_extension("@ofiuco//python:extensions.bzl", "poetry")
+poetry.parse(
+    name = "poetry",
+    lock = "//:poetry.lock",
+)
+use_repo(poetry, "poetry")

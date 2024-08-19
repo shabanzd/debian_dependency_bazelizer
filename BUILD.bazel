@@ -1,20 +1,9 @@
-load("@rules_python//python:pip.bzl", "compile_pip_requirements")
-load("@rules_python//python:defs.bzl", "py_binary", "py_library")
-load("@dep_bazelizer_deps//:requirements.bzl", "requirement")
+load("@ofiuco//python:poetry.bzl", "poetry_update")
 
-compile_pip_requirements(
-    name = "requirements",
-    timeout = "moderate",
-    extra_args = [
-        "--allow-unsafe",
-        "--emit-index-url",
-        "--resolver=backtracking",
-        "--pip-args",
-        "--index-url=https://pypi.python.org/simple",
-        "--upgrade",
-    ],
-    src = "requirements.in",
-    requirements_txt = "requirements.txt",
+poetry_update(
+    name = "update_lock",
+    lock = "poetry.lock",
+    toml = "pyproject.toml",
 )
 
 py_binary(
@@ -25,7 +14,7 @@ py_binary(
     deps = [
         "//src:bazelize_deps",
         "//src:read_input_files",
-        requirement("click"),
+        "@poetry//:click",
     ],
     visibility = ["//visibility:public"],
 )
