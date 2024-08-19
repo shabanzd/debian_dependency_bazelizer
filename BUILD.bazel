@@ -5,3 +5,16 @@ poetry_update(
     lock = "poetry.lock",
     toml = "pyproject.toml",
 )
+
+py_binary(
+    name = "debian_dependency_bazelizer",
+    srcs = ["main.py"],
+    main = "main.py",
+    tags = ["local"],
+    deps = [
+        "//src:bazelize_deps",
+        "//src:read_input_files",
+        "@poetry//:click",
+    ],
+    visibility = ["//visibility:public"],
+)

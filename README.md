@@ -3,7 +3,7 @@
 
 # debian_dependency_bazelizer
 
-The `debian_dependency_bazelizer` takes an input list of debian packages, and turns them and their entire transitive dependency subgraphs into ready-to-use, fully bazelized modules (bzlmods). It also automatically references the bazelized modules in the internal registry of the repo. The `debian_dependency_bazelizer` in its current form is intended to be used in the root module, where a local private bazel registry makes sense.
+The `debian_dependency_bazelizer` takes an input list of debian packages, and turns them and their entire transitive dependency subgraphs into ready-to-use, fully bazelized modules (bzlmods).
 
 ## Getting started
 
@@ -16,26 +16,17 @@ In order to try the `debian_dependency_bazelizer`, you need a linux distribution
 In order to use the `debian_dependency_bazelizer`, please apply the following steps:
 
 * In the `MODULE.bazel`, add:
+
 ```
-# since the debian dependency bazelizer is not in the BCR yet, downloading it
-# and referencing it in your repository's bazel registry is assumed to be your task :D
-# This should be nicer once the debian dependency bazelizer is uploaded to the BCR.
 bazel_dep(name = "debian_dependency_bazelizer", version = "0.0.1")
 ```
 
-* Add the following to the `BUILD` file:
-```
-load("@debian_dependency_bazelizer//:run_bazelizer.bzl", "run_bazelizer")
-run_bazelizer()
-```
-* call `bazel run //:debian_dependency_bazelizer`
+* call `bazel run @debian_dependency_bazelizer --`
 
 The `debian_dependency_bazelizer` takes the following arguments:
 
-### Registry path: 
-The registry path is the path to the local bazel registry. Don't forget to add this path to your .bazelrc as a fallback registry.
-
 ### Input file
+
 The input file is the file containing the debian packages to be turned into bzlmods. Similar to:
 
 ```
@@ -45,33 +36,10 @@ deb_package1:amd64=1.2.3
 deb_package2:amd64=1.2.3
 ```
 
-### Config file
-The storage config file must be written in compliance with one of the following schemas:
+### Modules path
 
-* For the `AWS S3` storage: 
-```javascript
-{
-        "download_url": "https://mydownloadurl.com", // mandatory
-        "storage": {
-            "aws_s3": {
-                "bucket": "mybucket", // mandatory
-                "credentials_profile": "other-profile", // optional
-                "upload_url": "https://pub-57066c0fbbb14beb942f046a28ab836b.r2.dev" // mandatory
-            }
-        }
-}
-```
+The path to which the modules are dumped. It is up to the user to decide where to upload them and how to access them.
 
-* For the `unknown` storage, which means that the files tars are dumped somewhere and the user will take care of uploading them to the storage of their choice: 
-```javascript
-{
-        "download_url": "https://mydownloadurl.com", // mandatory
-        "storage": {
-            "unknown": {
-                "path": "mydir" // mandatory
-            }
-        }
-}
 ```
 
 An example usage can be found at: https://github.com/shabanzd/debian_dependency_bazelizer/tree/main/example
@@ -82,7 +50,7 @@ Up until `Bazel 5`, Bazel had not been able to resolve dependency graphs. As a r
 
 Since `Bazel 6` and the introduction of `bzlmod`s, the approach described above is no longer the only option.
 
-The `debian_dependency_bazelizer` is a tool that takes input packages of different types, then turns those packages, in addition to their entire dependency graphs, into `bzlmod`s and references them in an internal `registry`. The freshly generated `bzlmod`s are ready to be resolved and consumed directly by `Bazel`. This eliminates the need to have package managers running in repository rules in order to resolve dependency graphs for `Bazel`. Another benefit the `debian_dependency_bazelizer` provides, is that the modules created by the tool access their transitive runtime dependencies directly from the runfiles; not from sysroot or a custom sysroot.
+The `debian_dependency_bazelizer` is a tool that takes input packages of different types, then turns those packages, in addition to their entire dependency graphs, into `bzlmod`s. The created modules by the `debian_dependency_bazelizer` access their transitive runtime dependencies directly from the runfiles; not from sysroot or a custom sysroot.
 
 ### What if every dependency was a bzlmod?
 
@@ -104,14 +72,12 @@ So in order to turn a debian package, say `deb_a`, into a module, all we need to
 
 Great, so now `deb_a` is a module. Problem is, it is likely that `deb_a` has transitive dependencies. In order for the `deb_a` module to fetch those dependencies, they also need to be modules. In other words, the entire subgraph needs to be built up of bazel modules. This means that the modularization process mentioned above should be done for the entire dependency subgraph.
 
-The `debian_dependency_bazelizer` tries to do exactly that; it processes the entire dependency graph and repackages it into modules. It also adds references to these modules in a local registry inside the repo. One can visualize the process as in the graph below
+The `debian_dependency_bazelizer` tries to do exactly that; it processes the entire dependency graph and repackages it into modules. One can visualize the process as in the graph below
 
 ```mermaid
 graph LR;
     A[Unpackage Dependency]-->B[Modularize Dependency];
-    B-->C[Reference Dependency in The Local Registry];
-    D[Next Dependency]-->A;
-    C --> D;
+    B-->C[Next Dependency]-->A;
 ```
 
 Since it is not necessary for this tool to be implemented as a repository rule, I decided to do it entirely in python. This could make the code base easier to test and collaborate on.
@@ -156,14 +122,10 @@ graph TB;
     A[Queue of deb dependencies, deb_q]-->|deb_dep|B{Visited?};
     %% if visited, pop and process next
     B-->|yes|C[Pop deb_q]-->A;
-    %% if not in visited, check registry
-    B-->|no|D{In Registry?};
-    %% if in registry, retrieve and mark visited
-    D-->|yes|E[Retrieve info from egistry]-->F[Mark as Visited]-->C;
-    %% if not in registry, 
-    D-->|no|G[apt-get download deb_dep_pinned_name] -->|get transitive deps|H[dpkg-deb -I deb_archive_path]-->|list files|I[dpkg -X deb_archive_path pkg_dir] --> J[get rpath directories]-->K{are all transitive dependency visited?};
+    %% if not in visited
+    B-->|no|D[apt-get download deb_dep_pinned_name] -->|get transitive deps|H[dpkg-deb -I deb_archive_path]-->|list files|I[dpkg -X deb_archive_path pkg_dir] --> J[get rpath directories]-->K{are all transitive dependency visited?};
     %% if all transitive deps are visited => edge => rpath patch and modularize
-    K-->|yes|L[rpath patch ELF files in the package]-->M[Turn package into a module]-->N[Upload as an archive, or add to repo]-->O[reference the module in the registry]-->C;
+    K-->|yes|L[rpath patch ELF files in the package]-->M[Turn package into a module]-->N[Dump in modules_path]-->C;
     %% if all transitive deps are visited => process next
     K-->|no|P[add all non-processed transitive deps to deb_q]-->A;
 ```

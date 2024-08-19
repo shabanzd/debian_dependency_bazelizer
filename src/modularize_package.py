@@ -4,11 +4,10 @@ from pathlib import Path
 import os
 import subprocess
 import tarfile
+import shutil
 
 from src.module import Module
 from src.package import Package, PackageMetadata
-from src.registry import add_package_to_registry
-from src.storage import Storage
 from src.writers import write_build_file, write_module_file, write_python_path_file, write_cpp_path_file, json_dump
 
 BUILD_FILE: Final = Path("BUILD")
@@ -77,17 +76,12 @@ def _repackage_deb_package(package: Package):
 
 
 def modularize_package(
-    registry_path: Path, package: Package, modules: Dict[PackageMetadata, Module], storage: Storage
+    package: Package, modules: Dict[PackageMetadata, Module], modules_path: Path
 ):
-    """Turns package into a module and adds it to local registry."""
+    """Turns package into a module."""
     _rpath_patch_elf_files(package=package, modules=modules)
     module_tar = _repackage_deb_package(package)
-    storage.upload_file(file=module_tar)
+    modules_path.mkdir(exist_ok=True , parents=True)
+    shutil.copy(module_tar, modules_path / module_tar.name)
 
-    add_package_to_registry(
-        registry_path=registry_path,
-        package=package,
-        debian_module_tar=str(module_tar),
-        full_url=storage.get_download_url(module_tar),
-    )
     module_tar.unlink()

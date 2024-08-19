@@ -1,19 +1,6 @@
-load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@rules_python//python:defs.bzl", "py_library")
 
 package(default_visibility = ["//visibility:public"])
-
-py_binary(
-    name = "debian_dependency_bazelizer",
-    srcs = ["main.py"],
-    main = "main.py",
-    tags = ["local"],
-    deps = [
-        ":bazelize_deps",
-        ":read_input_files",
-        ":storage",
-        "@poetry//:click",
-    ],
-)
 
 py_library(
     name = "read_input_files",
@@ -25,12 +12,6 @@ py_library(
 )
 
 py_library(
-    name = "storage",
-    srcs = ["storage.py"],
-    deps = ["@poetry//:boto3"],
-)
-
-py_library(
     name = "bazelize_deps",
     srcs = ["bazelize_deps.py"],
     deps = [
@@ -38,8 +19,6 @@ py_library(
         ":module",
         ":package",
         ":package_factory",
-        ":registry",
-        ":storage",
     ],
 )
 
@@ -68,8 +47,6 @@ py_library(
     deps = [
         ":module",
         ":package",
-        ":registry",
-        ":storage",
         ":writers",
     ],
 )
@@ -85,19 +62,6 @@ py_library(
 )
 
 py_library(
-    name = "registry",
-    srcs = ["registry.py"],
-    deps = [
-        ":module",
-        ":package",
-        ":version",
-        ":writers",
-    ],
-)
-
-py_library(
     name = "writers",
     srcs = ["writers.py"],
 )
-
-exports_files(["main.py"])

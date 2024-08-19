@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: bazel run //src:debian_dependency_bazelizer -- -i ./tests/ci_inputs/deb_packages.in -c ./tests/ci_inputs/storage_config.json -i ./tests/ci_inputs/deb_packages_2.in
-      - run: bazel run //src:debian_dependency_bazelizer  -- -i ./tests/ci_inputs/deb_packages.in -c ./tests/ci_inputs/unknown_storage_config.json
+      - run: bazel run //:debian_dependency_bazelizer -- -i ./tests/ci_inputs/deb_packages.in -m modules -i ./tests/ci_inputs/deb_packages_2.in
+      - run: bazel run //:debian_dependency_bazelizer  -- -i ./tests/ci_inputs/deb_packages.in -m modules
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd example && bazel run //:debian_dependency_bazelizer  -- -i ../tests/ci_inputs/deb_packages.in -c ../tests/ci_inputs/storage_config.json -i ../tests/ci_inputs/deb_packages_2.in
+      - run: cd example && bazel run @debian_dependency_bazelizer  -- -i ../tests/ci_inputs/deb_packages.in -m modules -i ../tests/ci_inputs/deb_packages_2.in
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

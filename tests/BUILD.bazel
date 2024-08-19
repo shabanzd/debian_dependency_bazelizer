@@ -41,27 +41,8 @@ py_test(
     timeout = "short",
     srcs = ["test_main.py"],
     deps = [
-        "//src:debian_dependency_bazelizer",
+        "//:debian_dependency_bazelizer",
         "@poetry//:click",
-        "@poetry//:pytest",
-    ],
-)
-
-py_test(
-    name = "test_storage",
-    timeout = "short",
-    srcs = ["test_storage.py"],
-    data = [
-        "resources/correct_s3_storage_config.json",
-        "resources/correct_unknown_storage_config.json",
-        "resources/missing_bucket_s3_storage_config.json",
-        "resources/missing_path_unknown_storage_config.json",
-        "resources/missing_storage_s3_storage_config.json",
-        "resources/missing_url_s3_storage_config.json",
-        "resources/storage_config.txt",
-    ],
-    deps = [
-        "//src:storage",
         "@poetry//:pytest",
     ],
 )

@@ -3,7 +3,7 @@ import sys
 
 from click.testing import CliRunner
 
-from src.main import main
+from main import main
 
 
 def test_main():
@@ -11,9 +11,8 @@ def test_main():
     runner = CliRunner()
     result = runner.invoke(main, ["--help"])
     assert result.exit_code == 0
-    assert "-r" in result.output
     assert "-i" in result.output
-    assert "-c" in result.output
+    assert "-m" in result.output
 
     result = runner.invoke(main)
     assert result.exit_code != 0
@@ -21,7 +20,7 @@ def test_main():
 
     result = runner.invoke(main, ["-i", "./tests/ci_inputs/deb_packages.in"])
     assert result.exit_code != 0
-    assert "Error: Missing option '--config_file' / '-c'" in result.output
+    assert "Error: Missing option '--modules_path' / '-m'" in result.output
 
 
 if __name__ == "__main__":
