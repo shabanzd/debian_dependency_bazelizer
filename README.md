@@ -40,8 +40,6 @@ deb_package2:amd64=1.2.3
 
 The path to which the modules are dumped. It is up to the user to decide where to upload them and how to access them.
 
-```
-
 An example usage can be found at: https://github.com/shabanzd/debian_dependency_bazelizer/tree/main/example
 
 ## Summary
