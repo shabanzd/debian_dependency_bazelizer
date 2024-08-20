@@ -37,8 +37,18 @@ If there are more than one input file, simply do -if path_to_file for each file.
     help="""The path to dump the modules to. 
     If path is relative, it is assumed to be relative to the workspace dir.""",
 )
-def main(input_file: List[Path], modules_path: Path):
+@click.option(
+    "--delimiter",
+    "-d",
+    required=False,
+    default="~",
+    help="""Starting bazel 7.3, modules can have a ~ delimiter or a + delimiter.""",
+)
+def main(input_file: List[Path], modules_path: Path, delimiter: str):
     """Turns input deb packages into modules and dumps it in modules_path."""
+    if delimiter not in {"~", "+"}:
+        raise ValueError(f"Delimiter: {delimiter} is not allowed. Delimiter must be either ~ or +")
+        
     input_files = [
         file if file.is_absolute() else Path(BAZEL_WORKSPACE_DIR_STR) / file
         for file in input_file
@@ -52,6 +62,7 @@ def main(input_file: List[Path], modules_path: Path):
     bazelize_deps(
         modules_path=_get_path(modules_path),
         input_package_metadatas=read_input_files(input_files=input_files),
+        delimiter=delimiter,
     )
 
 

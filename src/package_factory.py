@@ -155,7 +155,7 @@ def _get_package_deps(archive_path: Path, arch: str):
     return deps
 
 
-def create_deb_package(metadata: PackageMetadata):
+def create_deb_package(metadata: PackageMetadata, delimiter: str = "~") -> Package:
     """Factory function to create deb packages."""
     if not metadata.name or not metadata.arch or not metadata.version:
         raise ValueError(
@@ -170,7 +170,7 @@ def create_deb_package(metadata: PackageMetadata):
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
-    package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}~"
+    package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}{delimiter}"
     package.prefix_version = package.prefix + metadata.version
     package.compatibility_level = get_compatibility_level(metadata.version)
     # path to package.deb
