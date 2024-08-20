@@ -9,7 +9,7 @@ The `debian_dependency_bazelizer` takes an input list of debian packages, and tu
 
 ### Requirements
 
-In order to try the `debian_dependency_bazelizer`, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed (preferably version 0.10). You are recommended to have [bazelisk](https://github.com/bazelbuild/bazelisk) installed as well.
+In order to try the `debian_dependency_bazelizer`, you need a linux distribution running `apt` and `dpkg`. These are needed to manage and unpack the debian packages. In addition, `patchelf` needs to be installed (preferably version 0.10).
 
 ### Using the debian_dependency_bazelizer
 
