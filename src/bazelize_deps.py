@@ -45,6 +45,7 @@ def _print_summary(deb_package_cache: Dict[PackageMetadata, Package]):
 def bazelize_deps(
     input_package_metadatas: Set[PackageMetadata],
     modules_path: Path,
+    delimiter: str = "~",
 ) -> None:
     """This function bazelizes deps in a topological order."""
     visited_modules: Dict[PackageMetadata, Module] = {}
@@ -53,7 +54,7 @@ def bazelize_deps(
     processed_packages: Dict[PackageMetadata, Package] = {}
 
     for input_package_metadata in input_package_metadatas:
-        processed_packages[input_package_metadata] = create_deb_package(metadata=input_package_metadata)
+        processed_packages[input_package_metadata] = create_deb_package(metadata=input_package_metadata, delimiter=delimiter)
 
     package_stack = list(processed_packages.keys())
 
@@ -63,7 +64,7 @@ def bazelize_deps(
             continue
 
         if package_stack[-1] not in processed_packages:
-            processed_packages[package_stack[-1]] = create_deb_package(metadata=package_stack[-1])
+            processed_packages[package_stack[-1]] = create_deb_package(metadata=package_stack[-1], delimiter=delimiter)
 
         if not _add_deps_to_stack(
             package_stack[-1],
