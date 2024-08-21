@@ -1,6 +1,6 @@
 module(
     name = "debian_dependency_bazelizer",
-    version = "0.5.0",
+    version = "1.0.0",
     compatibility_level = 1,
     bazel_compatibility = [">=7.0.0"],
 )
