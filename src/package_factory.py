@@ -139,6 +139,7 @@ def _get_package_deps(archive_path: Path, arch: str):
         # now it is of the pattern dep (>= 0.1)
         dep_name, version_spec = dep_name.split(maxsplit=1)
         dep_name = dep_name.split(":")[0]
+        is_strict_version = "=" in version_spec and ">=" not in version_spec and "<=" not in version_spec and "~= " not in version_spec
 
         # Another workaround: tzdata accesses files from system, it needs more investigation to handle it properly.
         # TODO: find a general way to handle deps accessing files from system.
@@ -148,7 +149,7 @@ def _get_package_deps(archive_path: Path, arch: str):
         dep_version = get_package_version(
             name=dep_name,
             arch=arch,
-        )
+        ) if not is_strict_version else version_spec.split()[1][:-1]
 
         deps.add(PackageMetadata(name=dep_name, arch=arch, version=dep_version))
 
