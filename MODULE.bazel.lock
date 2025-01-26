@@ -85,6 +85,34 @@
   },
   "selectedYankedVersions": {},
   "moduleExtensions": {
+    "@@apple_support~//crosstool:setup.bzl%apple_cc_configure_extension": {
+      "general": {
+        "bzlTransitiveDigest": "PjIds3feoYE8SGbbIq2SFTZy3zmxeO2tQevJZNDo7iY=",
+        "usagesDigest": "+hz7IHWN6A1oVJJWNDB6yZRG+RYhF76wAYItpAeIUIg=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "local_config_apple_cc_toolchains": {
+            "bzlFile": "@@apple_support~//crosstool:setup.bzl",
+            "ruleClassName": "_apple_cc_autoconf_toolchains",
+            "attributes": {}
+          },
+          "local_config_apple_cc": {
+            "bzlFile": "@@apple_support~//crosstool:setup.bzl",
+            "ruleClassName": "_apple_cc_autoconf",
+            "attributes": {}
+          }
+        },
+        "recordedRepoMappingEntries": [
+          [
+            "apple_support~",
+            "bazel_tools",
+            "bazel_tools"
+          ]
+        ]
+      }
+    },
     "@@ofiuco~//python:extensions.bzl%poetry": {
       "general": {
         "bzlTransitiveDigest": "7NfTJAYtdjPQPgL1LmiwF2VacV/J4QxQ34daxdtDMvA=",
@@ -119,7 +147,11 @@
     },
     "@@ofiuco~//python:internal_deps.bzl%internal_deps": {
       "general": {
+<<<<<<< HEAD
         "bzlTransitiveDigest": "9EIfDw4pPGxn7kX+XSgOvU0OC56JhU6497/eKU3kLJs=",
+=======
+        "bzlTransitiveDigest": "YTZZt+9E0jKEYsqgpV1QT1UrZYYJlcazjgWHW2rlzkM=",
+>>>>>>> 61e34a0 (adapt prefix to new http archive)
         "usagesDigest": "0Ienc/DpyfRMxUF81tuUP+++OFRRKtDOMyweSXa6wsU=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
