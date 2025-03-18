@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, Iterable
 from pathlib import Path
 
 import os
@@ -156,7 +156,7 @@ def _get_package_deps(archive_path: Path, arch: str):
     return deps
 
 
-def create_deb_package(metadata: PackageMetadata, delimiter: str = "~") -> Package:
+def create_deb_package(metadata: PackageMetadata, delimiter: str = "~", tags: Iterable[str] = []) -> Package:
     """Factory function to create deb packages."""
     if not metadata.name or not metadata.arch or not metadata.version:
         raise ValueError(
@@ -174,6 +174,7 @@ def create_deb_package(metadata: PackageMetadata, delimiter: str = "~") -> Packa
     package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}{delimiter}"
     package.prefix_version = package.prefix + metadata.version
     package.compatibility_level = get_compatibility_level(metadata.version)
+    package.tags = set(tags)
     # path to package.deb
     archive_path = _download_package_dot_debian(
         name=metadata.name,

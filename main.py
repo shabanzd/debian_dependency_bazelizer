@@ -44,7 +44,14 @@ If there are more than one input file, simply do -if path_to_file for each file.
     default="~",
     help="""Starting bazel 7.3, modules can have a ~ delimiter or a + delimiter.""",
 )
-def main(input_file: List[Path], modules_path: Path, delimiter: str):
+@click.option(
+    "--tags",
+    "-t",
+    required=False,
+    multiple=True,
+    help="Tags to add to the generated targets."
+)
+def main(input_file: List[Path], modules_path: Path, delimiter: str, tags: List[str] = []):
     """Turns input deb packages into modules and dumps it in modules_path."""
     if delimiter not in {"~", "+"}:
         raise ValueError(f"Delimiter: {delimiter} is not allowed. Delimiter must be either ~ or +")
@@ -63,6 +70,7 @@ def main(input_file: List[Path], modules_path: Path, delimiter: str):
         modules_path=_get_path(modules_path),
         input_package_metadatas=read_input_files(input_files=input_files),
         delimiter=delimiter,
+        tags=tags
     )
 
 

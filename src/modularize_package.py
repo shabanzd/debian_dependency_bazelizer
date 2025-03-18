@@ -1,4 +1,4 @@
-from typing import Dict, Final, Set
+from typing import Dict, Final, List, Set
 from pathlib import Path
 
 import os
@@ -59,7 +59,7 @@ def _rpath_patch_elf_files(package: Package, modules: Dict[PackageMetadata, Modu
         )
 
 
-def _repackage_deb_package(package: Package):
+def _repackage_deb_package(package: Package) -> Path:
     # create empty WORKSPACE file
     Path(package.package_dir / Path("WORKSPACE")).touch()
     write_build_file(package, Path(package.package_dir / BUILD_FILE))
