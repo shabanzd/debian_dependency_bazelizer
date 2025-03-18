@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Final
+from typing import Any, Dict, Final, List
 
 import json
 import os
@@ -7,50 +7,46 @@ import os
 from src.package import Package
 from src.module import get_module_name, get_module_version
 
-RPATHS_DOT_JSON: Final = "rpaths.json"
 LINUX_PLATFORM: Final = "@platforms//os:linux"
 X86_64_CPU: Final = "@platforms//cpu:x86_64"
 
-def _create_build_file_content(package: Package):
+def _create_filegroup_content(package: Package):
+    "Creates a filegroup content out of a debian package object"
     if package.arch != "amd64":
         raise ValueError("Only amd64 architecture is supported for now")
-
-    dep_targets = []
-    for dep in package.deps:
-        module_name = get_module_name(name=dep.name, arch=dep.arch)
-        dep_targets.append(f""""@{module_name}//:all_files",""")
-
-    data_str = "\n      ".join(dep_targets)
-    files_str = "\n      ".join(
-        [
-            '"' + os.fspath(file) + '",'
-            for file in package.elf_files.union(package.nonelf_files)
-        ]
-    )
-
-    file_group = f"""
-load("@rules_cc//cc:defs.bzl", "cc_library")
-
-filegroup(
+    
+    file_group_content = f"""filegroup(
     name = "all_files",
-    srcs = [
-      {files_str}
-    ],
-    data = [
-      {data_str}
-    ],
-    visibility = ["//visibility:public"],
-)"""
-    exports_files = f"""
-exports_files([
-    {files_str}
-    "{RPATHS_DOT_JSON}",
-])
-"""
+    srcs = glob(["**"]),"""
 
-    return f"""{file_group}
+    if package.deps:
+        file_group_content += "\n    data = [\n"
+        for dep in package.deps:
+            file_group_content += f"""      "@{get_module_name(name=dep.name, arch=dep.arch)}//:all_files",\n"""
+        file_group_content += "    ],"
+    
+    if package.tags:
+        file_group_content += f"\n    tags = [{', '.join(package.tags)}],"
+    
+    file_group_content += "\n    visibility = [\"//visibility:public\"],\n)"
 
-{exports_files}
+    return file_group_content
+
+
+def _create_build_file_content(package: Package):
+    "Creates the BUILD file content out of a debian package object"
+    if package.arch != "amd64":
+        raise ValueError("Only amd64 architecture is supported for now")
+    
+    file_group_content = _create_filegroup_content(package)
+    tags_str = "[]" if not package.tags else f"[{', '.join(package.tags)}]"
+
+    return f"""load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@rules_python//python:defs.bzl", "py_library")
+
+{file_group_content}
+
+exports_files(glob(["**"]))
 
 py_library(
     name = "{package.module_name}_paths_py",
@@ -60,6 +56,7 @@ py_library(
         "{LINUX_PLATFORM}",
         "{X86_64_CPU}",
     ],
+    tags = {tags_str},
     visibility = ["//visibility:public"],
 )
 
@@ -71,6 +68,7 @@ cc_library(
         "{LINUX_PLATFORM}",
         "{X86_64_CPU}",
     ],
+    tags = {tags_str},
     visibility = ["//visibility:public"],
 )
 
