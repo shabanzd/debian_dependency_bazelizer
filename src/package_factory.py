@@ -9,6 +9,7 @@ from src.module import get_module_name
 from src.package import PackageMetadata, Package, DetachedModeMetadata
 
 DEPENDS_ATTR: Final = "Depends"
+MAIN_REPO_RULES_PREFIX: Final = "_main~_repo_rules~"
 
 
 def _is_acceptable_error(err: str):
@@ -185,7 +186,10 @@ def create_deb_package(
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
-    package.prefix = (
+    if detached_mode_metadata:    
+        package.prefix = f"{MAIN_REPO_RULES_PREFIX}{package.module_name}"
+    else:
+        package.prefix = (
         f"{get_module_name(name=metadata.name, arch=metadata.arch)}{delimiter}"
     )
     package.prefix_version = package.prefix + metadata.version
@@ -219,7 +223,6 @@ def create_deb_package(
             continue
 
         if not _is_patchable_elf_file(Path(package.package_dir / file_path)):
-            package.nonelf_files.add(file_path)
             continue
 
         package.elf_files.add(file_path)

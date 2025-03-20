@@ -86,7 +86,7 @@ def _repackage_deb_package(package: Package) -> Path:
     write_name_txt_file(package)
     debian_module_tar = Path(package.prefix_version + ".tar.gz")
     # repackage Debian Module as a tarball.
-    with tarfile.open(debian_module_tar, "w:gz") as tar:
+    with tarfile.open(debian_module_tar, "w:gz", dereference=True) as tar:
         tar.add(package.package_dir.relative_to(Path(".").resolve()))
     write_http_archive(package, debian_module_tar)
 

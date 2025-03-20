@@ -111,6 +111,38 @@
         ]
       }
     },
+    "@@ofiuco~//python:extensions.bzl%poetry": {
+      "general": {
+        "bzlTransitiveDigest": "7NfTJAYtdjPQPgL1LmiwF2VacV/J4QxQ34daxdtDMvA=",
+        "usagesDigest": "x4l+ScJa5Nk+UsjM6R1IcxTuUwvBwMNAHOs1wnU4+O0=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "poetry": {
+            "bzlFile": "@@ofiuco~//python/private:poetry_parse.bzl",
+            "ruleClassName": "poetry_parse",
+            "attributes": {
+              "lock": "@@//:poetry.lock",
+              "generate_extras": true,
+              "platforms": {}
+            }
+          }
+        },
+        "recordedRepoMappingEntries": [
+          [
+            "ofiuco~",
+            "ofiuco",
+            "ofiuco~"
+          ],
+          [
+            "ofiuco~",
+            "ofiuco_defs",
+            "ofiuco~~internal_deps~ofiuco_defs"
+          ]
+        ]
+      }
+    },
     "@@ofiuco~//python:internal_deps.bzl%internal_deps": {
       "general": {
         "bzlTransitiveDigest": "YTZZt+9E0jKEYsqgpV1QT1UrZYYJlcazjgWHW2rlzkM=",

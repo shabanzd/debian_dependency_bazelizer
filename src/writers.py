@@ -160,7 +160,7 @@ def _create_http_archive_text(
     name = "{name}",
     build_file = "{build_file}",
     integrity = "{integrity}",
-    strip_prefix: {prefix},
+    strip_prefix = "{prefix}",
     url = "{url}",
 )
 """
@@ -209,6 +209,14 @@ def write_http_archive(package: Package, debian_module_tar: Path):
     file = package.detached_mode_metadata.archives_file 
     file.parent.mkdir(parents=True, exist_ok=True)
     content = file.read_text() if file.exists() else ""
+    if not content:
+        content = '''"""This file was generated automatically by the debian dependency bazerlizer.
+"""
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+'''
+
     file.write_text(content + _create_http_archive_text(
         name=get_module_name(name=package.name, arch=package.arch),
         prefix=package.prefix,

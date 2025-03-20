@@ -45,7 +45,6 @@ class Package:
     deps: Set[PackageMetadata] = dataclasses.field(default_factory=set)
     files: Set[PackageFile] = dataclasses.field(default_factory=set)
     elf_files: Set[Path] = dataclasses.field(default_factory=set)
-    nonelf_files: Set[Path] = dataclasses.field(default_factory=set)
     rpaths: Dict[str, str] = dataclasses.field(default_factory=dict)
     tags: Set[str] = dataclasses.field(default_factory=set)
     detached_mode_metadata: Optional[DetachedModeMetadata] = None
