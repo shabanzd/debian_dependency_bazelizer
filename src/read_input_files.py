@@ -1,4 +1,5 @@
 """File containing an input file reader for deb packages."""
+
 from collections import defaultdict
 from typing import Dict, Iterable, Set
 from pathlib import Path
@@ -12,6 +13,7 @@ from src.version import (
     compare_version_strings,
 )
 
+
 def _get_package_metadata(pinned_package: str) -> PackageMetadata:
     _check_entry(pinned_package)
     # entries format: name:arch=version
@@ -21,9 +23,11 @@ def _get_package_metadata(pinned_package: str) -> PackageMetadata:
 
     if "=" in arch_version:
         arch, version = arch_version.split("=")
-    
+
     if arch != "amd64":
-        raise ValueError(f"Unsupported architecture {arch}. Only amd64 arch is supported so far.")
+        raise ValueError(
+            f"Unsupported architecture {arch}. Only amd64 arch is supported so far."
+        )
 
     if not version:
         version = get_package_version(name=name, arch=arch)

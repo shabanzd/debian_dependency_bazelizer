@@ -17,6 +17,7 @@ VERSION_DOT_TXT: Final = Path("version.txt")
 @dataclasses.dataclass
 class DebianVersion:
     "Debian Version data class."
+
     raw_version: str
     epoch: Optional[int] = None
     version: str = ""
@@ -49,6 +50,7 @@ class DebianVersion:
 @dataclasses.dataclass
 class Spec:
     "Debian Version data class."
+
     version: DebianVersion
     spec: str
 
