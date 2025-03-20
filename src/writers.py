@@ -2,12 +2,25 @@ from pathlib import Path
 from typing import Any, Dict, Final
 
 import json
+import base64
+import hashlib
 
 from src.package import Package
 from src.module import get_module_name, get_module_version
 
 LINUX_PLATFORM: Final = "@platforms//os:linux"
 X86_64_CPU: Final = "@platforms//cpu:x86_64"
+BUILD_FILE: Final = Path("BUILD")
+MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
+NAME_DOT_TXT: Final = "name.txt"
+VERSION_DOT_TXT: Final = "version.txt"
+
+def _get_integrity_for_file(debian_module_tar: Path):
+    with debian_module_tar.open("rb") as f:
+        files_content = f.read()
+    hash = hashlib.sha256(files_content).digest()
+    hash_base64 = base64.b64encode(hash).decode()
+    return f"sha256-{hash_base64}"
 
 
 def _create_filegroup_content(package: Package):
@@ -140,37 +153,78 @@ inline std::map<std::string, std::string> paths()
 
 """
 
+def _create_http_archive_text(
+    name: str, build_file: str, integrity: str, prefix: str, url: str 
+):
+    return f"""http_archive(
+    name = "{name}",
+    build_file = "{build_file}",
+    integrity = "{integrity}",
+    strip_prefix: {prefix},
+    url = "{url}",
+)
+"""
 
-def write_file(content: str, file: Path):
-    "Writes a file content"
-    with open(file, "w") as file_to_write:
-        file_to_write.write(content)
 
-
-def write_module_file(package: Package, file: Path):
+def write_module_file(package: Package):
     "Writes a MODULE.bazel file declaring the package as a module and listing its bazel_deps"
-    write_file(_create_module_file_content(package), file)
+    file = Path(package.package_dir / MODULE_DOT_BAZEL)
+    file.write_text(_create_module_file_content(package))
 
 
-def write_build_file(package: Package, file: Path):
+def write_build_file(package: Package):
     "Writes a BUILD file exporting the list of files"
-    write_file(_create_build_file_content(package), file)
+    if package.detached_mode_metadata:
+        file = Path(package.detached_mode_metadata.build_files_dir / package.module_name / f"{package.module_name}.BUILD")
+    else:
+        file = Path(package.package_dir / BUILD_FILE)
+
+    file.parent.mkdir(parents=True, exist_ok=True)
+    file.write_text(_create_build_file_content(package))
 
 
 def write_python_path_file(rpaths: Dict[str, str], file: Path):
     "Writes a python file exposing the paths of ELF files"
     full_rpaths = {key: "../" + value + "/" + key for key, value in rpaths.items()}
-    write_file(_create_paths_python_file_content(full_rpaths), file)
+    file.write_text(_create_paths_python_file_content(full_rpaths))
+
 
 
 def write_cpp_path_file(rpaths: Dict[str, str], package_name: str, file: Path):
     "Writes a python file exposing the paths of ELF files"
     full_rpaths = {key: "../" + value + "/" + key for key, value in rpaths.items()}
-    write_file(_create_paths_cpp_file_content(full_rpaths, package_name), file)
+    file.write_text(_create_paths_cpp_file_content(full_rpaths, package_name))
+
 
 
 def json_dump(json_file: Path, obj: Dict[Any, Any], sort_keys=True):
     "Dumps json content into json file"
-    with open(file=json_file, mode="w", encoding="utf-8") as file:
-        json.dump(obj, file, indent=4, sort_keys=sort_keys)
-        file.write("\n")
+    json_file.write_text(json.dumps(obj, indent=4, sort_keys=sort_keys) + "\n")
+
+def write_http_archive(package: Package, debian_module_tar: Path):
+    "Writes a http_archive file for the debian module"
+    if not package.detached_mode_metadata:
+        return
+
+    file = package.detached_mode_metadata.archives_file 
+    file.parent.mkdir(parents=True, exist_ok=True)
+    content = file.read_text() if file.exists() else ""
+    file.write_text(content + _create_http_archive_text(
+        name=get_module_name(name=package.name, arch=package.arch),
+        prefix=package.prefix,
+        url=f"{package.detached_mode_metadata.url_prefix}/{str(debian_module_tar)}",
+        integrity=_get_integrity_for_file(debian_module_tar),
+        build_file=f"{str(package.detached_mode_metadata.build_file_package)}:{package.module_name}/{package.module_name}.BUILD",
+    ) + "\n")
+
+def write_name_txt_file(package: Package):
+    if not package.detached_mode_metadata:
+        return
+    file = Path(package.detached_mode_metadata.build_files_dir / package.module_name / NAME_DOT_TXT)
+    file.write_text(f"{package.name}\n")
+
+def write_version_txt_file(package: Package):
+    if not package.detached_mode_metadata:
+        return
+    file = Path(package.detached_mode_metadata.build_files_dir / package.module_name / VERSION_DOT_TXT)
+    file.write_text(f"{package.version}\n")

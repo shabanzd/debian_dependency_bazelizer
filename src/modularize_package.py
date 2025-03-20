@@ -14,10 +14,11 @@ from src.writers import (
     write_python_path_file,
     write_cpp_path_file,
     json_dump,
+    write_http_archive,
+    write_name_txt_file,
+    write_version_txt_file,
 )
 
-BUILD_FILE: Final = Path("BUILD")
-MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
 RPATHS_DOT_JSON: Final = Path("rpaths.json")
 UPLOAD_BUCKET: Final = "upload_bucket"
 UPLOAD_URL: Final = "upload_url"
@@ -70,8 +71,8 @@ def _rpath_patch_elf_files(package: Package, modules: Dict[PackageMetadata, Modu
 def _repackage_deb_package(package: Package) -> Path:
     # create empty WORKSPACE file
     Path(package.package_dir / Path("WORKSPACE")).touch()
-    write_build_file(package, Path(package.package_dir / BUILD_FILE))
-    write_module_file(package, Path(package.package_dir / MODULE_DOT_BAZEL))
+    write_build_file(package)
+    write_module_file(package)
     write_python_path_file(
         package.rpaths, package.package_dir / Path(package.module_name + "_paths.py")
     )
@@ -81,10 +82,13 @@ def _repackage_deb_package(package: Package) -> Path:
         package.package_dir / Path(package.module_name + "_paths.hh"),
     )
     json_dump(package.package_dir / RPATHS_DOT_JSON, package.rpaths)
+    write_version_txt_file(package)
+    write_name_txt_file(package)
     debian_module_tar = Path(package.prefix_version + ".tar.gz")
     # repackage Debian Module as a tarball.
     with tarfile.open(debian_module_tar, "w:gz") as tar:
         tar.add(package.package_dir.relative_to(Path(".").resolve()))
+    write_http_archive(package, debian_module_tar)
 
     return debian_module_tar
 

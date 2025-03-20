@@ -190,7 +190,7 @@ def create_deb_package(
     )
     package.prefix_version = package.prefix + metadata.version
     package.compatibility_level = get_compatibility_level(metadata.version)
-    package.tags = set(tags)
+    package.tags = set(f'"{tag}"' for tag in tags)
     package.detached_mode_metadata = detached_mode_metadata
     # path to package.deb
     archive_path = _download_package_dot_debian(

@@ -6,11 +6,12 @@ import dataclasses
 dataclasses.dataclass(frozen=True)
 
 
+@dataclasses.dataclass(frozen=True)
 class DetachedModeMetadata:
     url_prefix: str
     build_file_package: str
-    archives_file_path: Path
-    build_files_path: Path
+    archives_file: Path
+    build_files_dir: Path
 
 
 @dataclasses.dataclass(frozen=True)

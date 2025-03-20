@@ -54,34 +54,37 @@ If there are more than one input file, simply do -i path_to_file for each file."
     help="Tags to add to the generated targets.",
 )
 @click.option(
-    "--detach_build_files_mode",
+    "--detached_build_files_mode",
+    "-db",
     is_flag=True,
     help="""If set, the BUILD files will be detached from the package and stored separately.""",
 )
 @click.option(
     "--url_prefix",
+    "-u",
     type=str,
     required=False,
     help="""The URL prefix of the uploaded http_archives.""",
 )
 @click.option(
     "--build_file_package",
+    "-bp",
     type=str,
     required=False,
     help="""The package within which the build files will be dumped. Example: //third_party""",
 )
 @click.option(
-    "--archives_file_path",
+    "--archives_file",
+    "-af",
     type=click.Path(path_type=Path, dir_okay=False),
     required=False,
-    is_dir=False,
     help="""Path to the <name>.MODULE.bazel file containing the http_archives.""",
 )
 @click.option(
-    "--build_files_path",
+    "--build_files_dir",
+    "-bf",
     type=click.Path(path_type=Path, file_okay=False),
     required=False,
-    is_dir=True,
     help="""Path to the build files if in detached mode.""",
 )
 def main(
@@ -89,11 +92,11 @@ def main(
     modules_path: Path,
     delimiter: str,
     tags: List[str],
-    detach_build_files_mode: bool,
+    detached_build_files_mode: bool,
     url_prefix: str,
     build_file_package: str,
-    archives_file_path: Optional[Path],
-    build_files_path: Optional[Path],
+    archives_file: Optional[Path],
+    build_files_dir: Optional[Path],
 ):
     """Turns input deb packages into modules and dumps it in modules_path."""
     if delimiter not in {"~", "+"}:
@@ -101,11 +104,11 @@ def main(
             f"Delimiter: {delimiter} is not allowed. Delimiter must be either ~ or +"
         )
 
-    if detach_build_files_mode and (
+    if detached_build_files_mode and (
         not url_prefix
         or not build_file_package
-        or not archives_file_path
-        or not build_files_path
+        or not archives_file
+        or not build_files_dir
     ):
         raise ValueError(
             "--build_file_package, --url_prefix, --archives_file_path and --build_files_path are required when --detach_build_file is set."
@@ -119,14 +122,17 @@ def main(
     for file in input_files:
         if not file.exists():
             raise ValueError(f"{file} does not exist")
+    
+    if archives_file and archives_file.exists():
+        archives_file.unlink()
 
     detached_mode_metadata: None | DetachedModeMetadata = None
-    if detach_build_files_mode:
+    if detached_build_files_mode:
         detached_mode_metadata = DetachedModeMetadata(
             url_prefix=url_prefix,
             build_file_package=build_file_package,
-            archives_file_path=archives_file_path,
-            build_files_path=build_files_path,
+            archives_file=archives_file,
+            build_files_dir=build_files_dir,
         )
 
     bazelize_deps(
