@@ -1,6 +1,17 @@
-from typing import Dict, Set
+from typing import Dict, Optional, Set
 from pathlib import Path
 import dataclasses
+
+
+dataclasses.dataclass(frozen=True)
+
+
+@dataclasses.dataclass(frozen=True)
+class DetachedModeMetadata:
+    url_prefix: str
+    build_file_package: str
+    archives_file: Path
+    build_files_dir: Path
 
 
 @dataclasses.dataclass(frozen=True)
@@ -34,6 +45,6 @@ class Package:
     deps: Set[PackageMetadata] = dataclasses.field(default_factory=set)
     files: Set[PackageFile] = dataclasses.field(default_factory=set)
     elf_files: Set[Path] = dataclasses.field(default_factory=set)
-    nonelf_files: Set[Path] = dataclasses.field(default_factory=set)
     rpaths: Dict[str, str] = dataclasses.field(default_factory=dict)
     tags: Set[str] = dataclasses.field(default_factory=set)
+    detached_mode_metadata: Optional[DetachedModeMetadata] = None

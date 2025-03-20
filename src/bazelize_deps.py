@@ -1,10 +1,10 @@
-from typing import Iterable, Dict, List, Set
+from typing import Iterable, Dict, List, Set, Optional
 from pathlib import Path
 
 from src.package_factory import create_deb_package
 from src.module import Module
 from src.modularize_package import modularize_package
-from src.package import Package, PackageMetadata
+from src.package import Package, PackageMetadata, DetachedModeMetadata
 
 
 def _add_deps_to_stack(
@@ -47,6 +47,7 @@ def bazelize_deps(
     modules_path: Path,
     delimiter: str = "~",
     tags: Iterable[str] = [],
+    detached_mode_metadata: Optional[DetachedModeMetadata] = None,
 ) -> None:
     """This function bazelizes deps in a topological order."""
     visited_modules: Dict[PackageMetadata, Module] = {}
@@ -55,7 +56,12 @@ def bazelize_deps(
     processed_packages: Dict[PackageMetadata, Package] = {}
 
     for input_package_metadata in input_package_metadatas:
-        processed_packages[input_package_metadata] = create_deb_package(metadata=input_package_metadata, delimiter=delimiter, tags=tags)
+        processed_packages[input_package_metadata] = create_deb_package(
+            metadata=input_package_metadata,
+            delimiter=delimiter,
+            tags=tags,
+            detached_mode_metadata=detached_mode_metadata,
+        )
 
     package_stack = list(processed_packages.keys())
 
@@ -65,7 +71,10 @@ def bazelize_deps(
             continue
 
         if package_stack[-1] not in processed_packages:
-            processed_packages[package_stack[-1]] = create_deb_package(metadata=package_stack[-1], delimiter=delimiter, tags=tags)
+            processed_packages[package_stack[-1]] = create_deb_package(
+                metadata=package_stack[-1], delimiter=delimiter, tags=tags,
+                detached_mode_metadata=detached_mode_metadata,
+            )
 
         if not _add_deps_to_stack(
             package_stack[-1],

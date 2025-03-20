@@ -17,6 +17,7 @@ VERSION_DOT_TXT: Final = Path("version.txt")
 @dataclasses.dataclass
 class DebianVersion:
     "Debian Version data class."
+
     raw_version: str
     epoch: Optional[int] = None
     version: str = ""
@@ -49,25 +50,13 @@ class DebianVersion:
 @dataclasses.dataclass
 class Spec:
     "Debian Version data class."
+
     version: DebianVersion
     spec: str
 
     def spec_str(self):
         """Returns the spec as a string."""
         return self.spec + self.version.semantic_version
-
-
-def _get_versions(path: Path) -> List[DebianVersion]:
-    return [
-        DebianVersion(_get_file_contents(module_version_path / VERSION_DOT_TXT))
-        for module_version_path in path.iterdir()
-        if module_version_path.is_dir()
-    ]
-
-
-def _get_file_contents(path: Path) -> str:
-    with open(path, "r", encoding="utf-8") as file:
-        return file.read()
 
 
 def _extract_attribute(
@@ -103,39 +92,6 @@ def _get_deb_package_version_from_aptcache(name: str, arch: str) -> str:
 
     return _extract_attribute(package_info=package_info, attribute=VERSION_ATTRIBUTE)
 
-
-def _parse_specs(version_spec: str) -> List[Spec]:
-    if not version_spec:
-        return [("", DebianVersion(None, ""))]
-
-    specs: List[Spec] = []
-
-    for one_version_spec in version_spec.split(","):
-        for i, char in enumerate(one_version_spec):
-            if char.isdigit():
-                spec = one_version_spec[:i]
-                version = one_version_spec[i:]
-                specs.append(Spec(spec=spec, version=DebianVersion(version)))
-                break
-
-    return specs
-
-
-def _satisfies_specifications(pkg_version: DebianVersion, version_spec: str) -> bool:
-    """Returns if two versions are compatible."""
-    specs: List[Spec] = _parse_specs(version_spec)
-    for spec in specs:
-        logger.debug(
-            "Checking if package version %s satisfies specification %s",
-            pkg_version,
-            spec.spec_str(),
-        )
-
-        version = packaging_version.parse(pkg_version.semantic_version)
-        if version not in packaging_specifiers.SpecifierSet(spec.spec_str()):
-            return False
-
-    return True
 
 
 def get_compatibility_level(version_string: str) -> int:
