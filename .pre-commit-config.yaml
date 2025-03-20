@@ -2,9 +2,6 @@ default_language_version:
   python: python3.10
   node: 20.15.0
 
-# Do not add files to the global excludes! Instead
-# 1. Fix the issues!
-# 2. Add only to failing hooks
 exclude: ^bazel-
 
 repos:
