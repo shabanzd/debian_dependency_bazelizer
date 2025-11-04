@@ -4,6 +4,7 @@ from pathlib import Path
 from src.writers import _create_filegroup_content
 from src.package import Package
 
+
 def test_filegroup_content_creation():
     package = Package(
         name="test-package",
@@ -20,11 +21,11 @@ def test_filegroup_content_creation():
         elf_files=set(),
         rpaths={},
         tags=set(),
-        detached_mode_metadata=None
+        detached_mode_metadata=None,
     )
     # This should pass as the package has amd64 arch
     _create_filegroup_content(package)
-    
+
     # Test with non-amd64 arch
     package_arm = Package(
         name="test-package",
@@ -41,11 +42,14 @@ def test_filegroup_content_creation():
         elf_files=set(),
         rpaths={},
         tags=set(),
-        detached_mode_metadata=None
+        detached_mode_metadata=None,
     )
     # Should raise ValueError for non-amd64 arch
-    with pytest.raises(ValueError, match="Only amd64 architecture is supported for now"):
+    with pytest.raises(
+        ValueError, match="Only amd64 architecture is supported for now"
+    ):
         _create_filegroup_content(package_arm)
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__] + sys.argv[1:]))

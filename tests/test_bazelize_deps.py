@@ -4,12 +4,15 @@ from pathlib import Path
 from src.bazelize_deps import _add_deps_to_stack
 from src.package import Package, PackageMetadata
 
+
 def test_add_deps_to_stack():
     # Test setup
-    package_metadata = PackageMetadata(name="test-package", arch="amd64", version="1.0.0")
+    package_metadata = PackageMetadata(
+        name="test-package", arch="amd64", version="1.0.0"
+    )
     package_stack = []
     visited_modules = set()
-    
+
     # Create a test package with no deps
     package = Package(
         name="test-package",
@@ -26,14 +29,17 @@ def test_add_deps_to_stack():
         elf_files=set(),
         rpaths={},
         tags=set(),
-        detached_mode_metadata=None
+        detached_mode_metadata=None,
     )
-    
+
     deb_package_cache = {package_metadata: package}
-    
+
     # Test the function
-    result = _add_deps_to_stack(package_metadata, package_stack, visited_modules, deb_package_cache)
-    assert result == False  # No deps were added
+    result = _add_deps_to_stack(
+        package_metadata, package_stack, visited_modules, deb_package_cache
+    )
+    assert result is False  # No deps were added
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__] + sys.argv[1:]))

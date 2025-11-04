@@ -122,7 +122,7 @@ def main(
     for file in input_files:
         if not file.exists():
             raise ValueError(f"{file} does not exist")
-    
+
     if archives_file and archives_file.exists():
         archives_file.unlink()
 
