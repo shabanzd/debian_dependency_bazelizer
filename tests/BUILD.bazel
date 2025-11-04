@@ -1,6 +1,49 @@
 load("@rules_python//python:defs.bzl", "py_test")
 
 py_test(
+    name = "test_module",
+    timeout = "short",
+    srcs = ["test_module.py"],
+    deps = [
+        "//src:module",
+        "@poetry//:pytest",
+    ],
+)
+
+
+py_test(
+    name = "test_writers",
+    timeout = "short",
+    srcs = ["test_writers.py"],
+    deps = [
+        "//src:writers",
+        "//src:package",
+        "//src:module",
+        "@poetry//:pytest",
+    ],
+)
+
+py_test(
+    name = "test_bazelize_deps",
+    timeout = "short",
+    srcs = ["test_bazelize_deps.py"],
+    deps = [
+        "//src:bazelize_deps",
+        "@poetry//:pytest",
+    ],
+)
+
+py_test(
+    name = "test_package",
+    timeout = "short",
+    srcs = ["test_package.py"],
+    deps = [
+        "//src:package",
+        "@poetry//:pytest",
+    ],
+)
+
+py_test(
     name = "test_modularize_package",
     timeout = "short",
     srcs = ["test_modularize_package.py"],
