@@ -1,15 +1,11 @@
-from packaging import version as packaging_version, specifiers as packaging_specifiers
+from packaging import version as packaging_version
 from pathlib import Path
-from typing import Final, List, Optional
+from typing import Final, Optional
 
 import dataclasses
-import functools
 import logging
 import re
 import subprocess
-
-
-from src.module import get_module_name
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -21,6 +17,7 @@ VERSION_DOT_TXT: Final = Path("version.txt")
 @dataclasses.dataclass
 class DebianVersion:
     "Debian Version data class."
+
     raw_version: str
     epoch: Optional[int] = None
     version: str = ""
@@ -53,25 +50,13 @@ class DebianVersion:
 @dataclasses.dataclass
 class Spec:
     "Debian Version data class."
+
     version: DebianVersion
     spec: str
 
     def spec_str(self):
         """Returns the spec as a string."""
         return self.spec + self.version.semantic_version
-
-
-def _get_versions(path: Path) -> List[DebianVersion]:
-    return [
-        DebianVersion(_get_file_contents(module_version_path / VERSION_DOT_TXT))
-        for module_version_path in path.iterdir()
-        if module_version_path.is_dir()
-    ]
-
-
-def _get_file_contents(path: Path) -> str:
-    with open(path, "r", encoding="utf-8") as file:
-        return file.read()
 
 
 def _extract_attribute(
@@ -106,40 +91,6 @@ def _get_deb_package_version_from_aptcache(name: str, arch: str) -> str:
     )
 
     return _extract_attribute(package_info=package_info, attribute=VERSION_ATTRIBUTE)
-
-
-def _parse_specs(version_spec: str) -> List[Spec]:
-    if not version_spec:
-        return [("", DebianVersion(None, ""))]
-
-    specs: List[Spec] = []
-
-    for one_version_spec in version_spec.split(","):
-        for i, char in enumerate(one_version_spec):
-            if char.isdigit():
-                spec = one_version_spec[:i]
-                version = one_version_spec[i:]
-                specs.append(Spec(spec=spec, version=DebianVersion(version)))
-                break
-
-    return specs
-
-
-def _satisfies_specifications(pkg_version: DebianVersion, version_spec: str) -> bool:
-    """Returns if two versions are compatible."""
-    specs: List[Spec] = _parse_specs(version_spec)
-    for spec in specs:
-        logger.debug(
-            "Checking if package version %s satisfies specification %s",
-            pkg_version,
-            spec.spec_str(),
-        )
-
-        version = packaging_version.parse(pkg_version.semantic_version)
-        if version not in packaging_specifiers.SpecifierSet(spec.spec_str()):
-            return False
-
-    return True
 
 
 def get_compatibility_level(version_string: str) -> int:
@@ -188,53 +139,7 @@ def compare_debian_versions(version_1: DebianVersion, version_2: DebianVersion) 
     return 0
 
 
-def get_version_from_registry(
-    registry_path: Path, name: str, arch: str, version_spec: str
-) -> str:
-    "Get a compliant version from registry."
-    module_name = get_module_name(name=name, arch=arch)
-    modules_path = registry_path / "modules"
-    module_path = modules_path / module_name
+def get_package_version(name: str, arch: str) -> str:
+    "Get package version from apt-cache."
 
-    if not module_path.exists():
-        logger.info(
-            f"module {module_name} not found in local bazel registry, expected path: {module_path} does not exist."
-        )
-        return ""
-
-    debian_versions = _get_versions(module_path)
-    if not debian_versions:
-        raise ValueError(
-            f"package: {module_name}, exists in registry modules, but has no versions"
-        )
-
-    debian_versions.sort(
-        reverse=True, key=functools.cmp_to_key(compare_debian_versions)
-    )
-    # find the highest version that matches the version_specifier
-    for deb_version in debian_versions:
-        if version_spec and not _satisfies_specifications(deb_version, version_spec):
-            continue
-
-        logger.debug(
-            "Found version: %s:%s",
-            deb_version.epoch,
-            deb_version.version,
-        )
-
-        return deb_version.raw_version
-
-    return ""
-
-
-def get_package_version(
-    registry_path: Path, name: str, arch: str, version_spec: str = ""
-) -> str:
-    "Get package version by trying to first get it from registry, if not possible get it from apt-cache."
-    dep_version = get_version_from_registry(
-        registry_path=registry_path, name=name, arch=arch, version_spec=version_spec
-    )
-    if not dep_version:
-        dep_version = _get_deb_package_version_from_aptcache(name, arch)
-
-    return dep_version
+    return _get_deb_package_version_from_aptcache(name, arch)

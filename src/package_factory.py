@@ -1,14 +1,15 @@
-from typing import Final
+from typing import Final, Iterable, Optional
 from pathlib import Path
 
 import os
 import subprocess
 
 from src.version import get_package_version, get_compatibility_level
-from src.module import get_module_name, get_module_version
-from src.package import PackageMetadata, Package
+from src.module import get_module_name
+from src.package import PackageMetadata, Package, DetachedModeMetadata
 
 DEPENDS_ATTR: Final = "Depends"
+MAIN_REPO_RULES_PREFIX: Final = "_main~_repo_rules~"
 
 
 def _is_acceptable_error(err: str):
@@ -16,7 +17,7 @@ def _is_acceptable_error(err: str):
         "not an ELF executable",
         "missing ELF header",
         "Permission denied",
-        ]:
+    ]:
         if e in err:
             return True
     return False
@@ -107,7 +108,7 @@ def _extract_attribute(
     )
 
 
-def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
+def _get_package_deps(archive_path: Path, arch: str):
     deps_str = _extract_attribute(
         subprocess.check_output(["dpkg-deb", "-I", archive_path], encoding="utf-8"),
         DEPENDS_ATTR,
@@ -139,12 +140,11 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
         # now it is of the pattern dep (>= 0.1)
         dep_name, version_spec = dep_name.split(maxsplit=1)
         dep_name = dep_name.split(":")[0]
-        version_spec = (
-            version_spec[1:] if version_spec.startswith("(") else version_spec
-        )
-        version_spec = version_spec[:-1] if version_spec.endswith(")") else version_spec
-        version_spec = (
-            "=" + version_spec if version_spec.split()[0] == "=" else version_spec
+        is_strict_version = (
+            "=" in version_spec
+            and ">=" not in version_spec
+            and "<=" not in version_spec
+            and "~= " not in version_spec
         )
 
         # Another workaround: tzdata accesses files from system, it needs more investigation to handle it properly.
@@ -152,11 +152,13 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
         if dep_name == "tzdata":
             continue
 
-        dep_version = get_package_version(
-            registry_path=registry_path,
-            name=dep_name,
-            arch=arch,
-            version_spec=version_spec,
+        dep_version = (
+            get_package_version(
+                name=dep_name,
+                arch=arch,
+            )
+            if not is_strict_version
+            else version_spec.split()[1][:-1]
         )
 
         deps.add(PackageMetadata(name=dep_name, arch=arch, version=dep_version))
@@ -164,7 +166,12 @@ def _get_package_deps(registry_path: Path, archive_path: Path, arch: str):
     return deps
 
 
-def create_deb_package(registry_path: Path, metadata: PackageMetadata):
+def create_deb_package(
+    metadata: PackageMetadata,
+    delimiter: str = "~",
+    tags: Iterable[str] = [],
+    detached_mode_metadata: Optional[DetachedModeMetadata] = None,
+) -> Package:
     """Factory function to create deb packages."""
     if not metadata.name or not metadata.arch or not metadata.version:
         raise ValueError(
@@ -179,8 +186,16 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
-    package.prefix = f"{get_module_name(name=metadata.name, arch=metadata.arch)}~{get_module_version(metadata.version)}"
+    if detached_mode_metadata:
+        package.prefix = f"{MAIN_REPO_RULES_PREFIX}{package.module_name}"
+    else:
+        package.prefix = (
+            f"{get_module_name(name=metadata.name, arch=metadata.arch)}{delimiter}"
+        )
+    package.prefix_version = package.prefix + metadata.version
     package.compatibility_level = get_compatibility_level(metadata.version)
+    package.tags = set(f'"{tag}"' for tag in tags)
+    package.detached_mode_metadata = detached_mode_metadata
     # path to package.deb
     archive_path = _download_package_dot_debian(
         name=metadata.name,
@@ -208,7 +223,6 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
             continue
 
         if not _is_patchable_elf_file(Path(package.package_dir / file_path)):
-            package.nonelf_files.add(file_path)
             continue
 
         package.elf_files.add(file_path)
@@ -222,9 +236,7 @@ def create_deb_package(registry_path: Path, metadata: PackageMetadata):
         return package
 
     # now fillup the transitive deps
-    package.deps = _get_package_deps(
-        registry_path=registry_path, archive_path=archive_path, arch=package.arch
-    )
+    package.deps = _get_package_deps(archive_path=archive_path, arch=package.arch)
     archive_path.unlink()
 
     return package

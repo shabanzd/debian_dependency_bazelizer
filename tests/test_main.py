@@ -3,7 +3,7 @@ import sys
 
 from click.testing import CliRunner
 
-from src.main import main
+from main import main
 
 
 def test_main():
@@ -11,17 +11,16 @@ def test_main():
     runner = CliRunner()
     result = runner.invoke(main, ["--help"])
     assert result.exit_code == 0
-    assert "-rp" in result.output
-    assert "-if" in result.output
-    assert "-cf" in result.output
+    assert "-i" in result.output
+    assert "-m" in result.output
 
     result = runner.invoke(main)
     assert result.exit_code != 0
-    assert "Error: Missing option '--input_file' / '-if'" in result.output
+    assert "Error: Missing option '--input_file' / '-i'" in result.output
 
-    result = runner.invoke(main, ["-if", "./tests/ci_inputs/deb_packages.in"])
+    result = runner.invoke(main, ["-i", "./tests/ci_inputs/deb_packages.in"])
     assert result.exit_code != 0
-    assert "Error: Missing option '--storage_config_file' / '-cf'" in result.output
+    assert "Error: Missing option '--modules_path' / '-m'" in result.output
 
 
 if __name__ == "__main__":

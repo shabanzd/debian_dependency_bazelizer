@@ -1,5 +1,7 @@
 # fallback to Bazel Central registry
 common --registry=https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/
+# enable bzlmod
+common --enable_bzlmod
 
 
 # Testing

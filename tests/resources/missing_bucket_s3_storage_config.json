@@ -1,8 +1,0 @@
-{
-    "download_url": "https://testdownloadurl.com",
-    "storage": {
-        "aws_s3": {
-            "credentials_profile": "other-profile"
-        }
-    }
-}

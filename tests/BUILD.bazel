@@ -1,5 +1,47 @@
 load("@rules_python//python:defs.bzl", "py_test")
-load("@pip//:requirements.bzl", "requirement")
+
+py_test(
+    name = "test_module",
+    timeout = "short",
+    srcs = ["test_module.py"],
+    deps = [
+        "//src:module",
+        "@poetry//:pytest",
+    ],
+)
+
+
+py_test(
+    name = "test_writers",
+    timeout = "short",
+    srcs = ["test_writers.py"],
+    deps = [
+        "//src:writers",
+        "//src:package",
+        "//src:module",
+        "@poetry//:pytest",
+    ],
+)
+
+py_test(
+    name = "test_bazelize_deps",
+    timeout = "short",
+    srcs = ["test_bazelize_deps.py"],
+    deps = [
+        "//src:bazelize_deps",
+        "@poetry//:pytest",
+    ],
+)
+
+py_test(
+    name = "test_package",
+    timeout = "short",
+    srcs = ["test_package.py"],
+    deps = [
+        "//src:package",
+        "@poetry//:pytest",
+    ],
+)
 
 py_test(
     name = "test_modularize_package",
@@ -7,7 +49,7 @@ py_test(
     srcs = ["test_modularize_package.py"],
     deps = [
         "//src:modularize_package",
-        requirement("pytest"),
+        "@poetry//:pytest",
     ],
 )
 
@@ -17,8 +59,8 @@ py_test(
     srcs = ["test_version.py"],
     deps = [
         "//src:version",
-        requirement("pytest"),
-        requirement("pytest_mock"),
+        "@poetry//:pytest",
+        "@poetry//:pytest-mock",
     ],
 )
 
@@ -26,14 +68,15 @@ py_test(
     name = "test_read_input_files",
     timeout = "short",
     srcs = ["test_read_input_files.py"],
+    data = [
+        "resources/arm_input.in",
+        "resources/correct_input.in",
+        "resources/faulty_input.in",
+    ],
     deps = [
         "//src:read_input_files",
-        requirement("pytest"),
+        "@poetry//:pytest",
     ],
-    data = [
-        "resources/faulty_input.in",
-        "resources/correct_input.in",
-    ]
 )
 
 py_test(
@@ -41,27 +84,8 @@ py_test(
     timeout = "short",
     srcs = ["test_main.py"],
     deps = [
-        "//src:dependency-bazelizer",
-        requirement("pytest"),
-        requirement("click"),
+        "//:debian_dependency_bazelizer",
+        "@poetry//:click",
+        "@poetry//:pytest",
     ],
-)
-
-py_test(
-    name = "test_storage",
-    timeout = "short",
-    srcs = ["test_storage.py"],
-    deps = [
-        "//src:storage",
-        requirement("pytest"),
-    ],
-    data = [
-        "resources/storage_config.txt",
-        "resources/correct_s3_storage_config.json",
-        "resources/correct_unknown_storage_config.json",
-        "resources/missing_storage_s3_storage_config.json",
-        "resources/missing_bucket_s3_storage_config.json",
-        "resources/missing_url_s3_storage_config.json",
-        "resources/missing_path_unknown_storage_config.json",
-    ]
 )

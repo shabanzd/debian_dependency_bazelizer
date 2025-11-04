@@ -1,8 +1,0 @@
-{
-    "storage": {
-        "aws_s3": {
-            "bucket": "my-bucket",
-            "credentials_profile": "other-profile"
-        }
-    }
-}

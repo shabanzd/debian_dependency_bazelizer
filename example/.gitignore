@@ -1,0 +1,5 @@
+/bazel-*
+/modules/*
+/registry/*
+/my_registry/*
+__pycache__

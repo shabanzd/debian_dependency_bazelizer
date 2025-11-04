@@ -1,0 +1,13 @@
+exclude: ^bazel-
+
+repos:
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.6.9
+  hooks:
+  - id: ruff
+    types_or: [python, pyi, jupyter]
+    args: [--fix, --unsafe-fixes]
+    language_version: python3.12
+  - id: ruff-format
+    types_or: [python, pyi, jupyter]
+    language_version: python3.12
