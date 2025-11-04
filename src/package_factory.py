@@ -9,7 +9,10 @@ from src.module import get_module_name
 from src.package import PackageMetadata, Package, DetachedModeMetadata
 
 DEPENDS_ATTR: Final = "Depends"
-MAIN_REPO_RULES_PREFIX: Final = "_main~_repo_rules~"
+
+
+def _get_http_archive_prefix(delimiter: str) -> str:
+    return f"_main{delimiter}_repo_rules{delimiter}"
 
 
 def _is_acceptable_error(err: str):
@@ -186,13 +189,9 @@ def create_deb_package(
     package.pinned_name = _get_deb_pinned_name(
         name=metadata.name, arch=metadata.arch, version=metadata.version
     )
-    if detached_mode_metadata:
-        package.prefix = f"{MAIN_REPO_RULES_PREFIX}{package.module_name}"
-    else:
-        package.prefix = (
-            f"{get_module_name(name=metadata.name, arch=metadata.arch)}{delimiter}"
-        )
-    package.prefix_version = package.prefix + metadata.version
+    http_archive_prefix = _get_http_archive_prefix(delimiter)
+    package.prefix = f"{http_archive_prefix}{get_module_name(name=metadata.name, arch=metadata.arch)}"
+    package.prefix_version = f"{get_module_name(name=metadata.name, arch=metadata.arch)}{delimiter}{metadata.version}"
     package.compatibility_level = get_compatibility_level(metadata.version)
     package.tags = set(f'"{tag}"' for tag in tags)
     package.detached_mode_metadata = detached_mode_metadata
