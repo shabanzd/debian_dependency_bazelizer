@@ -72,7 +72,9 @@ def bazelize_deps(
 
         if package_stack[-1] not in processed_packages:
             processed_packages[package_stack[-1]] = create_deb_package(
-                metadata=package_stack[-1], delimiter=delimiter, tags=tags,
+                metadata=package_stack[-1],
+                delimiter=delimiter,
+                tags=tags,
                 detached_mode_metadata=detached_mode_metadata,
             )
 

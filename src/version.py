@@ -1,6 +1,6 @@
-from packaging import version as packaging_version, specifiers as packaging_specifiers
+from packaging import version as packaging_version
 from pathlib import Path
-from typing import Final, List, Optional
+from typing import Final, Optional
 
 import dataclasses
 import logging
@@ -91,7 +91,6 @@ def _get_deb_package_version_from_aptcache(name: str, arch: str) -> str:
     )
 
     return _extract_attribute(package_info=package_info, attribute=VERSION_ATTRIBUTE)
-
 
 
 def get_compatibility_level(version_string: str) -> int:

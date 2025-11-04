@@ -15,6 +15,7 @@ MODULE_DOT_BAZEL: Final = Path("MODULE.bazel")
 NAME_DOT_TXT: Final = "name.txt"
 VERSION_DOT_TXT: Final = "version.txt"
 
+
 def _get_integrity_for_file(debian_module_tar: Path):
     with debian_module_tar.open("rb") as f:
         files_content = f.read()
@@ -153,8 +154,9 @@ inline std::map<std::string, std::string> paths()
 
 """
 
+
 def _create_http_archive_text(
-    name: str, build_file: str, integrity: str, prefix: str, url: str 
+    name: str, build_file: str, integrity: str, prefix: str, url: str
 ):
     return f"""http_archive(
     name = "{name}",
@@ -175,7 +177,11 @@ def write_module_file(package: Package):
 def write_build_file(package: Package):
     "Writes a BUILD file exporting the list of files"
     if package.detached_mode_metadata:
-        file = Path(package.detached_mode_metadata.build_files_dir / package.module_name / f"{package.module_name}.BUILD")
+        file = Path(
+            package.detached_mode_metadata.build_files_dir
+            / package.module_name
+            / f"{package.module_name}.BUILD"
+        )
     else:
         file = Path(package.package_dir / BUILD_FILE)
 
@@ -189,24 +195,23 @@ def write_python_path_file(rpaths: Dict[str, str], file: Path):
     file.write_text(_create_paths_python_file_content(full_rpaths))
 
 
-
 def write_cpp_path_file(rpaths: Dict[str, str], package_name: str, file: Path):
     "Writes a python file exposing the paths of ELF files"
     full_rpaths = {key: "../" + value + "/" + key for key, value in rpaths.items()}
     file.write_text(_create_paths_cpp_file_content(full_rpaths, package_name))
 
 
-
 def json_dump(json_file: Path, obj: Dict[Any, Any], sort_keys=True):
     "Dumps json content into json file"
     json_file.write_text(json.dumps(obj, indent=4, sort_keys=sort_keys) + "\n")
+
 
 def write_http_archive(package: Package, debian_module_tar: Path):
     "Writes a http_archive file for the debian module"
     if not package.detached_mode_metadata:
         return
 
-    file = package.detached_mode_metadata.archives_file 
+    file = package.detached_mode_metadata.archives_file
     file.parent.mkdir(parents=True, exist_ok=True)
     content = file.read_text() if file.exists() else ""
     if not content:
@@ -217,22 +222,36 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 
 '''
 
-    file.write_text(content + _create_http_archive_text(
-        name=get_module_name(name=package.name, arch=package.arch),
-        prefix=package.prefix,
-        url=f"{package.detached_mode_metadata.url_prefix}/{str(debian_module_tar)}",
-        integrity=_get_integrity_for_file(debian_module_tar),
-        build_file=f"{str(package.detached_mode_metadata.build_file_package)}:{package.module_name}/{package.module_name}.BUILD",
-    ) + "\n")
+    file.write_text(
+        content
+        + _create_http_archive_text(
+            name=get_module_name(name=package.name, arch=package.arch),
+            prefix=package.prefix,
+            url=f"{package.detached_mode_metadata.url_prefix}/{str(debian_module_tar)}",
+            integrity=_get_integrity_for_file(debian_module_tar),
+            build_file=f"{str(package.detached_mode_metadata.build_file_package)}:{package.module_name}/{package.module_name}.BUILD",
+        )
+        + "\n"
+    )
+
 
 def write_name_txt_file(package: Package):
     if not package.detached_mode_metadata:
         return
-    file = Path(package.detached_mode_metadata.build_files_dir / package.module_name / NAME_DOT_TXT)
+    file = Path(
+        package.detached_mode_metadata.build_files_dir
+        / package.module_name
+        / NAME_DOT_TXT
+    )
     file.write_text(f"{package.name}\n")
+
 
 def write_version_txt_file(package: Package):
     if not package.detached_mode_metadata:
         return
-    file = Path(package.detached_mode_metadata.build_files_dir / package.module_name / VERSION_DOT_TXT)
+    file = Path(
+        package.detached_mode_metadata.build_files_dir
+        / package.module_name
+        / VERSION_DOT_TXT
+    )
     file.write_text(f"{package.version}\n")
